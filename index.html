@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prevenció d'incendis i biodiversitat — Collserola</title>
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css">
+<script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green: #8db89a;
+    --green-dark: #5f8a70;
+    --amber: #e08a3c;
+    --red: #c1440e;
+    --gray: #9a9a94;
+    --ink: #26302b;
+    --paper: #f7f6f2;
+    --panel: #ffffff;
+    --line: #e1ddd2;
+    --mono: 'DM Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; height:100%; font-family: var(--sans); color: var(--ink); background: var(--paper); }
+  #map{ position:absolute; top:0; bottom:0; left:340px; right:0; }
+
+  /* ---------- Sidebar ---------- */
+  #sidebar{
+    position:absolute; top:0; bottom:0; left:0; width:340px;
+    background: var(--panel); border-right:1px solid var(--line);
+    display:flex; flex-direction:column; z-index:5;
+  }
+  #sidebar-header{
+    padding:18px 20px 14px; border-bottom:1px solid var(--line);
+  }
+  #sidebar-header .brand{
+    font-family: var(--mono); font-size:11px; letter-spacing:.12em; color: var(--green-dark);
+    text-transform:uppercase; margin-bottom:6px;
+  }
+  #sidebar-header h1{
+    font-size:16px; line-height:1.3; margin:0 0 4px; font-weight:700;
+  }
+  #sidebar-header p{
+    font-size:11.5px; color:#6b6f68; margin:0; font-family: var(--mono);
+  }
+  #sidebar-scroll{ flex:1; overflow-y:auto; padding: 10px 0 20px; }
+
+  .layer-group{ border-bottom:1px solid var(--line); }
+  .layer-group-title{
+    font-family: var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.1em;
+    color:#8a8d85; padding:14px 20px 6px;
+  }
+  .layer-row{
+    display:flex; align-items:center; gap:9px; padding:8px 20px; cursor:pointer;
+    user-select:none;
+  }
+  .layer-row:hover{ background:#f1efe8; }
+  .layer-row input[type=checkbox]{
+    width:15px; height:15px; accent-color: var(--green-dark); cursor:pointer; flex-shrink:0;
+  }
+  .layer-row label{ font-size:13.5px; font-weight:500; cursor:pointer; flex:1; }
+  .layer-count{
+    font-family: var(--mono); font-size:10.5px; color:#9a9d95; background:#eef0ea;
+    padding:1px 6px; border-radius:8px;
+  }
+  .info-btn{
+    width:16px; height:16px; border-radius:50%; border:1px solid #c9ccc2; background:none;
+    color:#8a8d85; font-family: var(--mono); font-size:10px; line-height:14px; cursor:pointer;
+    flex-shrink:0; padding:0;
+  }
+  .info-btn:hover{ border-color: var(--green-dark); color: var(--green-dark); }
+
+  .sublayer-panel{ padding: 2px 20px 12px 44px; display:none; }
+  .sublayer-panel.open{ display:block; }
+
+  .legend{ display:flex; flex-direction:column; gap:5px; margin-bottom:10px; }
+  .legend-item{ display:flex; align-items:center; gap:8px; font-size:11.5px; color:#4d5049; }
+  .swatch{ width:12px; height:12px; border-radius:3px; flex-shrink:0; border:1px solid rgba(0,0,0,.12); }
+
+  .table-toggle{
+    font-family: var(--mono); font-size:10.5px; color: var(--green-dark); background:#eef4ef;
+    border:1px solid #d3e2d7; border-radius:5px; padding:5px 9px; cursor:pointer; width:100%;
+    text-align:left; margin-top:2px;
+  }
+  .table-toggle:hover{ background:#e2ede4; }
+
+  #sidebar-footer{
+    padding:12px 20px; border-top:1px solid var(--line); font-family: var(--mono);
+    font-size:10px; color:#9a9d95; display:flex; justify-content:space-between;
+  }
+
+  /* ---------- Attribute table overlay ---------- */
+  #table-overlay{
+    position:absolute; left:340px; right:0; bottom:0; height:0; background:var(--panel);
+    border-top:1px solid var(--line); z-index:6; overflow:hidden; transition:height .18s ease;
+    display:flex; flex-direction:column;
+  }
+  #table-overlay.open{ height:38%; }
+  #table-head{
+    display:flex; align-items:center; justify-content:space-between; padding:8px 16px;
+    border-bottom:1px solid var(--line); flex-shrink:0;
+  }
+  #table-head h3{ font-size:12.5px; margin:0; font-family: var(--mono); text-transform:uppercase; letter-spacing:.06em;}
+  #table-close{ border:none; background:none; font-size:16px; cursor:pointer; color:#8a8d85; }
+  #table-scroll{ overflow:auto; flex:1; }
+  table.attr{ border-collapse:collapse; width:100%; font-size:11.5px; font-family: var(--mono); }
+  table.attr th{
+    position:sticky; top:0; background:#f1efe8; text-align:left; padding:6px 10px;
+    border-bottom:1px solid var(--line); cursor:pointer; white-space:nowrap;
+  }
+  table.attr td{ padding:5px 10px; border-bottom:1px solid #f0efe9; white-space:nowrap; }
+  table.attr tbody tr:hover{ background:#f6f8f5; cursor:pointer; }
+
+  /* ---------- Map controls ---------- */
+  .basemap-switch{
+    position:absolute; top:14px; right:14px; z-index:5; background:var(--panel);
+    border:1px solid var(--line); border-radius:8px; overflow:hidden; display:flex;
+    font-family: var(--mono); font-size:11px; box-shadow:0 2px 6px rgba(0,0,0,.06);
+  }
+  .basemap-switch button{
+    border:none; background:none; padding:7px 11px; cursor:pointer; color:#6b6f68; border-right:1px solid var(--line);
+  }
+  .basemap-switch button:last-child{ border-right:none; }
+  .basemap-switch button.active{ background: var(--green); color:#fff; }
+
+  #coord-display{
+    position:absolute; left:350px; bottom:10px; z-index:5; font-family: var(--mono);
+    font-size:10.5px; background:rgba(255,255,255,.9); padding:4px 8px; border-radius:5px;
+    border:1px solid var(--line); color:#6b6f68; pointer-events:none;
+  }
+
+  .maplibregl-popup-content{
+    font-family: var(--sans); font-size:12.5px; padding:12px 14px; border-radius:8px;
+    box-shadow:0 4px 14px rgba(0,0,0,.14);
+  }
+  .popup-title{ font-weight:700; font-size:13.5px; margin-bottom:6px; color:var(--green-dark); }
+  .popup-row{ display:flex; gap:6px; margin-bottom:2px; }
+  .popup-row .k{ color:#8a8d85; min-width:78px; font-family:var(--mono); font-size:10.5px; text-transform:uppercase; }
+  .popup-row .v{ font-weight:500; }
+
+  /* ---------- Metadata modal ---------- */
+  #modal-backdrop{
+    position:fixed; inset:0; background:rgba(38,48,43,.45); z-index:20; display:none;
+    align-items:center; justify-content:center;
+  }
+  #modal-backdrop.open{ display:flex; }
+  #modal{
+    background:#fff; border-radius:10px; width:420px; max-width:90vw; max-height:80vh;
+    overflow-y:auto; padding:22px 24px; box-shadow:0 12px 40px rgba(0,0,0,.25);
+  }
+  #modal h2{ font-size:15px; margin:0 0 12px; }
+  #modal .meta-field{ margin-bottom:10px; }
+  #modal .meta-label{ font-family:var(--mono); font-size:10px; text-transform:uppercase; color:#9a9d95; letter-spacing:.06em; }
+  #modal .meta-value{ font-size:12.5px; margin-top:2px; }
+  #modal-close{
+    float:right; border:none; background:none; font-size:18px; cursor:pointer; color:#8a8d85;
+  }
+
+  .maplibregl-ctrl-attrib{ font-size:10px !important; }
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <div id="sidebar-header">
+    <div class="brand">CREAF · SIG</div>
+    <h1>Prevenció d'incendis i biodiversitat</h1>
+    <p>Parc Natural de la Serra de Collserola</p>
+  </div>
+
+  <div id="sidebar-scroll">
+
+    <div class="layer-group">
+      <div class="layer-group-title">Actuacions de prevenció</div>
+
+      <div class="layer-row" data-target="franges">
+        <input type="checkbox" id="chk-franges" checked>
+        <label for="chk-franges">Franges de gestió</label>
+        <span class="layer-count" id="count-franges">880</span>
+        <button class="info-btn" data-meta="franges">i</button>
+      </div>
+      <div class="sublayer-panel open" id="panel-franges">
+        <div class="legend">
+          <div class="legend-item"><span class="swatch" style="background:#8db89a"></span> Executada</div>
+          <div class="legend-item"><span class="swatch" style="background:#e08a3c"></span> Pendent d'execució</div>
+        </div>
+        <button class="table-toggle" data-table="franges">Veure taula d'atributs (880 registres)</button>
+      </div>
+
+      <div class="layer-row" data-target="pegs">
+        <input type="checkbox" id="chk-pegs" checked>
+        <label for="chk-pegs">Punts Estratègics de Gestió (PEG)</label>
+        <span class="layer-count" id="count-pegs">187</span>
+        <button class="info-btn" data-meta="pegs">i</button>
+      </div>
+      <div class="sublayer-panel open" id="panel-pegs">
+        <div class="legend">
+          <div class="legend-item"><span class="swatch" style="background:#c1440e"></span> Prioritat alta</div>
+          <div class="legend-item"><span class="swatch" style="background:#e0a83c"></span> Prioritat mitjana</div>
+          <div class="legend-item"><span class="swatch" style="background:#9a9a94"></span> Sense classificar</div>
+        </div>
+        <button class="table-toggle" data-table="pegs">Veure taula d'atributs (187 registres)</button>
+      </div>
+    </div>
+
+    <div class="layer-group">
+      <div class="layer-group-title">Límits</div>
+      <div class="layer-row" data-target="xpn">
+        <input type="checkbox" id="chk-xpn" checked>
+        <label for="chk-xpn">Parc Natural de Collserola</label>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="sidebar-footer">
+    <span>WGS84</span>
+    <span id="zoom-display">z—</span>
+  </div>
+</div>
+
+<div id="map"></div>
+<div class="basemap-switch" id="basemap-switch">
+  <button data-style="light" class="active">Clar</button>
+  <button data-style="sat">Satèl·lit</button>
+  <button data-style="osm">OSM</button>
+</div>
+<div id="coord-display">lon —, lat —</div>
+
+<div id="table-overlay">
+  <div id="table-head">
+    <h3 id="table-title">Taula d'atributs</h3>
+    <button id="table-close">✕</button>
+  </div>
+  <div id="table-scroll"><table class="attr" id="attr-table"></table></div>
+</div>
+
+<div id="modal-backdrop">
+  <div id="modal">
+    <button id="modal-close">✕</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script>
+const META = {
+  franges: {
+    title: "Franges de gestió — prevenció d'incendis",
+    fields: [
+      ["Font", "CREAF / Ajuntaments / Diputació de Barcelona"],
+      ["Àmbit", "Parc Natural de la Serra de Collserola"],
+      ["Descripció", "Franges perimetrals de gestió forestal per a la prevenció d'incendis, amb estat d'execució i any de realització."],
+      ["Sistema de referència", "ETRS89 / WGS84 (EPSG:4326)"],
+      ["Nombre de registres", "880"]
+    ]
+  },
+  pegs: {
+    title: "Punts Estratègics de Gestió (PEG)",
+    fields: [
+      ["Font", "CREAF"],
+      ["Àmbit", "Parc Natural de la Serra de Collserola"],
+      ["Descripció", "Perímetres de gestió estratègica per a la prevenció d'incendis forestals, classificats per prioritat i objectiu de gestió."],
+      ["Sistema de referència", "ETRS89 / WGS84 (EPSG:4326)"],
+      ["Nombre de registres", "187"]
+    ]
+  }
+};
+
+const OBJ_LABELS = {
+  AFG: "Àrea de Franja de Gestió", FP: "Franja Perimetral", AS: "Aclarida Selectiva",
+  C: "Clara", FAE: "Franja d'Autoprotecció Estructural", AE: "Aclarida Espessa", AC: "Àrea de Combustible"
+};
+
+const styles = {
+  light: {
+    version: 8,
+    sources: { basemap: { type:'raster', tiles:['https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png'], tileSize:256, attribution:'© CartoDB, © OpenStreetMap contributors' } },
+    layers: [{ id:'basemap', type:'raster', source:'basemap' }]
+  },
+  sat: {
+    version: 8,
+    sources: { basemap: { type:'raster', tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'], tileSize:256, attribution:'© Esri, Maxar, Earthstar Geographics' } },
+    layers: [{ id:'basemap', type:'raster', source:'basemap' }]
+  },
+  osm: {
+    version: 8,
+    sources: { basemap: { type:'raster', tiles:['https://tile.openstreetmap.org/{z}/{x}/{y}.png'], tileSize:256, attribution:'© OpenStreetMap contributors' } },
+    layers: [{ id:'basemap', type:'raster', source:'basemap' }]
+  }
+};
+
+const map = new maplibregl.Map({
+  container: 'map',
+  style: styles.light,
+  center: [2.083, 41.428],
+  zoom: 12,
+  minZoom: 10,
+  attributionControl: true
+});
+map.addControl(new maplibregl.NavigationControl({ showCompass:true }), 'top-right');
+
+let dataCache = {};
+
+map.on('load', async () => {
+  const [franges, pegs] = await Promise.all([
+    fetch('dades/franges_xpn.geojson').then(r => r.json()),
+    fetch('dades/pegs_xpn.geojson').then(r => r.json())
+  ]);
+  dataCache.franges = franges;
+  dataCache.pegs = pegs;
+
+  map.addSource('franges', { type:'geojson', data: franges });
+  map.addLayer({
+    id: 'franges-fill', type:'fill', source:'franges',
+    paint: {
+      'fill-color': ['case', ['==', ['get','feta'], 1], '#8db89a', '#e08a3c'],
+      'fill-opacity': 0.55
+    }
+  });
+  map.addLayer({
+    id: 'franges-line', type:'line', source:'franges',
+    paint: { 'line-color': ['case', ['==', ['get','feta'], 1], '#5f8a70', '#b8631e'], 'line-width': 1 }
+  });
+
+  map.addSource('pegs', { type:'geojson', data: pegs });
+  map.addLayer({
+    id: 'pegs-fill', type:'fill', source:'pegs',
+    paint: {
+      'fill-color': [
+        'match', ['get','id_priorit'],
+        'Alta', '#c1440e',
+        'Mitja', '#e0a83c',
+        '#9a9a94'
+      ],
+      'fill-opacity': 0.5
+    }
+  });
+  map.addLayer({
+    id: 'pegs-line', type:'line', source:'pegs',
+    paint: { 'line-color': '#7a4a2a', 'line-width': 1, 'line-dasharray':[2,1] }
+  });
+
+  // Park boundary from franges extent isn't available as its own file yet — derive outline placeholder disabled.
+  document.getElementById('chk-xpn').addEventListener('change', () => {}); // no source provided yet
+
+  setupPopups('franges-fill', 'franges');
+  setupPopups('pegs-fill', 'pegs');
+
+  ['franges-fill','franges-line','pegs-fill','pegs-line'].forEach(id => {
+    map.on('mouseenter', id, () => map.getCanvas().style.cursor = 'pointer');
+    map.on('mouseleave', id, () => map.getCanvas().style.cursor = '');
+  });
+});
+
+function setupPopups(layerId, key){
+  map.on('click', layerId, (e) => {
+    const f = e.features[0];
+    const p = f.properties;
+    let html = '';
+    if(key === 'franges'){
+      html = `<div class="popup-title">${p.nom || 'Franja ' + p.id_franja}</div>
+        <div class="popup-row"><span class="k">Codi</span><span class="v">${p.codi || '—'}</span></div>
+        <div class="popup-row"><span class="k">Estat</span><span class="v">${p.feta == 1 ? 'Executada' : 'Pendent'}</span></div>
+        <div class="popup-row"><span class="k">Any exec.</span><span class="v">${p.anyexec || '—'}</span></div>
+        <div class="popup-row"><span class="k">Finançament</span><span class="v">${p['finança'] || '—'}</span></div>
+        <div class="popup-row"><span class="k">Municipi</span><span class="v">${p.nom_muni || '—'}</span></div>
+        <div class="popup-row"><span class="k">Superfície</span><span class="v">${p.area_ha ? p.area_ha.toFixed(2)+' ha' : '—'}</span></div>`;
+    } else {
+      html = `<div class="popup-title">${p.nom_peg || 'PEG ' + p.id_peg}</div>
+        <div class="popup-row"><span class="k">Codi</span><span class="v">${p.codi_peg || '—'}</span></div>
+        <div class="popup-row"><span class="k">Objectiu</span><span class="v">${OBJ_LABELS[p.id_objecti] || p.id_objecti || '—'}</span></div>
+        <div class="popup-row"><span class="k">Prioritat</span><span class="v">${p.id_priorit || 'Sense classificar'}</span></div>
+        <div class="popup-row"><span class="k">Autor</span><span class="v">${p.autor || '—'}</span></div>
+        <div class="popup-row"><span class="k">Superfície</span><span class="v">${p.hectares ? p.hectares.toFixed(2)+' ha' : '—'}</span></div>
+        ${p.comentaris ? `<div class="popup-row"><span class="k">Comentaris</span><span class="v">${p.comentaris}</span></div>` : ''}`;
+    }
+    new maplibregl.Popup({ maxWidth:'280px' }).setLngLat(e.lngLat).setHTML(html).addTo(map);
+  });
+}
+
+// ---- Layer toggles ----
+document.getElementById('chk-franges').addEventListener('change', (e) => {
+  const vis = e.target.checked ? 'visible' : 'none';
+  ['franges-fill','franges-line'].forEach(id => map.setLayoutProperty(id, 'visibility', vis));
+});
+document.getElementById('chk-pegs').addEventListener('change', (e) => {
+  const vis = e.target.checked ? 'visible' : 'none';
+  ['pegs-fill','pegs-line'].forEach(id => map.setLayoutProperty(id, 'visibility', vis));
+});
+
+// ---- Basemap switcher ----
+document.getElementById('basemap-switch').addEventListener('click', (e) => {
+  const btn = e.target.closest('button');
+  if(!btn) return;
+  document.querySelectorAll('.basemap-switch button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const key = btn.dataset.style;
+  const savedLayers = ['franges','pegs'];
+  map.setStyle(styles[key]);
+  map.once('styledata', () => {
+    if(dataCache.franges && !map.getSource('franges')){
+      map.addSource('franges', { type:'geojson', data: dataCache.franges });
+      map.addLayer({ id:'franges-fill', type:'fill', source:'franges',
+        paint:{ 'fill-color': ['case', ['==', ['get','feta'], 1], '#8db89a', '#e08a3c'], 'fill-opacity':0.55 } });
+      map.addLayer({ id:'franges-line', type:'line', source:'franges',
+        paint:{ 'line-color': ['case', ['==', ['get','feta'], 1], '#5f8a70', '#b8631e'], 'line-width':1 } });
+      map.addSource('pegs', { type:'geojson', data: dataCache.pegs });
+      map.addLayer({ id:'pegs-fill', type:'fill', source:'pegs',
+        paint:{ 'fill-color': ['match', ['get','id_priorit'], 'Alta','#c1440e','Mitja','#e0a83c','#9a9a94'], 'fill-opacity':0.5 } });
+      map.addLayer({ id:'pegs-line', type:'line', source:'pegs',
+        paint:{ 'line-color':'#7a4a2a', 'line-width':1, 'line-dasharray':[2,1] } });
+      setupPopups('franges-fill','franges');
+      setupPopups('pegs-fill','pegs');
+      if(!document.getElementById('chk-franges').checked){
+        ['franges-fill','franges-line'].forEach(id => map.setLayoutProperty(id,'visibility','none'));
+      }
+      if(!document.getElementById('chk-pegs').checked){
+        ['pegs-fill','pegs-line'].forEach(id => map.setLayoutProperty(id,'visibility','none'));
+      }
+    }
+  });
+});
+
+// ---- Coordinate & zoom display ----
+map.on('mousemove', (e) => {
+  document.getElementById('coord-display').textContent =
+    `lon ${e.lngLat.lng.toFixed(5)}, lat ${e.lngLat.lat.toFixed(5)}`;
+});
+map.on('move', () => {
+  document.getElementById('zoom-display').textContent = 'z' + map.getZoom().toFixed(1);
+});
+
+// ---- Metadata modal ----
+document.querySelectorAll('.info-btn').forEach(btn => {
+  btn.addEventListener('click', (ev) => {
+    ev.stopPropagation();
+    const key = btn.dataset.meta;
+    const m = META[key];
+    let html = `<h2>${m.title}</h2>`;
+    m.fields.forEach(([label, value]) => {
+      html += `<div class="meta-field"><div class="meta-label">${label}</div><div class="meta-value">${value}</div></div>`;
+    });
+    document.getElementById('modal-content').innerHTML = html;
+    document.getElementById('modal-backdrop').classList.add('open');
+  });
+});
+document.getElementById('modal-close').addEventListener('click', () => document.getElementById('modal-backdrop').classList.remove('open'));
+document.getElementById('modal-backdrop').addEventListener('click', (e) => {
+  if(e.target.id === 'modal-backdrop') e.target.classList.remove('open');
+});
+
+// ---- Attribute tables ----
+document.querySelectorAll('.table-toggle').forEach(btn => {
+  btn.addEventListener('click', () => openTable(btn.dataset.table));
+});
+document.getElementById('table-close').addEventListener('click', () => {
+  document.getElementById('table-overlay').classList.remove('open');
+});
+
+function openTable(key){
+  const data = dataCache[key];
+  if(!data) return;
+  const cols = key === 'franges'
+    ? ['nom','codi','anyexec','feta','finança','nom_muni','area_ha']
+    : ['nom_peg','codi_peg','id_objecti','id_priorit','autor','hectares'];
+  const labels = key === 'franges'
+    ? ['Nom','Codi','Any exec.','Estat','Finançament','Municipi','Ha']
+    : ['Nom','Codi','Objectiu','Prioritat','Autor','Ha'];
+
+  let thead = '<thead><tr>' + labels.map(l => `<th>${l}</th>`).join('') + '</tr></thead>';
+  let rows = data.features.map((f, i) => {
+    const p = f.properties;
+    const cells = cols.map(c => {
+      let v = p[c];
+      if(c === 'feta') v = v == 1 ? 'Executada' : 'Pendent';
+      if(c === 'id_objecti') v = OBJ_LABELS[v] || v || '—';
+      if((c === 'area_ha' || c === 'hectares') && typeof v === 'number') v = v.toFixed(2);
+      return `<td>${v ?? '—'}</td>`;
+    }).join('');
+    return `<tr data-idx="${i}">${cells}</tr>`;
+  }).join('');
+
+  document.getElementById('attr-table').innerHTML = thead + '<tbody>' + rows + '</tbody>';
+  document.getElementById('table-title').textContent =
+    (key === 'franges' ? 'Franges de gestió' : 'Punts Estratègics de Gestió') + ` — ${data.features.length} registres`;
+  document.getElementById('table-overlay').classList.add('open');
+
+  document.querySelectorAll('#attr-table tbody tr').forEach(tr => {
+    tr.addEventListener('click', () => {
+      const feat = data.features[+tr.dataset.idx];
+      const coords = feat.geometry.coordinates;
+      let ring = feat.geometry.type === 'MultiPolygon' ? coords[0][0] : coords[0];
+      const bounds = ring.reduce((b, c) => b.extend(c), new maplibregl.LngLatBounds(ring[0], ring[0]));
+      map.fitBounds(bounds, { padding: 60, maxZoom: 16 });
+    });
+  });
+}
+
+// ---- Sublayer panel collapse on row click (excluding checkbox/info button) ----
+document.querySelectorAll('.layer-row').forEach(row => {
+  row.addEventListener('click', (e) => {
+    if(e.target.tagName === 'INPUT' || e.target.classList.contains('info-btn')) return;
+    const panel = document.getElementById('panel-' + row.dataset.target);
+    if(panel) panel.classList.toggle('open');
+  });
+});
+</script>
+</body>
+</html>
