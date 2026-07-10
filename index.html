@@ -197,9 +197,7 @@
       </div>
       <div class="sublayer-panel open" id="panel-pegs">
         <div class="legend">
-          <div class="legend-item"><span class="swatch" style="background:#c1440e"></span> Prioritat alta</div>
-          <div class="legend-item"><span class="swatch" style="background:#e0a83c"></span> Prioritat mitjana</div>
-          <div class="legend-item"><span class="swatch" style="background:#9a9a94"></span> Sense classificar</div>
+          <div class="legend-item"><span class="swatch" style="background:#4a7c94"></span> Punt Estratègic de Gestió</div>
         </div>
         <button class="table-toggle" data-table="pegs">Veure taula d'atributs (187 registres)</button>
       </div>
@@ -327,19 +325,11 @@ map.on('load', async () => {
   map.addSource('pegs', { type:'geojson', data: pegs });
   map.addLayer({
     id: 'pegs-fill', type:'fill', source:'pegs',
-    paint: {
-      'fill-color': [
-        'match', ['get','id_priorit'],
-        'Alta', '#c1440e',
-        'Mitja', '#e0a83c',
-        '#9a9a94'
-      ],
-      'fill-opacity': 0.5
-    }
+    paint: { 'fill-color': '#4a7c94', 'fill-opacity': 0.45 }
   });
   map.addLayer({
     id: 'pegs-line', type:'line', source:'pegs',
-    paint: { 'line-color': '#7a4a2a', 'line-width': 1, 'line-dasharray':[2,1] }
+    paint: { 'line-color': '#2f5568', 'line-width': 1, 'line-dasharray':[2,1] }
   });
 
   // Park boundary from franges extent isn't available as its own file yet — derive outline placeholder disabled.
@@ -408,9 +398,9 @@ document.getElementById('basemap-switch').addEventListener('click', (e) => {
         paint:{ 'line-color': ['case', ['==', ['get','feta'], 1], '#5f8a70', '#b8631e'], 'line-width':1 } });
       map.addSource('pegs', { type:'geojson', data: dataCache.pegs });
       map.addLayer({ id:'pegs-fill', type:'fill', source:'pegs',
-        paint:{ 'fill-color': ['match', ['get','id_priorit'], 'Alta','#c1440e','Mitja','#e0a83c','#9a9a94'], 'fill-opacity':0.5 } });
+        paint:{ 'fill-color': '#4a7c94', 'fill-opacity':0.45 } });
       map.addLayer({ id:'pegs-line', type:'line', source:'pegs',
-        paint:{ 'line-color':'#7a4a2a', 'line-width':1, 'line-dasharray':[2,1] } });
+        paint:{ 'line-color':'#2f5568', 'line-width':1, 'line-dasharray':[2,1] } });
       setupPopups('franges-fill','franges');
       setupPopups('pegs-fill','pegs');
       if(!document.getElementById('chk-franges').checked){
