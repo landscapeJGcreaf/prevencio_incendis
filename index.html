@@ -173,7 +173,7 @@
   <div id="sidebar-scroll">
 
     <div class="layer-group">
-      <div class="layer-group-title">Actuacions de prevenció</div>
+      <div class="layer-group-title">Tipologies d'espais</div>
 
       <div class="layer-row" data-target="franges">
         <input type="checkbox" id="chk-franges" checked>
@@ -214,6 +214,34 @@
           <div class="legend-item"><span class="swatch" style="background:#7b3fa0"></span> Àrea de Foment de la Gestió</div>
         </div>
         <button class="table-toggle" data-table="afg">Veure taula d'atributs (10 registres)</button>
+      </div>
+
+      <div class="layer-row" data-target="obertes">
+        <input type="checkbox" id="chk-obertes" checked>
+        <label for="chk-obertes">Zones de control obertes</label>
+        <span class="layer-count" id="count-obertes">3249</span>
+        <button class="info-btn" data-meta="obertes">i</button>
+      </div>
+      <div class="sublayer-panel open" id="panel-obertes">
+        <div class="legend">
+          <div class="legend-item"><span class="swatch" style="background:#c9a66b"></span> Antics conreus</div>
+          <div class="legend-item"><span class="swatch" style="background:#7d8a4c"></span> Antic sòl forestal</div>
+          <div class="legend-item"><span class="swatch" style="background:#a8a49a"></span> Sense canvis / sense classificar</div>
+        </div>
+        <button class="table-toggle" data-table="obertes">Veure taula d'atributs (3249 registres)</button>
+      </div>
+
+      <div class="layer-row" data-target="tancades">
+        <input type="checkbox" id="chk-tancades" checked>
+        <label for="chk-tancades">Zones de control tancades</label>
+        <span class="layer-count" id="count-tancades">11</span>
+        <button class="info-btn" data-meta="tancades">i</button>
+      </div>
+      <div class="sublayer-panel open" id="panel-tancades">
+        <div class="legend">
+          <div class="legend-item"><span class="swatch" style="background:#2d5a3d"></span> Bosc d'evolució natural</div>
+        </div>
+        <button class="table-toggle" data-table="tancades">Veure taula d'atributs (11 registres)</button>
       </div>
     </div>
 
@@ -287,6 +315,26 @@ const META = {
       ["Sistema de referència", "ETRS89 / WGS84 (EPSG:4326)"],
       ["Nombre de registres", "10"]
     ]
+  },
+  obertes: {
+    title: "Zones de control obertes",
+    fields: [
+      ["Font", "Cartografia facilitada pel Parc Natural de la Serra de Collserola (2020)"],
+      ["Àmbit", "Parc Natural de la Serra de Collserola"],
+      ["Descripció", "Espais oberts històrics (matollars, prats i herbassars) classificats segons el seu origen: antics conreus, antic sòl forestal, o sense canvis."],
+      ["Sistema de referència", "ETRS89 / WGS84 (EPSG:4326)"],
+      ["Nombre de registres", "3249"]
+    ]
+  },
+  tancades: {
+    title: "Zones de control tancades",
+    fields: [
+      ["Font", "Cartografia facilitada pel Parc Natural de la Serra de Collserola"],
+      ["Àmbit", "Parc Natural de la Serra de Collserola"],
+      ["Descripció", "Boscos d'evolució natural, reserves naturals parcials i sectors d'interès estratègic sense actuacions de gestió."],
+      ["Sistema de referència", "ETRS89 / WGS84 (EPSG:4326)"],
+      ["Nombre de registres", "11"]
+    ]
   }
 };
 
@@ -324,14 +372,18 @@ map.on('load', async () => {
     return r.json();
   }).catch(err => { console.warn('No s\'ha pogut carregar', url, err); return empty; });
 
-  const [franges, pegs, afg] = await Promise.all([
+  const [franges, pegs, afg, obertes, tancades] = await Promise.all([
     loadJSON('dades/franges_xpn.geojson'),
     loadJSON('dades/pegs_xpn.geojson'),
-    loadJSON('dades/afg_xpn.geojson')
+    loadJSON('dades/afg_xpn.geojson'),
+    loadJSON('dades/zones_control_obertes.geojson'),
+    loadJSON('dades/zones_control_tancades.geojson')
   ]);
   dataCache.franges = franges;
   dataCache.pegs = pegs;
   dataCache.afg = afg;
+  dataCache.obertes = obertes;
+  dataCache.tancades = tancades;
 
   // franges: 'feta' 1/0 = capa oficial (executada/pendent); 'feta' null = zona planificada/proposta (capa "Difference")
   map.addSource('franges', { type:'geojson', data: franges });
@@ -379,11 +431,39 @@ map.on('load', async () => {
     paint: { 'line-color': '#552b70', 'line-width': 1.2 }
   });
 
+  map.addSource('obertes', { type:'geojson', data: obertes });
+  map.addLayer({
+    id: 'obertes-fill', type:'fill', source:'obertes',
+    paint: {
+      'fill-color': ['match', ['get','origen'],
+        'Antics conreus', '#c9a66b',
+        'Antic sòl forestal', '#7d8a4c',
+        '#a8a49a'],
+      'fill-opacity': 0.5
+    }
+  });
+  map.addLayer({
+    id: 'obertes-line', type:'line', source:'obertes',
+    paint: { 'line-color': '#6b6555', 'line-width': 0.5 }
+  });
+
+  map.addSource('tancades', { type:'geojson', data: tancades });
+  map.addLayer({
+    id: 'tancades-fill', type:'fill', source:'tancades',
+    paint: { 'fill-color': '#2d5a3d', 'fill-opacity': 0.45 }
+  });
+  map.addLayer({
+    id: 'tancades-line', type:'line', source:'tancades',
+    paint: { 'line-color': '#173a26', 'line-width': 1.2 }
+  });
+
   setupPopups('franges-fill', 'franges');
   setupPopups('pegs-fill', 'pegs');
   setupPopups('afg-fill', 'afg');
+  setupPopups('obertes-fill', 'obertes');
+  setupPopups('tancades-fill', 'tancades');
 
-  ['franges-fill','pegs-fill','afg-fill'].forEach(id => {
+  ['franges-fill','pegs-fill','afg-fill','obertes-fill','tancades-fill'].forEach(id => {
     map.on('mouseenter', id, () => map.getCanvas().style.cursor = 'pointer');
     map.on('mouseleave', id, () => map.getCanvas().style.cursor = '');
   });
@@ -417,6 +497,16 @@ function setupPopups(layerId, key){
         <div class="popup-row"><span class="k">Prioritat</span><span class="v">${p.id_priorit || p.grup_prio || 'Sense classificar'}</span></div>
         <div class="popup-row"><span class="k">Superfície</span><span class="v">${p.hectares ? p.hectares.toFixed(2)+' ha' : '—'}</span></div>
         ${p.comentaris ? `<div class="popup-row"><span class="k">Comentaris</span><span class="v">${p.comentaris}</span></div>` : ''}`;
+    } else if(key === 'obertes'){
+      html = `<div class="popup-title">${p.categoria || 'Zona de control oberta'}</div>
+        <div class="popup-row"><span class="k">Origen</span><span class="v">${p.origen || 'Sense classificar'}</span></div>
+        <div class="popup-row"><span class="k">Categoria (nivell 1)</span><span class="v">${p.cat_niv_1 || '—'}</span></div>
+        <div class="popup-row"><span class="k">Acrònim</span><span class="v">${p.acronim || '—'}</span></div>`;
+    } else if(key === 'tancades'){
+      html = `<div class="popup-title">${p.nom || 'Zona de control tancada'}</div>
+        <div class="popup-row"><span class="k">Codi</span><span class="v">${p.codi || '—'}</span></div>
+        <div class="popup-row"><span class="k">Tipus</span><span class="v">${p.tipus || '—'}</span></div>
+        <div class="popup-row"><span class="k">Superfície</span><span class="v">${p.hectares ? p.hectares.toFixed(2)+' ha' : '—'}</span></div>`;
     } else {
       html = `<div class="popup-title">${p.nom_peg || 'PEG ' + p.id_peg}</div>
         <div class="popup-row"><span class="k">Codi</span><span class="v">${p.codi_peg || '—'}</span></div>
@@ -435,7 +525,9 @@ function setupPopups(layerId, key){
 const LAYER_GROUPS = {
   franges: ['franges-fill','franges-line','franges-line-planned'],
   pegs: ['pegs-fill','pegs-line'],
-  afg: ['afg-fill','afg-line']
+  afg: ['afg-fill','afg-line'],
+  obertes: ['obertes-fill','obertes-line'],
+  tancades: ['tancades-fill','tancades-line']
 };
 Object.entries(LAYER_GROUPS).forEach(([key, ids]) => {
   document.getElementById('chk-' + key).addEventListener('change', (e) => {
@@ -502,7 +594,13 @@ function openTable(key){
       labels: ['Nom','Codi','Objectiu','Prioritat','Any exec.','Entitat/mes','Autor','Ha'] },
     afg: { title: 'Àrees de Foment de la Gestió',
       cols: ['nom_peg','codi_peg','nom_tracta','id_priorit','executat_a','executat_e','hectares'],
-      labels: ['Nom','Codi','Tram','Prioritat','Any exec.','Entitat/mes','Ha'] }
+      labels: ['Nom','Codi','Tram','Prioritat','Any exec.','Entitat/mes','Ha'] },
+    obertes: { title: 'Zones de control obertes',
+      cols: ['categoria','origen','cat_niv_1','acronim'],
+      labels: ['Categoria','Origen','Categoria nivell 1','Acrònim'] },
+    tancades: { title: 'Zones de control tancades',
+      cols: ['nom','codi','tipus','hectares'],
+      labels: ['Nom','Codi','Tipus','Ha'] }
   };
   const { cols, labels } = TABLES[key];
 
