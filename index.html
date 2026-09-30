@@ -178,28 +178,42 @@
       <div class="layer-row" data-target="franges">
         <input type="checkbox" id="chk-franges" checked>
         <label for="chk-franges">Franges de gestió</label>
-        <span class="layer-count" id="count-franges">880</span>
+        <span class="layer-count" id="count-franges">1298</span>
         <button class="info-btn" data-meta="franges">i</button>
       </div>
       <div class="sublayer-panel open" id="panel-franges">
         <div class="legend">
           <div class="legend-item"><span class="swatch" style="background:#8db89a"></span> Executada</div>
           <div class="legend-item"><span class="swatch" style="background:#e08a3c"></span> Pendent d'execució</div>
+          <div class="legend-item"><span class="swatch" style="background:#a8a49a"></span> Planificada / proposta</div>
         </div>
-        <button class="table-toggle" data-table="franges">Veure taula d'atributs (880 registres)</button>
+        <button class="table-toggle" data-table="franges">Veure taula d'atributs (1298 registres)</button>
       </div>
 
       <div class="layer-row" data-target="pegs">
         <input type="checkbox" id="chk-pegs" checked>
         <label for="chk-pegs">Punts Estratègics de Gestió (PEG)</label>
-        <span class="layer-count" id="count-pegs">187</span>
+        <span class="layer-count" id="count-pegs">178</span>
         <button class="info-btn" data-meta="pegs">i</button>
       </div>
       <div class="sublayer-panel open" id="panel-pegs">
         <div class="legend">
           <div class="legend-item"><span class="swatch" style="background:#4a7c94"></span> Punt Estratègic de Gestió</div>
         </div>
-        <button class="table-toggle" data-table="pegs">Veure taula d'atributs (187 registres)</button>
+        <button class="table-toggle" data-table="pegs">Veure taula d'atributs (178 registres)</button>
+      </div>
+
+      <div class="layer-row" data-target="afg">
+        <input type="checkbox" id="chk-afg" checked>
+        <label for="chk-afg">Àrees de Foment de la Gestió (AFG)</label>
+        <span class="layer-count" id="count-afg">10</span>
+        <button class="info-btn" data-meta="afg">i</button>
+      </div>
+      <div class="sublayer-panel open" id="panel-afg">
+        <div class="legend">
+          <div class="legend-item"><span class="swatch" style="background:#7b3fa0"></span> Àrea de Foment de la Gestió</div>
+        </div>
+        <button class="table-toggle" data-table="afg">Veure taula d'atributs (10 registres)</button>
       </div>
     </div>
 
@@ -247,51 +261,53 @@ const META = {
   franges: {
     title: "Franges de gestió — prevenció d'incendis",
     fields: [
-      ["Font", "CREAF / Ajuntaments / Diputació de Barcelona"],
+      ["Font", "Cartografia facilitada pel Parc Natural de la Serra de Collserola"],
       ["Àmbit", "Parc Natural de la Serra de Collserola"],
-      ["Descripció", "Franges perimetrals de gestió forestal per a la prevenció d'incendis, amb estat d'execució i any de realització."],
+      ["Descripció", "Franges perimetrals de gestió forestal per a la prevenció d'incendis. Inclou franges oficials (amb estat d'execució) i zones planificades o proposades encara no executades."],
       ["Sistema de referència", "ETRS89 / WGS84 (EPSG:4326)"],
-      ["Nombre de registres", "880"]
+      ["Nombre de registres", "1298 (879 oficials + 419 planificades/proposades)"]
     ]
   },
   pegs: {
     title: "Punts Estratègics de Gestió (PEG)",
     fields: [
-      ["Font", "CREAF"],
+      ["Font", "Cartografia facilitada pel Parc Natural de la Serra de Collserola"],
       ["Àmbit", "Parc Natural de la Serra de Collserola"],
-      ["Descripció", "Perímetres de gestió estratègica per a la prevenció d'incendis forestals, classificats per prioritat i objectiu de gestió."],
+      ["Descripció", "Perímetres de gestió estratègica per a la prevenció d'incendis forestals, classificats per prioritat i objectiu de gestió. Cap PEG d'aquesta capa consta com a executat."],
       ["Sistema de referència", "ETRS89 / WGS84 (EPSG:4326)"],
-      ["Nombre de registres", "187"]
+      ["Nombre de registres", "178"]
+    ]
+  },
+  afg: {
+    title: "Àrees de Foment de la Gestió (AFG)",
+    fields: [
+      ["Font", "Cartografia facilitada pel Parc Natural de la Serra de Collserola"],
+      ["Àmbit", "Parc Natural de la Serra de Collserola"],
+      ["Descripció", "Àrees de foment de la gestió forestal. Dues zones consten com a executades (Can Julià, 2024; Pearson, 2025); la resta encara no."],
+      ["Sistema de referència", "ETRS89 / WGS84 (EPSG:4326)"],
+      ["Nombre de registres", "10"]
     ]
   }
 };
 
-const OBJ_LABELS = {
-  AFG: "Àrea de Franja de Gestió", FP: "Franja Perimetral", AS: "Aclarida Selectiva",
-  C: "Clara", FAE: "Franja d'Autoprotecció Estructural", AE: "Aclarida Espessa", AC: "Àrea de Combustible"
-};
+// Significat dels codis d'objectiu (AFG, FP, AS, C, FAE, AE, AC) pendent de confirmar: es mostra el codi.
+const OBJ_LABELS = {};
 
-const styles = {
-  light: {
-    version: 8,
-    sources: { basemap: { type:'raster', tiles:['https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}'], tileSize:256, attribution:'© Esri' } },
-    layers: [{ id:'basemap', type:'raster', source:'basemap' }]
-  },
-  sat: {
-    version: 8,
-    sources: { basemap: { type:'raster', tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'], tileSize:256, attribution:'© Esri, Maxar, Earthstar Geographics' } },
-    layers: [{ id:'basemap', type:'raster', source:'basemap' }]
-  },
-  osm: {
-    version: 8,
-    sources: { basemap: { type:'raster', tiles:['https://tile.openstreetmap.org/{z}/{x}/{y}.png'], tileSize:256, attribution:'© OpenStreetMap contributors' } },
-    layers: [{ id:'basemap', type:'raster', source:'basemap' }]
-  }
+const BASEMAPS = {
+  light: { tiles:['https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}'], attribution:'© Esri' },
+  sat:   { tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'], attribution:'© Esri, Maxar, Earthstar Geographics' },
+  osm:   { tiles:['https://tile.openstreetmap.org/{z}/{x}/{y}.png'], attribution:'© OpenStreetMap contributors' }
 };
+const baseStyle = { version: 8, sources: {}, layers: [] };
+Object.entries(BASEMAPS).forEach(([k, b]) => {
+  baseStyle.sources['bm-' + k] = { type:'raster', tiles:b.tiles, tileSize:256, attribution:b.attribution };
+  baseStyle.layers.push({ id:'bm-' + k, type:'raster', source:'bm-' + k,
+                          layout:{ visibility: k === 'light' ? 'visible' : 'none' } });
+});
 
 const map = new maplibregl.Map({
   container: 'map',
-  style: styles.light,
+  style: baseStyle,
   center: [2.083, 41.428],
   zoom: 12,
   minZoom: 10,
@@ -302,24 +318,45 @@ map.addControl(new maplibregl.NavigationControl({ showCompass:true }), 'top-righ
 let dataCache = {};
 
 map.on('load', async () => {
-  const [franges, pegs] = await Promise.all([
-    fetch('dades/franges_xpn.geojson').then(r => r.json()),
-    fetch('dades/pegs_xpn.geojson').then(r => r.json())
+  const empty = { type:'FeatureCollection', features:[] };
+  const loadJSON = (url) => fetch(url).then(r => {
+    if(!r.ok) throw new Error(r.status);
+    return r.json();
+  }).catch(err => { console.warn('No s\'ha pogut carregar', url, err); return empty; });
+
+  const [franges, pegs, afg] = await Promise.all([
+    loadJSON('dades/franges_xpn.geojson'),
+    loadJSON('dades/pegs_xpn.geojson'),
+    loadJSON('dades/afg_xpn.geojson')
   ]);
   dataCache.franges = franges;
   dataCache.pegs = pegs;
+  dataCache.afg = afg;
 
+  // franges: 'feta' 1/0 = capa oficial (executada/pendent); 'feta' null = zona planificada/proposta (capa "Difference")
   map.addSource('franges', { type:'geojson', data: franges });
   map.addLayer({
     id: 'franges-fill', type:'fill', source:'franges',
     paint: {
-      'fill-color': ['case', ['==', ['get','feta'], 1], '#8db89a', '#e08a3c'],
-      'fill-opacity': 0.55
+      'fill-color': ['case',
+        ['==', ['get','feta'], 1], '#8db89a',
+        ['==', ['get','feta'], 0], '#e08a3c',
+        '#a8a49a'],
+      'fill-opacity': 0.5
     }
   });
   map.addLayer({
     id: 'franges-line', type:'line', source:'franges',
-    paint: { 'line-color': ['case', ['==', ['get','feta'], 1], '#5f8a70', '#b8631e'], 'line-width': 1 }
+    filter: ['has', 'feta'],
+    paint: {
+      'line-color': ['case', ['==', ['get','feta'], 1], '#5f8a70', '#b8631e'],
+      'line-width': 1
+    }
+  });
+  map.addLayer({
+    id: 'franges-line-planned', type:'line', source:'franges',
+    filter: ['!', ['has', 'feta']],
+    paint: { 'line-color': '#726e63', 'line-width': 1, 'line-dasharray': [2,1] }
   });
 
   map.addSource('pegs', { type:'geojson', data: pegs });
@@ -332,13 +369,21 @@ map.on('load', async () => {
     paint: { 'line-color': '#2f5568', 'line-width': 1, 'line-dasharray':[2,1] }
   });
 
-  // Park boundary from franges extent isn't available as its own file yet — derive outline placeholder disabled.
-  document.getElementById('chk-xpn').addEventListener('change', () => {}); // no source provided yet
+  map.addSource('afg', { type:'geojson', data: afg });
+  map.addLayer({
+    id: 'afg-fill', type:'fill', source:'afg',
+    paint: { 'fill-color': '#7b3fa0', 'fill-opacity': 0.4 }
+  });
+  map.addLayer({
+    id: 'afg-line', type:'line', source:'afg',
+    paint: { 'line-color': '#552b70', 'line-width': 1.2 }
+  });
 
   setupPopups('franges-fill', 'franges');
   setupPopups('pegs-fill', 'pegs');
+  setupPopups('afg-fill', 'afg');
 
-  ['franges-fill','franges-line','pegs-fill','pegs-line'].forEach(id => {
+  ['franges-fill','pegs-fill','afg-fill'].forEach(id => {
     map.on('mouseenter', id, () => map.getCanvas().style.cursor = 'pointer');
     map.on('mouseleave', id, () => map.getCanvas().style.cursor = '');
   });
@@ -349,19 +394,35 @@ function setupPopups(layerId, key){
     const f = e.features[0];
     const p = f.properties;
     let html = '';
-    if(key === 'franges'){
-      html = `<div class="popup-title">${p.nom || 'Franja ' + p.id_franja}</div>
+    if(key === 'franges' && (p.feta === 1 || p.feta === 0)){
+      html = `<div class="popup-title">${p.nom || 'Franja'}</div>
         <div class="popup-row"><span class="k">Codi</span><span class="v">${p.codi || '—'}</span></div>
         <div class="popup-row"><span class="k">Estat</span><span class="v">${p.feta == 1 ? 'Executada' : 'Pendent'}</span></div>
         <div class="popup-row"><span class="k">Any exec.</span><span class="v">${p.anyexec || '—'}</span></div>
         <div class="popup-row"><span class="k">Finançament</span><span class="v">${p['finança'] || '—'}</span></div>
         <div class="popup-row"><span class="k">Municipi</span><span class="v">${p.nom_muni || '—'}</span></div>
         <div class="popup-row"><span class="k">Superfície</span><span class="v">${p.area_ha ? p.area_ha.toFixed(2)+' ha' : '—'}</span></div>`;
+    } else if(key === 'franges'){
+      html = `<div class="popup-title">${p.codizonac || 'Zona planificada'}</div>
+        <div class="popup-row"><span class="k">Estat</span><span class="v">Planificada / proposta</span></div>
+        <div class="popup-row"><span class="k">Tipus</span><span class="v">${p.tipus_zona || '—'}</span></div>
+        <div class="popup-row"><span class="k">Origen</span><span class="v">${p.origen || '—'}</span></div>
+        <div class="popup-row"><span class="k">Anualitat prevista</span><span class="v">${p.anualitat || 'Sense data'}</span></div>
+        <div class="popup-row"><span class="k">Superfície</span><span class="v">${p.area_1 ? p.area_1.toFixed(2)+' ha' : '—'}</span></div>`;
+    } else if(key === 'afg'){
+      html = `<div class="popup-title">${p.nom_peg || 'AFG'}</div>
+        <div class="popup-row"><span class="k">Codi</span><span class="v">${p.codi_peg || '—'}</span></div>
+        <div class="popup-row"><span class="k">Tram</span><span class="v">${p.nom_tracta || '—'}</span></div>
+        <div class="popup-row"><span class="k">Estat</span><span class="v">${p.executat_a ? 'Executada (' + p.executat_a + (p.executat_e ? ', ' + p.executat_e : '') + ')' : 'No executada'}</span></div>
+        <div class="popup-row"><span class="k">Prioritat</span><span class="v">${p.id_priorit || p.grup_prio || 'Sense classificar'}</span></div>
+        <div class="popup-row"><span class="k">Superfície</span><span class="v">${p.hectares ? p.hectares.toFixed(2)+' ha' : '—'}</span></div>
+        ${p.comentaris ? `<div class="popup-row"><span class="k">Comentaris</span><span class="v">${p.comentaris}</span></div>` : ''}`;
     } else {
       html = `<div class="popup-title">${p.nom_peg || 'PEG ' + p.id_peg}</div>
         <div class="popup-row"><span class="k">Codi</span><span class="v">${p.codi_peg || '—'}</span></div>
         <div class="popup-row"><span class="k">Objectiu</span><span class="v">${OBJ_LABELS[p.id_objecti] || p.id_objecti || '—'}</span></div>
         <div class="popup-row"><span class="k">Prioritat</span><span class="v">${p.id_priorit || 'Sense classificar'}</span></div>
+        <div class="popup-row"><span class="k">Estat</span><span class="v">${p.executat_a ? 'Executada (' + p.executat_a + (p.executat_e ? ', ' + p.executat_e : '') + ')' : 'No executada'}</span></div>
         <div class="popup-row"><span class="k">Autor</span><span class="v">${p.autor || '—'}</span></div>
         <div class="popup-row"><span class="k">Superfície</span><span class="v">${p.hectares ? p.hectares.toFixed(2)+' ha' : '—'}</span></div>
         ${p.comentaris ? `<div class="popup-row"><span class="k">Comentaris</span><span class="v">${p.comentaris}</span></div>` : ''}`;
@@ -371,46 +432,26 @@ function setupPopups(layerId, key){
 }
 
 // ---- Layer toggles ----
-document.getElementById('chk-franges').addEventListener('change', (e) => {
-  const vis = e.target.checked ? 'visible' : 'none';
-  ['franges-fill','franges-line'].forEach(id => map.setLayoutProperty(id, 'visibility', vis));
-});
-document.getElementById('chk-pegs').addEventListener('change', (e) => {
-  const vis = e.target.checked ? 'visible' : 'none';
-  ['pegs-fill','pegs-line'].forEach(id => map.setLayoutProperty(id, 'visibility', vis));
+const LAYER_GROUPS = {
+  franges: ['franges-fill','franges-line','franges-line-planned'],
+  pegs: ['pegs-fill','pegs-line'],
+  afg: ['afg-fill','afg-line']
+};
+Object.entries(LAYER_GROUPS).forEach(([key, ids]) => {
+  document.getElementById('chk-' + key).addEventListener('change', (e) => {
+    const vis = e.target.checked ? 'visible' : 'none';
+    ids.forEach(id => map.setLayoutProperty(id, 'visibility', vis));
+  });
 });
 
-// ---- Basemap switcher ----
+// ---- Basemap switcher (només canvia la visibilitat; les capes de dades no es toquen) ----
 document.getElementById('basemap-switch').addEventListener('click', (e) => {
   const btn = e.target.closest('button');
   if(!btn) return;
   document.querySelectorAll('.basemap-switch button').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  const key = btn.dataset.style;
-  const savedLayers = ['franges','pegs'];
-  map.setStyle(styles[key]);
-  map.once('styledata', () => {
-    if(dataCache.franges && !map.getSource('franges')){
-      map.addSource('franges', { type:'geojson', data: dataCache.franges });
-      map.addLayer({ id:'franges-fill', type:'fill', source:'franges',
-        paint:{ 'fill-color': ['case', ['==', ['get','feta'], 1], '#8db89a', '#e08a3c'], 'fill-opacity':0.55 } });
-      map.addLayer({ id:'franges-line', type:'line', source:'franges',
-        paint:{ 'line-color': ['case', ['==', ['get','feta'], 1], '#5f8a70', '#b8631e'], 'line-width':1 } });
-      map.addSource('pegs', { type:'geojson', data: dataCache.pegs });
-      map.addLayer({ id:'pegs-fill', type:'fill', source:'pegs',
-        paint:{ 'fill-color': '#4a7c94', 'fill-opacity':0.45 } });
-      map.addLayer({ id:'pegs-line', type:'line', source:'pegs',
-        paint:{ 'line-color':'#2f5568', 'line-width':1, 'line-dasharray':[2,1] } });
-      setupPopups('franges-fill','franges');
-      setupPopups('pegs-fill','pegs');
-      if(!document.getElementById('chk-franges').checked){
-        ['franges-fill','franges-line'].forEach(id => map.setLayoutProperty(id,'visibility','none'));
-      }
-      if(!document.getElementById('chk-pegs').checked){
-        ['pegs-fill','pegs-line'].forEach(id => map.setLayoutProperty(id,'visibility','none'));
-      }
-    }
-  });
+  Object.keys(BASEMAPS).forEach(k =>
+    map.setLayoutProperty('bm-' + k, 'visibility', k === btn.dataset.style ? 'visible' : 'none'));
 });
 
 // ---- Coordinate & zoom display ----
@@ -452,20 +493,27 @@ document.getElementById('table-close').addEventListener('click', () => {
 function openTable(key){
   const data = dataCache[key];
   if(!data) return;
-  const cols = key === 'franges'
-    ? ['nom','codi','anyexec','feta','finança','nom_muni','area_ha']
-    : ['nom_peg','codi_peg','id_objecti','id_priorit','autor','hectares'];
-  const labels = key === 'franges'
-    ? ['Nom','Codi','Any exec.','Estat','Finançament','Municipi','Ha']
-    : ['Nom','Codi','Objectiu','Prioritat','Autor','Ha'];
+  const TABLES = {
+    franges: { title: 'Franges de gestió',
+      cols: ['nom','codi','codizonac','feta','anyexec','nom_muni','area_ha','tipus_zona','origen','anualitat'],
+      labels: ['Nom','Codi','Codi zona planif.','Estat','Any exec.','Municipi','Ha','Tipus','Origen','Anualitat prevista'] },
+    pegs: { title: 'Punts Estratègics de Gestió',
+      cols: ['nom_peg','codi_peg','id_objecti','id_priorit','executat_a','executat_e','autor','hectares'],
+      labels: ['Nom','Codi','Objectiu','Prioritat','Any exec.','Entitat/mes','Autor','Ha'] },
+    afg: { title: 'Àrees de Foment de la Gestió',
+      cols: ['nom_peg','codi_peg','nom_tracta','id_priorit','executat_a','executat_e','hectares'],
+      labels: ['Nom','Codi','Tram','Prioritat','Any exec.','Entitat/mes','Ha'] }
+  };
+  const { cols, labels } = TABLES[key];
 
   let thead = '<thead><tr>' + labels.map(l => `<th>${l}</th>`).join('') + '</tr></thead>';
   let rows = data.features.map((f, i) => {
     const p = f.properties;
     const cells = cols.map(c => {
       let v = p[c];
-      if(c === 'feta') v = v == 1 ? 'Executada' : 'Pendent';
+      if(c === 'feta') v = (v == 1) ? 'Executada' : (v == 0 ? 'Pendent' : 'Planificada');
       if(c === 'id_objecti') v = OBJ_LABELS[v] || v || '—';
+      if(c === 'area_ha' && (v === null || v === undefined)) v = p.area_1;
       if((c === 'area_ha' || c === 'hectares') && typeof v === 'number') v = v.toFixed(2);
       return `<td>${v ?? '—'}</td>`;
     }).join('');
@@ -474,13 +522,14 @@ function openTable(key){
 
   document.getElementById('attr-table').innerHTML = thead + '<tbody>' + rows + '</tbody>';
   document.getElementById('table-title').textContent =
-    (key === 'franges' ? 'Franges de gestió' : 'Punts Estratègics de Gestió') + ` — ${data.features.length} registres`;
+    TABLES[key].title + ` — ${data.features.length} registres`;
   document.getElementById('table-overlay').classList.add('open');
 
   document.querySelectorAll('#attr-table tbody tr').forEach(tr => {
     tr.addEventListener('click', () => {
       const feat = data.features[+tr.dataset.idx];
       const coords = feat.geometry.coordinates;
+      if(feat.geometry.type === 'Point'){ map.flyTo({ center: coords, zoom: 16 }); return; }
       let ring = feat.geometry.type === 'MultiPolygon' ? coords[0][0] : coords[0];
       const bounds = ring.reduce((b, c) => b.extend(c), new maplibregl.LngLatBounds(ring[0], ring[0]));
       map.fitBounds(bounds, { padding: 60, maxZoom: 16 });
