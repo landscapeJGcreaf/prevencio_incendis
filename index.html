@@ -24,7 +24,7 @@
   }
   *{ box-sizing: border-box; }
   html,body{ margin:0; padding:0; height:100%; font-family: var(--sans); color: var(--ink); background: var(--paper); }
-  #map{ position:absolute; top:0; bottom:0; left:340px; right:0; }
+  #map{ position:absolute; top:0; bottom:0; left:340px; right:0; background:#ffffff; }
 
   /* ---------- Sidebar ---------- */
   #sidebar{
@@ -52,15 +52,6 @@
     font-family: var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.1em;
     color:#8a8d85; padding:14px 20px 6px;
   }
-  .group-toggle{
-    width:100%; display:flex; align-items:center; justify-content:space-between; gap:8px;
-    border:none; background:none; cursor:pointer; text-align:left;
-  }
-  .group-toggle:hover{ color: var(--ink); }
-  .group-toggle .chev{ flex-shrink:0; transition:transform .15s ease; }
-  .group-toggle[aria-expanded="false"] .chev{ transform:rotate(-90deg); }
-  .group-toggle[aria-expanded="false"]{ padding-bottom:14px; }
-  @media (prefers-reduced-motion: reduce){ .group-toggle .chev{ transition:none; } }
   .layer-row{
     display:flex; align-items:center; gap:9px; padding:8px 20px; cursor:pointer;
     user-select:none;
@@ -168,175 +159,39 @@
   }
 
   .maplibregl-ctrl-attrib{ font-size:10px !important; }
-  .popup-multi{ max-height:340px; overflow-y:auto; margin-right:-6px; padding-right:6px; }
-  .popup-section + .popup-section{ margin-top:10px; padding-top:10px; border-top:1px solid var(--line); }
-  .popup-layer{ display:flex; align-items:center; gap:6px; font-size:11px; color:#6b6f68; margin-bottom:6px; }
-  .popup-layer .tipo-dot{ width:8px; height:8px; }
-  .popup-n{ color:#9a9d95; }
-  .popup-sep{ height:1px; background:#f0efe9; margin:8px 0; }
-  .popup-more{ font-size:11px; color:#8a8d85; margin-top:6px; }
-  .home-btn{ display:flex !important; align-items:center; justify-content:center; color:#333; }
 
-  .opacity-ctl{ display:flex; align-items:center; gap:10px; font-size:11px; color:#6b6f68; margin:2px 0 4px; }
-  .opacity-ctl input{ flex:1; accent-color:var(--green-dark); }
-  /* ---------- Punts de mostreig (edició) ---------- */
-  .pt-sw{ width:11px; height:11px; border-radius:50%; flex-shrink:0; border:1.5px solid #fff; box-shadow:0 0 0 1px rgba(0,0,0,.15); }
-  table.pt-summary{ width:100%; border-collapse:collapse; font-size:11.5px; margin:4px 0 12px; }
-  table.pt-summary th{ font-weight:500; color:#8a8d85; text-align:right; padding:3px 4px; font-size:10.5px; }
-  table.pt-summary th:first-child, table.pt-summary td:first-child{ text-align:left; }
-  table.pt-summary td{ padding:3px 4px; border-top:1px solid #f0efe9; text-align:right; font-family:var(--mono); font-size:11px; }
-  table.pt-summary td:first-child{ font-family:var(--sans); font-size:12px; }
-  table.pt-summary tr.pt-total td{ font-weight:500; border-top:1px solid var(--line); }
-  .pt-mode{
-    width:100%; margin-bottom:6px; padding:8px 10px; border-radius:6px; cursor:pointer;
-    font-family:var(--sans); font-size:13px; font-weight:500;
-    background:var(--green-dark); color:#fff; border:1px solid var(--green-dark);
+  /* ---------- Mòbil: panell com a calaix desplegable ---------- */
+  #menu-toggle{
+    display:none; position:absolute; top:12px; left:12px; z-index:15;
+    width:38px; height:38px; border-radius:8px; border:1px solid var(--line);
+    background:var(--panel); box-shadow:0 2px 6px rgba(0,0,0,.12); cursor:pointer;
+    font-size:18px; line-height:36px; text-align:center; color:var(--ink);
   }
-  .pt-mode:hover{ background:#4f7760; }
-  .pt-mode[aria-pressed="true"]{ background:#fff; color:var(--red); border-color:var(--red); }
-  .pt-files{ display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
-  .pt-files button, .pt-import{
-    font-family:var(--sans); font-size:11.5px; padding:5px 8px; border-radius:5px; cursor:pointer;
-    border:1px solid var(--line); background:#fbfaf7; color:var(--ink);
+  #sidebar-backdrop{
+    display:none; position:fixed; inset:0; background:rgba(38,48,43,.4); z-index:9;
   }
-  .pt-files button:hover, .pt-import:hover{ border-color:var(--green-dark); }
-  .pt-import:focus-within{ outline:2px solid var(--green-dark); outline-offset:2px; }
-  .pt-note{ font-size:11px; color:#8a8d85; margin:8px 0 4px; line-height:1.4; }
-  .pt-clear{ border:none; background:none; padding:0; font-size:11px; color:var(--red); cursor:pointer; text-decoration:underline; }
-
-  #edit-banner{
-    position:absolute; top:14px; left:calc(340px + (100% - 340px) / 2); transform:translateX(-50%); z-index:6;
-    background:var(--ink); color:#fff; font-size:12.5px; padding:8px 14px; border-radius:6px;
-    box-shadow:0 4px 14px rgba(0,0,0,.18); display:none; max-width:calc(100% - 400px); text-align:center;
+  @media (max-width: 760px){
+    #menu-toggle{ display:block; }
+    #sidebar{
+      width:86vw; max-width:340px; z-index:10;
+      transform:translateX(-100%); transition:transform .22s ease;
+      box-shadow:2px 0 16px rgba(0,0,0,.18);
+    }
+    #sidebar.open{ transform:translateX(0); }
+    #sidebar.open + #sidebar-backdrop{ display:block; }
+    #sidebar-header{ padding-left:58px; }
+    #map{ left:0; }
+    #table-overlay{ left:0; }
+    #table-overlay.open{ height:55%; }
+    #coord-display{ left:10px; font-size:9.5px; }
+    .basemap-switch{ font-size:10px; }
+    .basemap-switch button{ padding:6px 8px; }
   }
-  #edit-banner.on{ display:block; }
-
-  .pt-form{ display:flex; flex-direction:column; gap:7px; min-width:220px; }
-  .pt-form-title{ font-weight:700; font-size:13.5px; color:var(--green-dark); }
-  .pt-form-hint{ font-size:11px; color:#8a8d85; margin-top:-3px; }
-  .pt-form label{ display:flex; flex-direction:column; gap:2px; font-size:11px; color:#6b6f68; }
-  .pt-form select, .pt-form textarea{
-    font-family:var(--sans); font-size:12.5px; padding:4px 6px; border:1px solid var(--line);
-    border-radius:4px; background:#fff; color:var(--ink);
-  }
-  .pt-form textarea{ resize:vertical; }
-  .pt-form .err{ font-size:11px; color:var(--red); display:none; }
-  .pt-form .err.on{ display:block; }
-  .pt-actions{ display:flex; gap:6px; margin-top:3px; }
-  .pt-actions button{ font-family:var(--sans); font-size:12px; padding:5px 10px; border-radius:5px; cursor:pointer; border:1px solid var(--line); background:#fbfaf7; }
-  .pt-actions .pt-save{ background:var(--green-dark); color:#fff; border-color:var(--green-dark); }
-  .pt-actions .pt-del{ margin-left:auto; color:var(--red); border-color:#efd3c6; background:#fff; }
-  .pt-popup-actions{ display:flex; gap:6px; margin-top:6px; }
-  .pt-popup-actions button{ font-family:var(--sans); font-size:11.5px; padding:4px 9px; border-radius:5px; cursor:pointer; border:1px solid var(--line); background:#fbfaf7; }
-
-  /* ---------- Generador aleatori ---------- */
-  .pt-generate{
-    width:100%; margin-bottom:6px; padding:7px 10px; border-radius:6px; cursor:pointer;
-    font-family:var(--sans); font-size:12.5px; background:#fff; color:var(--green-dark); border:1px solid var(--green-dark);
-  }
-  .pt-generate:hover{ background:#eef4ef; }
-  .gen-form h2{ margin:0 0 6px; }
-  .gen-intro{ font-size:12.5px; color:#555a53; line-height:1.5; margin:0 0 12px; }
-  .gen-table{ width:100%; border-collapse:collapse; font-size:12.5px; margin-bottom:6px; }
-  .gen-table th{ font-weight:500; font-size:11px; color:#8a8d85; text-align:left; padding:4px 6px; }
-  .gen-table td{ padding:4px 6px; border-top:1px solid #f0efe9; }
-  .gen-table td:first-child .pt-sw{ display:inline-block; vertical-align:-1px; margin-right:8px; }
-  .gen-table input{ width:64px; font-family:var(--mono); font-size:12px; padding:4px 6px; border:1px solid var(--line); border-radius:4px; }
-  .gen-hint{ font-size:11.5px; color:#8a8d85; margin:4px 0 10px; line-height:1.45; }
-  .gen-hint-inline{ color:#8a8d85; }
-  .gen-check{ display:flex; align-items:flex-start; gap:7px; font-size:12.5px; margin-bottom:7px; line-height:1.4; }
-  .gen-check input{ margin-top:2px; accent-color:var(--green-dark); }
-  .gen-grid{ display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:8px; margin:10px 0 14px; align-items:end; }
-  .gen-grid label{ display:flex; flex-direction:column; gap:3px; font-size:11px; color:#6b6f68; }
-  .gen-grid input{ width:100%; min-width:0; font-family:var(--mono); font-size:12px; padding:5px 7px; border:1px solid var(--line); border-radius:4px; }
-  .gen-done{ margin-top:14px; padding:10px 12px; background:#f3f7f3; border:1px solid #d3e2d7; border-radius:6px; font-size:12.5px; line-height:1.5; }
-  .gen-done p{ margin:0 0 6px; }
-  .gen-done ul{ margin:0 0 6px; padding-left:18px; }
-  .gen-done li.short{ color:var(--red); }
-  #modal:has(.gen-form){ width:500px; }
-
-  /* ---------- Estadístiques per tipologia ---------- */
-  .stats-launch{ padding: 4px 20px 14px; }
-  .stats-launch p{ font-size:11.5px; color:#6b6f68; margin:0 0 8px; line-height:1.45; }
-  button:focus-visible, input:focus-visible, a:focus-visible{ outline:2px solid var(--green-dark); outline-offset:2px; }
-
-  #stats-drawer{
-    position:absolute; top:0; bottom:0; right:0; width:min(720px, calc(100% - 340px));
-    background:var(--panel); border-left:1px solid var(--line); z-index:8;
-    display:flex; flex-direction:column; transform:translateX(100%); visibility:hidden;
-    transition:transform .2s ease, visibility 0s linear .2s;
-    box-shadow:-8px 0 28px rgba(38,48,43,.12);
-  }
-  #stats-drawer.open{ transform:none; visibility:visible; transition:transform .2s ease; }
-  @media (prefers-reduced-motion: reduce){ #stats-drawer, #stats-drawer.open{ transition:none; } }
-
-  #stats-head{ padding:18px 22px 0; border-bottom:1px solid var(--line); flex-shrink:0; }
-  #stats-head-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
-  #stats-head h2{ font-size:16px; margin:0 0 4px; }
-  #stats-head p{ font-size:12px; color:#6b6f68; margin:0 0 14px; max-width:62ch; line-height:1.45; }
-  #stats-close{ border:none; background:none; font-size:16px; cursor:pointer; color:#8a8d85; padding:2px 4px; }
-  .stats-tabs{ display:flex; gap:4px; overflow-x:auto; }
-  .stats-tab{
-    border:none; background:none; padding:9px 12px 10px; font-family:var(--sans); font-size:13px;
-    color:#6b6f68; border-bottom:2px solid transparent; cursor:pointer; white-space:nowrap;
-  }
-  .stats-tab:hover{ color:var(--ink); }
-  .stats-tab[aria-selected="true"]{ color:var(--ink); font-weight:500; border-bottom-color:var(--green-dark); }
-
-  #stats-body{ flex:1; overflow-y:auto; padding:20px 22px 32px; }
-  .stats-note{ font-size:12.5px; color:#555a53; margin:0 0 18px; max-width:66ch; line-height:1.5; }
-  .stats-msg{ font-size:12.5px; color:#8a4a2a; background:#fbf1ea; border:1px solid #f0dccd; border-radius:6px; padding:10px 12px; }
-
-  .tipo-bars{ display:flex; flex-direction:column; gap:14px; margin-bottom:12px; }
-  .tipo-bar-label{ display:flex; align-items:center; gap:8px; font-size:13px; font-weight:500; margin-bottom:5px; }
-  .tipo-dot{ width:10px; height:10px; border-radius:50%; flex-shrink:0; }
-  .tipo-bar-label .ha{ margin-left:auto; font-family:var(--mono); font-size:11px; font-weight:400; color:#8a8d85; }
-  .stack{ display:flex; height:26px; border-radius:5px; overflow:hidden; background:#eeece6; }
-  .stack span{ height:100%; min-width:0; }
-  .stack span + span{ box-shadow: inset 1px 0 0 rgba(255,255,255,.55); }
-
-  .stats-legend{ display:flex; flex-wrap:wrap; gap:6px 16px; margin:8px 0 26px; }
-  .stats-legend .legend-item{ font-size:11.5px; max-width:100%; }
-  .stats-legend .legend-item span.txt{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:300px; }
-
-  .stats-tools{ display:flex; align-items:center; gap:10px; margin-bottom:8px; }
-  .stats-tools h3{ font-size:13px; margin:0; font-weight:700; }
-  .stats-tools input{
-    margin-left:auto; font-family:var(--sans); font-size:12px; padding:5px 9px; width:200px;
-    border:1px solid var(--line); border-radius:5px; background:#fbfaf7;
-  }
-  .stats-tools a{ font-family:var(--mono); font-size:10.5px; color:var(--green-dark); white-space:nowrap; }
-  .stats-tools input + a{ margin-left:0; }
-  .stats-tools h3 + a{ margin-left:auto; }
-
-  .stats-table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:6px; }
-  table.stats{ border-collapse:collapse; width:100%; font-size:12px; }
-  table.stats th{
-    background:#f1efe8; text-align:right; padding:7px 10px; font-weight:500; font-size:11.5px;
-    border-bottom:1px solid var(--line); white-space:nowrap;
-  }
-  table.stats th:first-child, table.stats td:first-child{ text-align:left; }
-  table.stats td{ padding:6px 10px; border-bottom:1px solid #f0efe9; text-align:right; font-family:var(--mono); font-size:11.5px; white-space:nowrap; }
-  table.stats td:first-child{ font-family:var(--sans); font-size:12px; white-space:normal; min-width:200px; }
-  table.stats td.pct{ color:#8a8d85; }
-  table.stats tr.total td{ font-weight:500; background:#faf9f5; border-top:1px solid var(--line); }
-  table.stats .cat-cell{ display:flex; align-items:flex-start; gap:7px; }
-  table.stats .cat-cell .swatch{ margin-top:2px; }
-
-  .delta{ display:flex; align-items:center; justify-content:flex-end; gap:8px; }
-  .delta-track{ position:relative; width:110px; height:10px; background:#f1efe8; border-radius:2px; }
-  .delta-track::after{ content:''; position:absolute; left:50%; top:-2px; bottom:-2px; width:1px; background:#b9b6ab; }
-  .delta-bar{ position:absolute; top:0; bottom:0; border-radius:2px; }
-  .change-block{ margin-bottom:26px; }
-  .change-block .tipo-bar-label .ha{ margin-left:auto; font-family:var(--mono); font-size:11px; font-weight:400; color:#8a8d85; }
-  details.transit{ margin-top:8px; }
-  details.transit summary{ cursor:pointer; font-size:12px; color:var(--green-dark); padding:4px 0; }
-  table.stats.matrix th{ white-space:normal; min-width:70px; vertical-align:bottom; }
-  table.stats.matrix td.diag{ background:#f3f7f3; font-weight:500; }
 </style>
 </head>
 <body>
 
+<button id="menu-toggle" aria-label="Obrir panell de capes">☰</button>
 <div id="sidebar">
   <div id="sidebar-header">
     <div class="brand">CREAF · SIG</div>
@@ -347,14 +202,10 @@
   <div id="sidebar-scroll">
 
     <div class="layer-group">
-      <button type="button" class="layer-group-title group-toggle" aria-expanded="true" aria-controls="group-tipologies">
-        <span>Tipologies d'espais</span>
-        <svg class="chev" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M3 4.5 6 7.5l3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <div class="layer-group-body" id="group-tipologies">
+      <div class="layer-group-title">Tipologies d'espais</div>
 
       <div class="layer-row" data-target="franges">
-        <input type="checkbox" id="chk-franges">
+        <input type="checkbox" id="chk-franges" checked>
         <label for="chk-franges">Franges de gestió</label>
         <span class="layer-count" id="count-franges">1298</span>
         <button class="info-btn" data-meta="franges">i</button>
@@ -369,7 +220,7 @@
       </div>
 
       <div class="layer-row" data-target="pegs">
-        <input type="checkbox" id="chk-pegs">
+        <input type="checkbox" id="chk-pegs" checked>
         <label for="chk-pegs">Punts Estratègics de Gestió (PEG)</label>
         <span class="layer-count" id="count-pegs">178</span>
         <button class="info-btn" data-meta="pegs">i</button>
@@ -382,7 +233,7 @@
       </div>
 
       <div class="layer-row" data-target="afg">
-        <input type="checkbox" id="chk-afg">
+        <input type="checkbox" id="chk-afg" checked>
         <label for="chk-afg">Àrees de Foment de la Gestió (AFG)</label>
         <span class="layer-count" id="count-afg">10</span>
         <button class="info-btn" data-meta="afg">i</button>
@@ -395,7 +246,7 @@
       </div>
 
       <div class="layer-row" data-target="obertes">
-        <input type="checkbox" id="chk-obertes">
+        <input type="checkbox" id="chk-obertes" checked>
         <label for="chk-obertes">Zones de control obertes</label>
         <span class="layer-count" id="count-obertes">3249</span>
         <button class="info-btn" data-meta="obertes">i</button>
@@ -410,7 +261,7 @@
       </div>
 
       <div class="layer-row" data-target="tancades">
-        <input type="checkbox" id="chk-tancades">
+        <input type="checkbox" id="chk-tancades" checked>
         <label for="chk-tancades">Zones de control tancades</label>
         <span class="layer-count" id="count-tancades">11</span>
         <button class="info-btn" data-meta="tancades">i</button>
@@ -420,83 +271,6 @@
           <div class="legend-item"><span class="swatch" style="background:#2d5a3d"></span> Bosc d'evolució natural</div>
         </div>
         <button class="table-toggle" data-table="tancades">Veure taula d'atributs (11 registres)</button>
-      </div>
-      </div>
-    </div>
-
-    <div class="layer-group">
-      <button type="button" class="layer-group-title group-toggle" aria-expanded="false" aria-controls="group-relleu">
-        <span>Més dades</span>
-        <svg class="chev" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M3 4.5 6 7.5l3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <div class="layer-group-body" id="group-relleu" hidden>
-      <div class="layer-row" data-target="pendent">
-        <input type="checkbox" id="chk-pendent">
-        <label for="chk-pendent">Pendent</label>
-        <button class="info-btn" data-meta="pendent">i</button>
-      </div>
-      <div class="sublayer-panel" id="panel-pendent">
-        <div class="legend">
-          <div class="legend-item"><span class="swatch" style="background:#f0e4b2"></span> Baix (menys de 15°)</div>
-          <div class="legend-item"><span class="swatch" style="background:#e09646"></span> Mitjà (15–25°)</div>
-          <div class="legend-item"><span class="swatch" style="background:#96341e"></span> Alt (més de 25°)</div>
-        </div>
-        <label class="opacity-ctl">Opacitat <input type="range" min="0" max="100" value="75" data-opacity="pendent-img" aria-label="Opacitat de la pendent"></label>
-      </div>
-
-      <div class="layer-row" data-target="orientacio">
-        <input type="checkbox" id="chk-orientacio">
-        <label for="chk-orientacio">Orientació</label>
-        <button class="info-btn" data-meta="orientacio">i</button>
-      </div>
-      <div class="sublayer-panel" id="panel-orientacio">
-        <div class="legend">
-          <div class="legend-item"><span class="swatch" style="background:#2c7bb6"></span> Nord</div>
-          <div class="legend-item"><span class="swatch" style="background:#d7191c"></span> Sud</div>
-          <div class="legend-item"><span class="swatch" style="background:#a6d96a"></span> Est</div>
-          <div class="legend-item"><span class="swatch" style="background:#b8a2d6"></span> Oest</div>
-          <div class="legend-item"><span class="swatch" style="background:#d9d9d9"></span> Pla</div>
-        </div>
-        <label class="opacity-ctl">Opacitat <input type="range" min="0" max="100" value="75" data-opacity="orientacio-img" aria-label="Opacitat de l'orientació"></label>
-      </div>
-
-      <div class="layer-row" data-target="cob2020">
-        <input type="checkbox" id="chk-cob2020">
-        <label for="chk-cob2020">Cobertes del sòl 2020</label>
-        <span class="layer-count" id="count-cob2020">—</span>
-        <button class="info-btn" data-meta="cob2020">i</button>
-      </div>
-      <div class="sublayer-panel" id="panel-cob2020">
-        <div class="legend">
-          <div class="legend-item"><span class="swatch" style="background:#2d5a3d"></span> Arbrat dens</div>
-          <div class="legend-item"><span class="swatch" style="background:#7d9a5c"></span> Arbrat clar</div>
-          <div class="legend-item"><span class="swatch" style="background:#b9a462"></span> Matollars</div>
-          <div class="legend-item"><span class="swatch" style="background:#e3d28a"></span> Prats i herbassars</div>
-          <div class="legend-item"><span class="swatch" style="background:#c98a4b"></span> Conreus</div>
-          <div class="legend-item"><span class="swatch" style="background:#a8a49a"></span> Improductiu natural</div>
-        </div>
-        <p class="pt-note">Només dins de les franges, els PEG i les AFG.</p>
-        <label class="opacity-ctl">Opacitat <input type="range" min="0" max="100" value="80" data-opacity="cob2020-fill" data-prop="fill-opacity" aria-label="Opacitat de les cobertes 2020"></label>
-      </div>
-
-      <div class="layer-row" data-target="cob1956">
-        <input type="checkbox" id="chk-cob1956">
-        <label for="chk-cob1956">Cobertes del sòl 1956</label>
-        <span class="layer-count" id="count-cob1956">—</span>
-        <button class="info-btn" data-meta="cob1956">i</button>
-      </div>
-      <div class="sublayer-panel" id="panel-cob1956">
-        <div class="legend">
-          <div class="legend-item"><span class="swatch" style="background:#2d5a3d"></span> Arbrat dens</div>
-          <div class="legend-item"><span class="swatch" style="background:#7d9a5c"></span> Arbrat clar</div>
-          <div class="legend-item"><span class="swatch" style="background:#b9a462"></span> Matollars</div>
-          <div class="legend-item"><span class="swatch" style="background:#e3d28a"></span> Prats i herbassars</div>
-          <div class="legend-item"><span class="swatch" style="background:#c98a4b"></span> Conreus</div>
-          <div class="legend-item"><span class="swatch" style="background:#a8a49a"></span> Improductiu natural</div>
-        </div>
-        <p class="pt-note">Només dins de les franges, els PEG i les AFG.</p>
-        <label class="opacity-ctl">Opacitat <input type="range" min="0" max="100" value="80" data-opacity="cob1956-fill" data-prop="fill-opacity" aria-label="Opacitat de les cobertes 1956"></label>
-      </div>
       </div>
     </div>
 
@@ -508,48 +282,6 @@
       </div>
     </div>
 
-    <div class="layer-group">
-      <button type="button" class="layer-group-title group-toggle" aria-expanded="false" aria-controls="group-punts">
-        <span>Punts de mostreig</span>
-        <svg class="chev" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M3 4.5 6 7.5l3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <div class="layer-group-body" id="group-punts" hidden>
-      <div class="layer-row" data-target="punts">
-        <input type="checkbox" id="chk-punts" checked>
-        <label for="chk-punts">Punts proposats</label>
-        <span class="layer-count" id="count-punts">0</span>
-      </div>
-      <div class="sublayer-panel open" id="panel-punts">
-        <div class="legend">
-          <div class="legend-item"><span class="pt-sw" style="background:#5f8a70"></span> Franja</div>
-          <div class="legend-item"><span class="pt-sw" style="background:#4a7c94"></span> PEG</div>
-          <div class="legend-item"><span class="pt-sw" style="background:#7b3fa0"></span> AFG</div>
-          <div class="legend-item"><span class="pt-sw" style="background:#b8894a"></span> Control obert</div>
-          <div class="legend-item"><span class="pt-sw" style="background:#2d5a3d"></span> Control bosc</div>
-        </div>
-        <table class="pt-summary" id="pt-summary" aria-label="Recompte de punts per tipologia"></table>
-        <button type="button" id="pt-mode" class="pt-mode" aria-pressed="false">Afegir punts</button>
-        <button type="button" id="pt-generate" class="pt-generate">Genera punts aleatoris</button>
-        <button class="table-toggle" data-table="punts">Veure taula de punts</button>
-        <div class="pt-files">
-          <button type="button" id="pt-export-geojson">Descarrega GeoJSON</button>
-          <button type="button" id="pt-export-csv">Descarrega CSV</button>
-          <label class="pt-import">Importa GeoJSON<input type="file" id="pt-import" accept=".geojson,.json" hidden></label>
-        </div>
-        <p class="pt-note">Els punts es desen en aquest navegador. Descarrega'ls en acabar la sessió per no perdre'ls.</p>
-        <button type="button" id="pt-clear" class="pt-clear">Esborra tots els punts</button>
-      </div>
-      </div>
-    </div>
-
-    <div class="layer-group">
-      <div class="layer-group-title">Anàlisi</div>
-      <div class="stats-launch">
-        <p>Estadístiques de les franges, els PEG i les AFG segons les cobertes del sòl de 1956 i 2020 i el Mapa d'Hàbitats de Catalunya (v3, 2022).</p>
-        <button class="table-toggle" id="open-stats" aria-controls="stats-drawer" aria-expanded="false">Veure estadístiques per tipologia</button>
-      </div>
-    </div>
-
   </div>
 
   <div id="sidebar-footer">
@@ -557,14 +289,15 @@
     <span id="zoom-display">z—</span>
   </div>
 </div>
+<div id="sidebar-backdrop"></div>
 
 <div id="map"></div>
 <div class="basemap-switch" id="basemap-switch">
   <button data-style="light" class="active">Clar</button>
   <button data-style="sat">Satèl·lit</button>
   <button data-style="osm">OSM</button>
+  <button data-style="none">Cap</button>
 </div>
-<div id="edit-banner" role="status">Mode edició: clica al mapa per afegir un punt, clica un punt per editar-lo o arrossega'l per moure'l. Esc per sortir.</div>
 <div id="coord-display">lon —, lat —</div>
 
 <div id="table-overlay">
@@ -575,25 +308,6 @@
   <div id="table-scroll"><table class="attr" id="attr-table"></table></div>
 </div>
 
-<aside id="stats-drawer" aria-labelledby="stats-title" aria-hidden="true">
-  <div id="stats-head">
-    <div id="stats-head-top">
-      <div>
-        <h2 id="stats-title">Cobertes i hàbitats per tipologia</h2>
-        <p>Superfície de cada tipologia de gestió segons el Mapa de Cobertes del Sòl (1956 i 2020) i el Mapa d'Hàbitats de Catalunya.</p>
-      </div>
-      <button id="stats-close" aria-label="Tanca les estadístiques">✕</button>
-    </div>
-    <div class="stats-tabs" role="tablist">
-      <button class="stats-tab" role="tab" data-tab="c1956" aria-selected="true">Cobertes 1956</button>
-      <button class="stats-tab" role="tab" data-tab="c2020" aria-selected="false">Cobertes 2020</button>
-      <button class="stats-tab" role="tab" data-tab="canvi" aria-selected="false">Canvi 1956–2020</button>
-      <button class="stats-tab" role="tab" data-tab="hab" aria-selected="false">Hàbitats</button>
-    </div>
-  </div>
-  <div id="stats-body" role="tabpanel"></div>
-</aside>
-
 <div id="modal-backdrop">
   <div id="modal">
     <button id="modal-close">✕</button>
@@ -603,42 +317,6 @@
 
 <script>
 const META = {
-  cob2020: {
-    title: "Cobertes del sòl 2020",
-    fields: [
-      ["Font", "Mapa de Cobertes del Sòl de Catalunya 2020 (CREAF), nivell 1F"],
-      ["Àmbit", "Intersecció amb les franges, els PEG i les AFG dins del Parc"],
-      ["Descripció", "Coberta actual de cada tipologia de gestió, sense les zones artificials (urbanitzacions, vials i edificacions), perquè sigui comparable amb el mapa de 1956. És la base de les estadístiques de la pestanya Anàlisi."],
-      ["Sistema de referència", "ETRS89 / WGS84 (EPSG:4326)"]
-    ]
-  },
-  cob1956: {
-    title: "Cobertes del sòl 1956",
-    fields: [
-      ["Font", "Mapa de Cobertes del Sòl de 1956 de la província de Barcelona (Diputació de Barcelona i CREAF), nivell 1F"],
-      ["Àmbit", "Intersecció amb les franges, els PEG i les AFG dins del Parc"],
-      ["Descripció", "Coberta que hi havia l'any 1956 a les zones gestionades avui. Permet veure si eren bosc, matollar o conreu."],
-      ["Sistema de referència", "Original en ETRS89 / UTM 31N (EPSG:25831), reprojectat a EPSG:4326"]
-    ]
-  },
-  pendent: {
-    title: "Pendent",
-    fields: [
-      ["Font", "Derivada del Model d'Elevacions del Terreny de 5 m de l'ICGC"],
-      ["Classes", "Baix (<15°), mitjà (15–25°) i alt (>25°), les mateixes que s'utilitzen per estratificar els punts de mostreig"],
-      ["Resolució", "5 m"],
-      ["Sistema de referència", "Original en ETRS89 / UTM 31N (EPSG:25831), reprojectat a Web Mercator per al visor"]
-    ]
-  },
-  orientacio: {
-    title: "Orientació",
-    fields: [
-      ["Font", "Derivada del Model d'Elevacions del Terreny de 5 m de l'ICGC"],
-      ["Classes", "L'orientació es mesura en graus des del nord (0°), en sentit horari. Nord: de 315° a 360° i de 0° a 45°. Est: de 45° a 135°. Sud: de 135° a 225°. Oest: de 225° a 315°. Les zones amb pendent inferior a 3° es classifiquen com a planes."],
-      ["Resolució", "5 m"],
-      ["Sistema de referència", "Original en ETRS89 / UTM 31N (EPSG:25831), reprojectat a Web Mercator per al visor"]
-    ]
-  },
   franges: {
     title: "Franges de gestió — prevenció d'incendis",
     fields: [
@@ -706,36 +384,15 @@ Object.entries(BASEMAPS).forEach(([k, b]) => {
                           layout:{ visibility: k === 'light' ? 'visible' : 'none' } });
 });
 
-// Extensió aproximada del Parc; es substitueix per l'extensió real del límit quan es carrega
-const RELLEU_COORDS_ALL = [[2.000077, 41.4853954], [2.1873925, 41.4853954], [2.1873925, 41.3836444], [2.000077, 41.3836444]];
-const HOME_BOUNDS = [[1.985, 41.365], [2.215, 41.505]];
-let homeBounds = HOME_BOUNDS;
-
 const map = new maplibregl.Map({
   container: 'map',
   style: baseStyle,
-  bounds: HOME_BOUNDS,
-  fitBoundsOptions: { padding: 30 },
+  center: [2.083, 41.428],
+  zoom: 12,
   minZoom: 10,
   attributionControl: true
 });
 map.addControl(new maplibregl.NavigationControl({ showCompass:true }), 'top-right');
-
-// Botó per tornar a la vista inicial (tot el Parc)
-class HomeControl {
-  onAdd(m){
-    this._c = document.createElement('div');
-    this._c.className = 'maplibregl-ctrl maplibregl-ctrl-group';
-    this._c.innerHTML = `<button type="button" class="home-btn" title="Torna a la vista inicial" aria-label="Torna a la vista inicial">
-      <svg viewBox="0 0 20 20" width="17" height="17" aria-hidden="true"><path d="M3 9.5 10 3.5l7 6M5 8v8.5h3.8v-5h2.4v5H15V8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg>
-    </button>`;
-    this._c.querySelector('button').addEventListener('click', () =>
-      m.fitBounds(homeBounds, { padding: 30, bearing: 0, pitch: 0 }));
-    return this._c;
-  }
-  onRemove(){ this._c.remove(); }
-}
-map.addControl(new HomeControl(), 'top-right');
 
 let dataCache = {};
 
@@ -746,13 +403,12 @@ map.on('load', async () => {
     return r.json();
   }).catch(err => { console.warn('No s\'ha pogut carregar', url, err); return empty; });
 
-  const [franges, pegs, afg, obertes, tancades, xpn] = await Promise.all([
+  const [franges, pegs, afg, obertes, tancades] = await Promise.all([
     loadJSON('dades/franges_xpn.geojson'),
     loadJSON('dades/pegs_xpn.geojson'),
     loadJSON('dades/afg_xpn.geojson'),
     loadJSON('dades/zones_control_obertes.geojson'),
-    loadJSON('dades/zones_control_tancades.geojson'),
-    loadJSON('dades/limit_xpn.geojson')
+    loadJSON('dades/zones_control_tancades.geojson')
   ]);
   dataCache.franges = franges;
   dataCache.pegs = pegs;
@@ -832,93 +488,22 @@ map.on('load', async () => {
     paint: { 'line-color': '#173a26', 'line-width': 1.2 }
   });
 
-  // Màscara fora del Parc: rectangle gran amb el Parc com a forat (sota les capes de dades)
-  map.addSource('xpn-mask', { type:'geojson', data: buildOutsideMask(xpn) });
-  map.addLayer({
-    id: 'xpn-mask', type:'fill', source:'xpn-mask',
-    paint: { 'fill-color': '#26302b', 'fill-opacity': 0.35 }
-  }, 'franges-fill');
+  setupPopups('franges-fill', 'franges');
+  setupPopups('pegs-fill', 'pegs');
+  setupPopups('afg-fill', 'afg');
+  setupPopups('obertes-fill', 'obertes');
+  setupPopups('tancades-fill', 'tancades');
 
-  // Rasters de relleu (PNG reprojectats a Web Mercator), sota la màscara i les capes vectorials
-  const RELLEU_COORDS = RELLEU_COORDS_ALL;
-  [['pendent', 'dades/raster/pendent.png'], ['orientacio', 'dades/raster/orientacio.png']].forEach(([id, url]) => {
-    map.addSource(id, { type:'image', url, coordinates: RELLEU_COORDS });
-    map.addLayer({
-      id: id + '-img', type:'raster', source:id,
-      paint: { 'raster-opacity': 0.75, 'raster-resampling':'nearest', 'raster-fade-duration': 0 }
-    }, 'xpn-mask');
+  ['franges-fill','pegs-fill','afg-fill','obertes-fill','tancades-fill'].forEach(id => {
+    map.on('mouseenter', id, () => map.getCanvas().style.cursor = 'pointer');
+    map.on('mouseleave', id, () => map.getCanvas().style.cursor = '');
   });
-
-  // Cobertes del sòl (es carreguen quan s'activen per primer cop)
-  const coverColor = ['match', ['get','coberta'], ...Object.entries(COVER_COLORS).flat(), 'Aigües continentals', '#5b8fb0', '#cccccc'];
-  ['cob2020', 'cob1956'].forEach(id => {
-    map.addSource(id, { type:'geojson', data: empty });
-    map.addLayer({
-      id: id + '-fill', type:'fill', source:id,
-      paint: { 'fill-color': coverColor, 'fill-opacity': 0.8, 'fill-outline-color': 'rgba(255,255,255,0.35)' }
-    }, 'xpn-mask');
-  });
-
-  // Límit del Parc Natural: només contorn, per sobre de totes les capes
-  map.addSource('xpn', { type:'geojson', data: xpn });
-  map.addLayer({
-    id: 'xpn-halo', type:'line', source:'xpn',
-    paint: { 'line-color': '#ffffff', 'line-width': 4, 'line-opacity': 0.8 }
-  });
-  map.addLayer({
-    id: 'xpn-line', type:'line', source:'xpn',
-    paint: { 'line-color': '#26302b', 'line-width': 1.6 }
-  });
-  initPointsLayer();
-  loadRelleuValues();
-
-  // Visibilitat inicial segons les caselles (per defecte només el límit del Parc)
-  Object.entries(LAYER_GROUPS).forEach(([key, ids]) => {
-    const vis = document.getElementById('chk-' + key).checked ? 'visible' : 'none';
-    ids.forEach(id => map.setLayoutProperty(id, 'visibility', vis));
-  });
-
-  // Vista inicial: extensió real del límit del Parc
-  const bb = geojsonBounds(xpn);
-  if(bb){ homeBounds = bb; map.fitBounds(homeBounds, { padding: 30, animate: false }); }
-
-  setupMultiPopup();
-
 });
 
-// Construeix la màscara exterior: el món menys el Parc. Els enclavaments interiors del Parc
-// (forats del polígon) també queden enfosquits. Orientació RFC 7946: anells exteriors
-// antihoraris i forats horaris.
-function geojsonBounds(fc){
-  let w = Infinity, so = Infinity, e = -Infinity, n = -Infinity;
-  const walk = (c) => {
-    if(typeof c[0] === 'number'){ w = Math.min(w, c[0]); e = Math.max(e, c[0]); so = Math.min(so, c[1]); n = Math.max(n, c[1]); }
-    else c.forEach(walk);
-  };
-  (fc.features || []).forEach(f => f.geometry && walk(f.geometry.coordinates));
-  return isFinite(w) ? [[w, so], [e, n]] : null;
-}
-
-function buildOutsideMask(fc){
-  const area = (r) => r.reduce((a, p, i) => { const q = r[(i + 1) % r.length]; return a + (p[0] * q[1] - q[0] * p[1]); }, 0) / 2;
-  const ccw = (r) => area(r) > 0 ? r : [...r].reverse();
-  const cw  = (r) => area(r) < 0 ? r : [...r].reverse();
-  const world = ccw([[-179,-85],[179,-85],[179,85],[-179,85],[-179,-85]]);
-  const holes = [], enclaves = [];
-  (fc.features || []).forEach(f => {
-    const g = f.geometry; if(!g) return;
-    const polys = g.type === 'Polygon' ? [g.coordinates] : g.type === 'MultiPolygon' ? g.coordinates : [];
-    polys.forEach(poly => {
-      holes.push(cw(poly[0]));
-      poly.slice(1).forEach(inner => enclaves.push([ccw(inner)]));
-    });
-  });
-  return { type:'FeatureCollection', features:[{ type:'Feature', properties:{},
-    geometry:{ type:'MultiPolygon', coordinates:[[world, ...holes], ...enclaves] } }] };
-}
-
-// Contingut del popup per a una entitat d'una capa
-function popupContent(key, p){
+function setupPopups(layerId, key){
+  map.on('click', layerId, (e) => {
+    const f = e.features[0];
+    const p = f.properties;
     let html = '';
     if(key === 'franges' && (p.feta === 1 || p.feta === 0)){
       html = `<div class="popup-title">${p.nom || 'Franja'}</div>
@@ -948,21 +533,6 @@ function popupContent(key, p){
         <div class="popup-row"><span class="k">Origen</span><span class="v">${p.origen || 'Sense classificar'}</span></div>
         <div class="popup-row"><span class="k">Categoria (nivell 1)</span><span class="v">${p.cat_niv_1 || '—'}</span></div>
         <div class="popup-row"><span class="k">Acrònim</span><span class="v">${p.acronim || '—'}</span></div>`;
-    } else if(key === 'cob'){
-      html = `<div class="popup-title">${esc(p.coberta || '—')}</div>
-        <div class="popup-row"><span class="k">Tipologia</span><span class="v">${esc(p.tipologia || '—')}</span></div>
-        <div class="popup-row"><span class="k">Superfície</span><span class="v">${typeof p.area_ha === 'number' ? p.area_ha.toLocaleString('ca-ES', { minimumFractionDigits:2, maximumFractionDigits:2 }) + ' ha' : '—'}</span></div>`;
-    } else if(key === 'punts'){
-      html = `<div class="popup-title">${esc(p.id)} · ${esc(p.tipologia || 'Sense tipologia')}</div>
-        ${p.origen ? `<div class="popup-row"><span class="k">Origen</span><span class="v">${esc(p.origen)}</span></div>` : ''}
-        ${p.zona ? `<div class="popup-row"><span class="k">Zona</span><span class="v">${esc(p.zona)}</span></div>` : ''}
-        <div class="popup-row"><span class="k">Vessant</span><span class="v">${esc(p.vessant || '—')}</span></div>
-        <div class="popup-row"><span class="k">Mètode</span><span class="v">${esc(p.metode || 'Manual')}${p.llavor ? ' (llavor ' + esc(p.llavor) + ')' : ''}</span></div>
-        ${p.observacions ? `<div class="popup-row"><span class="k">Notes</span><span class="v">${esc(p.observacions)}</span></div>` : ''}
-        <div class="popup-pt-actions pt-popup-actions">
-          <button type="button" data-pt-edit="${esc(p.id)}">Edita</button>
-          <button type="button" data-pt-del="${esc(p.id)}">Elimina</button>
-        </div>`;
     } else if(key === 'tancades'){
       html = `<div class="popup-title">${p.nom || 'Zona de control tancada'}</div>
         <div class="popup-row"><span class="k">Codi</span><span class="v">${p.codi || '—'}</span></div>
@@ -978,60 +548,7 @@ function popupContent(key, p){
         <div class="popup-row"><span class="k">Superfície</span><span class="v">${p.hectares ? p.hectares.toFixed(2)+' ha' : '—'}</span></div>
         ${p.comentaris ? `<div class="popup-row"><span class="k">Comentaris</span><span class="v">${p.comentaris}</span></div>` : ''}`;
     }
-    return html;
-}
-
-// Un sol popup per clic amb la informació de totes les capes visibles en aquell punt,
-// ordenades de dalt a baix tal com es dibuixen al mapa.
-const POPUP_LAYERS = {
-  'franges-fill':  { key:'franges',  name:'Franges de gestió',              color:'#8db89a' },
-  'pegs-fill':     { key:'pegs',     name:'Punts Estratègics de Gestió',    color:'#4a7c94' },
-  'afg-fill':      { key:'afg',      name:'Àrees de Foment de la Gestió',   color:'#7b3fa0' },
-  'obertes-fill':  { key:'obertes',  name:'Zones de control obertes',       color:'#c9a66b' },
-  'tancades-fill': { key:'tancades', name:'Zones de control tancades',      color:'#2d5a3d' },
-  'punts-circle':  { key:'punts',    name:'Punts de mostreig',              color:'#26302b' },
-  'cob2020-fill':  { key:'cob',      name:'Cobertes del sòl 2020',          color:'#2d5a3d' },
-  'cob1956-fill':  { key:'cob',      name:'Cobertes del sòl 1956',          color:'#c98a4b' }
-};
-const MAX_PER_LAYER = 3;
-let activePopup = null;
-
-function setupMultiPopup(){
-  map.on('click', (e) => {
-    if(editMode) return;
-    const layers = Object.keys(POPUP_LAYERS).filter(id => map.getLayer(id));
-    const feats = map.queryRenderedFeatures(e.point, { layers });
-    const relleu = relleuSection(e.lngLat);
-    if(!feats.length && !relleu) return;
-
-    // Agrupa per capa i elimina duplicats (una mateixa entitat pot sortir repetida entre tessel·les)
-    const groups = [];
-    const seen = new Set();
-    feats.forEach(f => {
-      const id = f.layer.id;
-      const sig = id + '|' + JSON.stringify(f.properties);
-      if(seen.has(sig)) return;
-      seen.add(sig);
-      let g = groups.find(x => x.id === id);
-      if(!g){ g = { id, feats: [] }; groups.push(g); }
-      g.feats.push(f);
-    });
-
-    const html = groups.map(g => {
-      const L = POPUP_LAYERS[g.id];
-      const shown = g.feats.slice(0, MAX_PER_LAYER).map(f => popupContent(L.key, f.properties))
-        .join('<div class="popup-sep"></div>');
-      const more = g.feats.length > MAX_PER_LAYER
-        ? `<div class="popup-more">i ${g.feats.length - MAX_PER_LAYER} més en aquest punt</div>` : '';
-      return `<section class="popup-section">
-        <div class="popup-layer"><span class="tipo-dot" style="background:${L.color}"></span>${L.name}${g.feats.length > 1 ? ` <span class="popup-n">(${g.feats.length})</span>` : ''}</div>
-        ${shown}${more}
-      </section>`;
-    }).join('');
-
-    if(activePopup) activePopup.remove();
-    activePopup = new maplibregl.Popup({ maxWidth:'300px' }).setLngLat(e.lngLat)
-      .setHTML(`<div class="popup-multi">${html}${relleu}</div>`).addTo(map);
+    new maplibregl.Popup({ maxWidth:'280px' }).setLngLat(e.lngLat).setHTML(html).addTo(map);
   });
 }
 
@@ -1041,19 +558,21 @@ const LAYER_GROUPS = {
   pegs: ['pegs-fill','pegs-line'],
   afg: ['afg-fill','afg-line'],
   obertes: ['obertes-fill','obertes-line'],
-  tancades: ['tancades-fill','tancades-line'],
-  xpn: ['xpn-mask','xpn-halo','xpn-line'],
-  pendent: ['pendent-img'],
-  orientacio: ['orientacio-img'],
-  cob2020: ['cob2020-fill'],
-  cob1956: ['cob1956-fill'],
-  punts: ['punts-circle']
+  tancades: ['tancades-fill','tancades-line']
 };
 Object.entries(LAYER_GROUPS).forEach(([key, ids]) => {
   document.getElementById('chk-' + key).addEventListener('change', (e) => {
     const vis = e.target.checked ? 'visible' : 'none';
     ids.forEach(id => map.setLayoutProperty(id, 'visibility', vis));
   });
+});
+
+// ---- Calaix mòbil (obrir/tancar panell) ----
+document.getElementById('menu-toggle').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('open');
+});
+document.getElementById('sidebar-backdrop').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.remove('open');
 });
 
 // ---- Basemap switcher (només canvia la visibilitat; les capes de dades no es toquen) ----
@@ -1120,10 +639,7 @@ function openTable(key){
       labels: ['Categoria','Origen','Categoria nivell 1','Acrònim'] },
     tancades: { title: 'Zones de control tancades',
       cols: ['nom','codi','tipus','hectares'],
-      labels: ['Nom','Codi','Tipus','Ha'] },
-    punts: { title: 'Punts de mostreig',
-      cols: ['id','tipologia','origen','zona','vessant','metode','observacions','data'],
-      labels: ['Id','Tipologia','Origen','Zona','Vessant','Mètode','Observacions','Data'] }
+      labels: ['Nom','Codi','Tipus','Ha'] }
   };
   const { cols, labels } = TABLES[key];
 
@@ -1158,140 +674,6 @@ function openTable(key){
   });
 }
 
-
-
-// ---- Consulta dels valors de relleu al punt clicat ----
-// valors.png conserva la graella original dels rasters (ETRS89 / UTM 31N, cel·les de 5 m),
-// de manera que la consulta retorna exactament el valor de la cel·la:
-// canal R = pendent × 2 (resolució 0,5°), canal G = classe d'orientació; 255 = sense dades.
-const RELLEU_GRID = { x0: 416522.5, y0: 4592962.5, cell: 5, W: 3107, H: 2227 };
-const ORI_LABELS = ['Pla', 'Nord', 'Est', 'Sud', 'Oest'];
-let relleuData = null, relleuLoading = null;
-function loadRelleuValues(){
-  if(!relleuLoading) relleuLoading = fetch('dades/raster/valors.png')
-    .then(r => { if(!r.ok) throw new Error(r.status); return r.blob(); })
-    .then(b => createImageBitmap(b, { colorSpaceConversion:'none', premultiplyAlpha:'none' }))
-    .then(img => {
-      const c = document.createElement('canvas');
-      c.width = img.width; c.height = img.height;
-      const ctx = c.getContext('2d', { willReadFrequently:true });
-      ctx.drawImage(img, 0, 0);
-      relleuData = ctx.getImageData(0, 0, img.width, img.height).data;
-    })
-    .catch(err => console.warn("No s'han pogut carregar els valors de relleu", err));
-  return relleuLoading;
-}
-// Projecció ETRS89 geogràfiques -> UTM fus 31N (sèries de Krüger, precisió submil·limètrica)
-const utm31 = (() => {
-  const a = 6378137, f = 1 / 298.257222101, k0 = 0.9996, lon0 = 3 * Math.PI / 180;
-  const n = f / (2 - f), A = a / (1 + n) * (1 + n * n / 4 + n ** 4 / 64);
-  const al = [n / 2 - 2 * n * n / 3 + 5 * n ** 3 / 16, 13 * n * n / 48 - 3 * n ** 3 / 5, 61 * n ** 3 / 240];
-  const c = 2 * Math.sqrt(n) / (1 + n);
-  return (lng, lat) => {
-    const lam = lng * Math.PI / 180 - lon0, phi = lat * Math.PI / 180;
-    const t = Math.sinh(Math.atanh(Math.sin(phi)) - c * Math.atanh(c * Math.sin(phi)));
-    const xi = Math.atan2(t, Math.cos(lam)), eta = Math.atanh(Math.sin(lam) / Math.sqrt(1 + t * t));
-    let E = eta, N = xi;
-    al.forEach((aj, k) => { const j = 2 * (k + 1); E += aj * Math.cos(j * xi) * Math.sinh(j * eta); N += aj * Math.sin(j * xi) * Math.cosh(j * eta); });
-    return [500000 + k0 * A * E, k0 * A * N];
-  };
-})();
-function relleuAt(lng, lat){
-  if(!relleuData) return null;
-  const g = RELLEU_GRID;
-  const [E, N] = utm31(lng, lat);
-  const col = Math.floor((E - g.x0) / g.cell), row = Math.floor((g.y0 - N) / g.cell);
-  if(col < 0 || col >= g.W || row < 0 || row >= g.H) return null;
-  const i = (row * g.W + col) * 4;
-  const vp = relleuData[i], vo = relleuData[i + 1];
-  return { pendent: vp === 255 ? null : vp / 2, orientacio: vo === 255 ? null : vo };
-}
-const classePendent = (v) => v < 15 ? 'Baix' : v < 25 ? 'Mitjà' : 'Alt';
-function relleuSection(lngLat){
-  const showP = document.getElementById('chk-pendent').checked;
-  const showO = document.getElementById('chk-orientacio').checked;
-  if(!showP && !showO) return '';
-  const v = relleuAt(lngLat.lng, lngLat.lat);
-  if(!v || (v.pendent === null && v.orientacio === null)) return '';
-  const rows = [];
-  if(showP && v.pendent !== null) rows.push(`<div class="popup-row"><span class="k">Pendent</span><span class="v">${v.pendent.toLocaleString('ca-ES', { minimumFractionDigits:1, maximumFractionDigits:1 })}° (${classePendent(v.pendent)})</span></div>`);
-  if(showO && v.orientacio !== null) rows.push(`<div class="popup-row"><span class="k">Orientació</span><span class="v">${ORI_LABELS[v.orientacio]}</span></div>`);
-  return rows.length ? `<section class="popup-section">
-      <div class="popup-layer"><span class="tipo-dot" style="background:#96341e"></span>Relleu</div>${rows.join('')}
-    </section>` : '';
-}
-
-
-// ---- Cursor: fletxa sobre allò que es pot consultar amb un clic ----
-// Fora del mode edició: fletxa sobre capes actives i rasters de relleu visibles; mà de desplaçament a la resta.
-// En mode edició: creu per afegir punts i fletxa de moure sobre els punts existents.
-let cursorFrame = null;
-map.on('mousemove', (e) => {
-  if(drag || cursorFrame) return;
-  cursorFrame = requestAnimationFrame(() => {
-    cursorFrame = null;
-    const canvas = map.getCanvas();
-    if(editMode){
-      const onPoint = map.getLayer('punts-circle') && map.queryRenderedFeatures(e.point, { layers:['punts-circle'] }).length;
-      canvas.style.cursor = onPoint ? 'move' : 'crosshair';
-      return;
-    }
-    const layers = Object.keys(POPUP_LAYERS).filter(id => map.getLayer(id));
-    const onFeature = layers.length && map.queryRenderedFeatures(e.point, { layers }).length;
-    const rasterOn = document.getElementById('chk-pendent').checked || document.getElementById('chk-orientacio').checked;
-    const v = !onFeature && rasterOn ? relleuAt(e.lngLat.lng, e.lngLat.lat) : null;
-    const onRaster = v && (v.pendent !== null || v.orientacio !== null);
-    canvas.style.cursor = onFeature || onRaster ? 'default' : '';
-  });
-});
-
-
-// ---- Càrrega diferida de les cobertes (només quan s'activen) ----
-const LAZY_LAYERS = { cob2020: 'dades/cobertes_2020.geojson', cob1956: 'dades/cobertes_1956.geojson' };
-Object.entries(LAZY_LAYERS).forEach(([key, url]) => {
-  document.getElementById('chk-' + key).addEventListener('change', async (e) => {
-    if(!e.target.checked || dataCache[key]) return;
-    const badge = document.getElementById('count-' + key);
-    badge.textContent = 'carregant…';
-    try {
-      const r = await fetch(url);
-      if(!r.ok) throw new Error(r.status);
-      const data = await r.json();
-      dataCache[key] = data;
-      map.getSource(key).setData(data);
-      badge.textContent = data.features.length;
-    } catch(err){
-      badge.textContent = 'error';
-      console.warn("No s'ha pogut carregar", url, err);
-    }
-  });
-});
-
-
-// ---- Més dades: la llegenda només es mostra quan la capa està activa ----
-['pendent', 'orientacio', 'cob2020', 'cob1956'].forEach(key => {
-  const chk = document.getElementById('chk-' + key);
-  const panel = document.getElementById('panel-' + key);
-  chk.addEventListener('change', () => panel.classList.toggle('open', chk.checked));
-  panel.classList.toggle('open', chk.checked);
-});
-
-// ---- Opacitat dels rasters de relleu ----
-document.querySelectorAll('[data-opacity]').forEach(inp => {
-  inp.addEventListener('input', () => {
-    if(map.getLayer(inp.dataset.opacity)) map.setPaintProperty(inp.dataset.opacity, inp.dataset.prop || 'raster-opacity', inp.value / 100);
-  });
-});
-
-// ---- Plegar / desplegar grups de capes ----
-document.querySelectorAll('.group-toggle').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const open = btn.getAttribute('aria-expanded') !== 'true';
-    btn.setAttribute('aria-expanded', String(open));
-    document.getElementById(btn.getAttribute('aria-controls')).hidden = !open;
-  });
-});
-
 // ---- Sublayer panel collapse on row click (excluding checkbox/info button) ----
 document.querySelectorAll('.layer-row').forEach(row => {
   row.addEventListener('click', (e) => {
@@ -1300,742 +682,6 @@ document.querySelectorAll('.layer-row').forEach(row => {
     if(panel) panel.classList.toggle('open');
   });
 });
-
-// =====================================================================
-// ---- Estadístiques per tipologia (CSV exportats des de QGIS) ----
-// Cada CSV té 4 columnes: layer, categoria, sum (ha), pct. El nom de la
-// 2a columna pot variar (nivell_1F, cat_niv_1f, corine_ca...).
-// Per afegir el Parc sencer com a referència, n'hi ha prou amb afegir
-// files amb layer = XPN_Collserola als CSV.
-// =====================================================================
-const TIPOLOGIES = {
-  'Franges_XPN_FI':       { label:'Franges', color:'#8db89a' },
-  'pegs_dins_XPN_FI':     { label:'PEG',     color:'#4a7c94' },
-  '_Arees_FOMENT_Gestio': { label:'AFG',     color:'#7b3fa0' },
-  'XPN_Collserola':       { label:'Parc sencer (referència)', color:'#9a9a94' }
-};
-const TIPO_ORDER = ['Franges', 'PEG', 'AFG', 'Parc sencer (referència)'];
-
-const COVER_COLORS = {
-  'Arbrat dens':            '#2d5a3d',
-  'Arbrat clar':            '#7d9a5c',
-  'Matollars':              '#b9a462',
-  'Prats i herbassars':     '#e3d28a',
-  'Conreus':                '#c98a4b',
-  'Improductiu natural':    '#a8a49a',
-  'Improductiu artificial': '#6f6a75',
-  'Aigues continentals':    '#5b8fb0'
-};
-const HAB_PALETTE = ['#2d5a3d','#5f8a70','#8db89a','#b9a462','#e3d28a','#c98a4b','#4a7c94','#8c6d9e'];
-const OTHER_COLOR = '#d9d6cc';
-const HAB_TOP_N = 8;
-
-const STATS_SOURCES = {
-  c1956: { file:'dades/estadistiques/1956_tipologies_STATS.csv',
-           note:"Coberta de cada tipologia l'any 1956 (Mapa de Cobertes del Sòl de 1956, Diputació de Barcelona i CREAF, nivell 1F). Mostra si les zones gestionades avui eren bosc, matollar o conreu fa 70 anys." },
-  c2020: { file:'dades/estadistiques/2020_tipologies_STATS.csv',
-           note:"Coberta actual de cada tipologia (Mapa de Cobertes del Sòl de Catalunya 2020, CREAF, nivell 1F)." },
-  hab:   { file:'dades/estadistiques/habitats_v3_tipologies_STATS.csv',
-           note:`Hàbitats CORINE presents a cada tipologia (Mapa d'Hàbitats de Catalunya). Les barres mostren els ${HAB_TOP_N} hàbitats amb més superfície; la resta s'agrupa com a «Altres hàbitats». La taula els inclou tots.` }
-};
-
-const statsCache = {};
-let statsTab = 'c1956';
-
-const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const fmtHa  = (v) => v > 0 ? v.toLocaleString('ca-ES', { minimumFractionDigits:1, maximumFractionDigits:1 }) : '—';
-const fmtPct = (v) => !(v > 0) ? '—' : (v < 0.1 ? '<0,1' : v.toLocaleString('ca-ES', { minimumFractionDigits:1, maximumFractionDigits:1 }));
-
-// Parser CSV (admet camps entre cometes amb comes i cometes dobles a dins)
-function parseCSV(text){
-  const rows = []; let row = [], field = '', inQ = false;
-  for(let i = 0; i < text.length; i++){
-    const c = text[i];
-    if(inQ){
-      if(c === '"'){ if(text[i+1] === '"'){ field += '"'; i++; } else inQ = false; }
-      else field += c;
-    } else if(c === '"') inQ = true;
-    else if(c === ','){ row.push(field); field = ''; }
-    else if(c === '\n' || c === '\r'){
-      if(c === '\r' && text[i+1] === '\n') i++;
-      row.push(field); field = '';
-      if(row.some(x => x !== '')) rows.push(row);
-      row = [];
-    } else field += c;
-  }
-  row.push(field); if(row.some(x => x !== '')) rows.push(row);
-  return rows;
-}
-
-// Llegeix en UTF-8 i, si no ho és, en Windows-1252 (exportacions de QGIS en Latin-1)
-async function loadStatsCSV(url){
-  const r = await fetch(url);
-  if(!r.ok) throw new Error(`${url} (${r.status})`);
-  const buf = await r.arrayBuffer();
-  let text;
-  try { text = new TextDecoder('utf-8', { fatal:true }).decode(buf); }
-  catch(e){ text = new TextDecoder('windows-1252').decode(buf); }
-  const rows = parseCSV(text.replace(/^\uFEFF/, ''));
-  const byTipo = {}, totals = {}, catTotals = {};
-  rows.slice(1).forEach(([layer, cat, sum]) => {
-    const ha = parseFloat(sum);
-    if(!layer || !cat || isNaN(ha)) return;
-    const t = (TIPOLOGIES[layer] || { label: layer }).label;
-    (byTipo[t] = byTipo[t] || {})[cat] = (byTipo[t][cat] || 0) + ha;
-    totals[t] = (totals[t] || 0) + ha;
-    catTotals[cat] = (catTotals[cat] || 0) + ha;
-  });
-  const tipos = Object.keys(byTipo).sort((a, b) => {
-    const ia = TIPO_ORDER.indexOf(a), ib = TIPO_ORDER.indexOf(b);
-    return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
-  });
-  const cats = Object.keys(catTotals).sort((a, b) => catTotals[b] - catTotals[a]);
-  return { byTipo, totals, cats, tipos, file:url };
-}
-
-const tipoColor = (label) => (Object.values(TIPOLOGIES).find(t => t.label === label) || { color:'#9a9a94' }).color;
-
-async function getStats(key){
-  if(!statsCache[key]) statsCache[key] = loadStatsCSV(STATS_SOURCES[key].file);
-  return statsCache[key];
-}
-
-// ---- Composició (1956, 2020, hàbitats) ----
-function renderComposition(d, key){
-  const isHab = key === 'hab';
-  const OTHER = 'Altres hàbitats';
-  const colorOf = {};
-  const legendCats = isHab ? d.cats.slice(0, HAB_TOP_N) : d.cats;
-  legendCats.forEach((c, i) => colorOf[c] = isHab ? HAB_PALETTE[i % HAB_PALETTE.length] : (COVER_COLORS[c] || OTHER_COLOR));
-
-  const bars = d.tipos.map(t => {
-    const total = d.totals[t];
-    const segs = [];
-    let other = 0;
-    d.cats.forEach(c => {
-      const ha = d.byTipo[t][c] || 0;
-      if(!ha) return;
-      if(colorOf[c]) segs.push([c, ha, colorOf[c]]); else other += ha;
-    });
-    if(other) segs.push([OTHER, other, OTHER_COLOR]);
-    const spans = segs.map(([c, ha, col]) =>
-      `<span style="width:${(ha / total * 100).toFixed(3)}%;background:${col}" title="${esc(c)}: ${fmtHa(ha)} ha (${fmtPct(ha / total * 100)} %)"></span>`).join('');
-    return `<div>
-      <div class="tipo-bar-label"><span class="tipo-dot" style="background:${tipoColor(t)}"></span>${esc(t)}<span class="ha">${fmtHa(total)} ha</span></div>
-      <div class="stack" role="img" aria-label="Composició de ${esc(t)}">${spans}</div>
-    </div>`;
-  }).join('');
-
-  const legendItems = legendCats.map(c =>
-    `<div class="legend-item" title="${esc(c)}"><span class="swatch" style="background:${colorOf[c]}"></span><span class="txt">${esc(c)}</span></div>`);
-  if(isHab && d.cats.length > HAB_TOP_N)
-    legendItems.push(`<div class="legend-item"><span class="swatch" style="background:${OTHER_COLOR}"></span><span class="txt">${OTHER}</span></div>`);
-
-  const head = `<tr><th>${isHab ? 'Hàbitat' : 'Coberta'}</th>` +
-    d.tipos.map(t => `<th>${esc(t)} (ha)</th><th>%</th>`).join('') + '</tr>';
-  const body = d.cats.map(c => `<tr data-cat="${esc(c.toLowerCase())}">
-      <td><div class="cat-cell"><span class="swatch" style="background:${colorOf[c] || OTHER_COLOR}"></span>${esc(c)}</div></td>` +
-    d.tipos.map(t => {
-      const ha = d.byTipo[t][c] || 0;
-      return `<td>${fmtHa(ha)}</td><td class="pct">${fmtPct(ha / d.totals[t] * 100)}</td>`;
-    }).join('') + '</tr>').join('');
-  const foot = `<tr class="total"><td>Total</td>` +
-    d.tipos.map(t => `<td>${fmtHa(d.totals[t])}</td><td class="pct">100,0</td>`).join('') + '</tr>';
-
-  return `<p class="stats-note">${STATS_SOURCES[key].note}</p>
-    <div class="tipo-bars">${bars}</div>
-    <div class="stats-legend">${legendItems.join('')}</div>
-    <div class="stats-tools">
-      <h3>Taula de superfícies</h3>
-      ${isHab ? '<input type="search" id="stats-filter" placeholder="Filtra hàbitats…" aria-label="Filtra hàbitats">' : ''}
-      <a href="${d.file}" download>Descarrega CSV</a>
-    </div>
-    <div class="stats-table-wrap"><table class="stats"><thead>${head}</thead><tbody>${body}${foot}</tbody></table></div>`;
-}
-
-// ---- Canvi 1956 → 2020 sobre la superfície comuna ----
-// Es fa servir una taula de transicions (coberta 1956 → coberta 2020, en ha) calculada només
-// on hi ha dades als dos mapes, de manera que els dos anys tenen exactament el mateix total.
-async function loadTransitions(url){
-  const r = await fetch(url);
-  if(!r.ok) throw new Error(`${url} (${r.status})`);
-  const buf = await r.arrayBuffer();
-  let text;
-  try { text = new TextDecoder('utf-8', { fatal:true }).decode(buf); }
-  catch(e){ text = new TextDecoder('windows-1252').decode(buf); }
-  const byTipo = {};
-  parseCSV(text.replace(/^\uFEFF/, '')).slice(1).forEach(([layer, c56, c20, ha]) => {
-    const v = parseFloat(ha);
-    if(!layer || !c56 || !c20 || isNaN(v)) return;
-    const t = (TIPOLOGIES[layer] || { label: layer }).label;
-    const T = byTipo[t] = byTipo[t] || { total:0, p56:{}, p20:{}, m:{} };
-    T.total += v;
-    T.p56[c56] = (T.p56[c56] || 0) + v;
-    T.p20[c20] = (T.p20[c20] || 0) + v;
-    (T.m[c56] = T.m[c56] || {})[c20] = (T.m[c56][c20] || 0) + v;
-  });
-  const tipos = Object.keys(byTipo).sort((a, b) => {
-    const ia = TIPO_ORDER.indexOf(a), ib = TIPO_ORDER.indexOf(b);
-    return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
-  });
-  return { byTipo, tipos, file:url };
-}
-
-function renderChange(dt){
-  const fmt1 = (v) => v.toLocaleString('ca-ES', { minimumFractionDigits:1, maximumFractionDigits:1 });
-  const rowsOf = (T) => [...new Set([...Object.keys(T.p56), ...Object.keys(T.p20)])].map(c => {
-    const p56 = (T.p56[c] || 0) / T.total * 100, p20 = (T.p20[c] || 0) / T.total * 100;
-    return { c, p56, p20, dp: p20 - p56 };
-  }).sort((a, b) => Math.max(b.p56, b.p20) - Math.max(a.p56, a.p20));
-
-  let maxAbs = 10;
-  dt.tipos.forEach(t => rowsOf(dt.byTipo[t]).forEach(r => maxAbs = Math.max(maxAbs, Math.abs(r.dp))));
-
-  const blocks = dt.tipos.map(t => {
-    const T = dt.byTipo[t];
-    const cats = rowsOf(T);
-    const rows = cats.map(r => {
-      const w = Math.abs(r.dp) / maxAbs * 50;
-      const bar = r.dp >= 0
-        ? `<span class="delta-bar" style="left:50%;width:${w}%;background:#4a7c94"></span>`
-        : `<span class="delta-bar" style="right:50%;width:${w}%;background:#c98a4b"></span>`;
-      const dpTxt = Math.abs(r.dp) < 0.05 ? '0,0' : (r.dp > 0 ? '+' : '') + fmt1(r.dp);
-      return `<tr>
-        <td><div class="cat-cell"><span class="swatch" style="background:${COVER_COLORS[r.c] || OTHER_COLOR}"></span>${esc(r.c)}</div></td>
-        <td>${fmtPct(r.p56)}</td><td>${fmtPct(r.p20)}</td>
-        <td><div class="delta">${dpTxt}<span class="delta-track">${bar}</span></div></td>
-      </tr>`;
-    }).join('');
-
-    // Matriu de transicions: files = coberta 1956, columnes = coberta 2020 (ha)
-    const order = cats.map(r => r.c);
-    const mHead = '<tr><th>1956 ↓ / 2020 →</th>' + order.map(c => `<th>${esc(c)}</th>`).join('') + '<th>Total 1956</th></tr>';
-    const mBody = order.filter(c56 => T.p56[c56]).map(c56 => '<tr>' +
-      `<td><div class="cat-cell"><span class="swatch" style="background:${COVER_COLORS[c56] || OTHER_COLOR}"></span>${esc(c56)}</div></td>` +
-      order.map(c20 => { const v = (T.m[c56] || {})[c20] || 0; return `<td${c56 === c20 ? ' class="diag"' : ''}>${fmtHa(v)}</td>`; }).join('') +
-      `<td>${fmtHa(T.p56[c56])}</td></tr>`).join('');
-    const mFoot = '<tr class="total"><td>Total 2020</td>' + order.map(c => `<td>${fmtHa(T.p20[c] || 0)}</td>`).join('') + `<td>${fmtHa(T.total)}</td></tr>`;
-
-    return `<div class="change-block">
-      <div class="tipo-bar-label"><span class="tipo-dot" style="background:${tipoColor(t)}"></span>${esc(t)}<span class="ha">${fmtHa(T.total)} ha comparables</span></div>
-      <div class="stats-table-wrap"><table class="stats">
-        <thead><tr><th>Coberta</th><th>1956 (%)</th><th>2020 (%)</th><th>Canvi (punts %)</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table></div>
-      <details class="transit">
-        <summary>D'on ve cada coberta actual (hectàrees de 1956 a 2020)</summary>
-        <div class="stats-table-wrap"><table class="stats matrix"><thead>${mHead}</thead><tbody>${mBody}${mFoot}</tbody></table></div>
-      </details>
-    </div>`;
-  }).join('');
-
-  return `<p class="stats-note">Canvi de coberta entre 1956 i 2020.</p>
-    <div class="stats-tools"><h3>Canvi per tipologia</h3><a href="${dt.file}" download>Descarrega CSV</a></div>
-    ${blocks}`;
-}
-
-async function renderStats(){
-  const body = document.getElementById('stats-body');
-  body.innerHTML = '<p class="stats-note">Carregant dades…</p>';
-  try {
-    if(statsTab === 'canvi'){
-      if(!statsCache.canvi) statsCache.canvi = loadTransitions('dades/estadistiques/canvi_1956_2020_STATS.csv');
-      body.innerHTML = renderChange(await statsCache.canvi);
-    } else {
-      const d = await getStats(statsTab);
-      body.innerHTML = renderComposition(d, statsTab);
-      const filter = document.getElementById('stats-filter');
-      if(filter) filter.addEventListener('input', () => {
-        const q = filter.value.trim().toLowerCase();
-        body.querySelectorAll('tbody tr[data-cat]').forEach(tr =>
-          tr.style.display = !q || tr.dataset.cat.includes(q) ? '' : 'none');
-      });
-    }
-  } catch(err){
-    delete statsCache[statsTab];
-    body.innerHTML = `<p class="stats-msg">No s'ha pogut carregar el fitxer ${esc(err.message)}. Comprova que els CSV són a <code>dades/estadistiques/</code> amb el nom correcte.</p>`;
-  }
-}
-
-const statsDrawer = document.getElementById('stats-drawer');
-const statsOpenBtn = document.getElementById('open-stats');
-function setStatsOpen(open){
-  statsDrawer.classList.toggle('open', open);
-  statsDrawer.setAttribute('aria-hidden', String(!open));
-  statsOpenBtn.setAttribute('aria-expanded', String(open));
-  if(open){ renderStats(); document.getElementById('stats-close').focus(); }
-  else statsOpenBtn.focus();
-}
-statsOpenBtn.addEventListener('click', () => setStatsOpen(true));
-document.getElementById('stats-close').addEventListener('click', () => setStatsOpen(false));
-document.addEventListener('keydown', (e) => {
-  if(e.key === 'Escape' && statsDrawer.classList.contains('open')) setStatsOpen(false);
-});
-document.querySelectorAll('.stats-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.stats-tab').forEach(t => t.setAttribute('aria-selected', String(t === tab)));
-    statsTab = tab.dataset.tab;
-    renderStats();
-  });
-});
-
-// =====================================================================
-// ---- Punts de mostreig: afegir, editar, moure, eliminar, exportar ----
-// Es desen al localStorage d'aquest navegador. Cal descarregar-los per compartir-los.
-// =====================================================================
-const PT_STORE = 'collserola_punts_mostreig_v1';
-const GEN_DEFAULT = 10;  // valor inicial del generador (es pot canviar lliurement)
-const TIPO_OPTS = ['Franja', 'PEG', 'AFG', 'Control obert', 'Control bosc'];
-const ORIGEN_OPTS = ['Antics conreus', 'Antic sòl forestal'];
-const VESSANT_OPTS = ['Obaga', 'Solana', 'Transició', 'Pla'];
-const PT_COLORS = { 'Franja':'#5f8a70', 'PEG':'#4a7c94', 'AFG':'#7b3fa0', 'Control obert':'#b8894a', 'Control bosc':'#2d5a3d' };
-const LAYER_TO_TIPO = { 'franges-fill':'Franja', 'pegs-fill':'PEG', 'afg-fill':'AFG', 'obertes-fill':'Control obert', 'tancades-fill':'Control bosc' };
-
-let points = loadPoints();
-let editMode = false;
-let ptPopup = null;
-let drag = null, justDragged = false;
-
-function loadPoints(){
-  try {
-    const fc = JSON.parse(localStorage.getItem(PT_STORE));
-    if(fc && Array.isArray(fc.features)) return fc;
-  } catch(e){}
-  return { type:'FeatureCollection', features:[] };
-}
-function savePoints(){
-  try { localStorage.setItem(PT_STORE, JSON.stringify(points)); }
-  catch(e){ alert("No s'han pogut desar els punts al navegador. Descarrega'ls ara per no perdre'ls."); }
-  refreshPoints();
-}
-function refreshPoints(){
-  dataCache.punts = points;
-  const src = map.getSource && map.getSource('punts');
-  if(src) src.setData(points);
-  document.getElementById('count-punts').textContent = points.features.length;
-  renderPtSummary();
-}
-const findPoint = (id) => points.features.find(f => f.properties.id === id);
-const r6 = (v) => Math.round(v * 1e6) / 1e6;
-function nextId(){
-  const n = points.features.reduce((m, f) => Math.max(m, parseInt(String(f.properties.id).replace(/\D/g, '')) || 0), 0) + 1;
-  return 'P' + String(n).padStart(2, '0');
-}
-
-function renderPtSummary(){
-  const rows = TIPO_OPTS.map(t => {
-    const n = points.features.filter(f => f.properties.tipologia === t).length;
-    return `<tr><td>${t}</td><td>${n}</td></tr>`;
-  }).join('');
-  document.getElementById('pt-summary').innerHTML =
-    `<thead><tr><th>Tipologia</th><th>Punts</th></tr></thead><tbody>${rows}<tr class="pt-total"><td>Total</td><td>${points.features.length}</td></tr></tbody>`;
-}
-
-function initPointsLayer(){
-  const tipoColor = ['match', ['get','tipologia'], ...Object.entries(PT_COLORS).flat(), '#6b6f68'];
-  map.addSource('punts', { type:'geojson', data: points });
-  map.addLayer({
-    id:'punts-circle', type:'circle', source:'punts',
-    paint:{
-      'circle-radius': ['interpolate', ['linear'], ['zoom'], 11, 4.5, 16, 8],
-      'circle-color': tipoColor,
-      'circle-stroke-color': '#ffffff',
-      'circle-stroke-width': 1.5
-    }
-  });
-
-  // Arrossegar punts en mode edició
-  map.on('mousedown', 'punts-circle', (e) => {
-    if(!editMode) return;
-    e.preventDefault();
-    drag = { id: e.features[0].properties.id, moved:false };
-    map.getCanvas().style.cursor = 'grabbing';
-    map.on('mousemove', onDragMove);
-    map.once('mouseup', onDragEnd);
-  });
-
-  // Clic en mode edició: sobre un punt l'edita, en un lloc buit en crea un de nou
-  map.on('click', (e) => {
-    if(!editMode) return;
-    if(justDragged) return;
-    const hit = map.queryRenderedFeatures(e.point, { layers:['punts-circle'] });
-    if(hit.length){
-      const f = findPoint(hit[0].properties.id);
-      if(f) openPointForm(f.geometry.coordinates, f);
-    } else {
-      openPointForm([r6(e.lngLat.lng), r6(e.lngLat.lat)], null, e.point);
-    }
-  });
-  refreshPoints();
-}
-function onDragMove(e){
-  const f = drag && findPoint(drag.id);
-  if(!f) return;
-  drag.moved = true;
-  f.geometry.coordinates = [r6(e.lngLat.lng), r6(e.lngLat.lat)];
-  map.getSource('punts').setData(points);
-}
-function onDragEnd(){
-  map.off('mousemove', onDragMove);
-  map.getCanvas().style.cursor = editMode ? 'crosshair' : '';
-  if(drag && drag.moved){
-    justDragged = true;
-    setTimeout(() => justDragged = false, 60);
-    savePoints();
-  }
-  drag = null;
-}
-
-// Proposa tipologia i origen segons les capes visibles sota el clic
-function suggestFromMap(screenPt){
-  const layers = Object.keys(LAYER_TO_TIPO).filter(id => map.getLayer(id));
-  const feats = screenPt ? map.queryRenderedFeatures(screenPt, { layers }) : [];
-  const tipos = [...new Set(feats.map(f => LAYER_TO_TIPO[f.layer.id]))];
-  const oberta = feats.find(f => f.layer.id === 'obertes-fill');
-  const origen = oberta && ORIGEN_OPTS.includes(oberta.properties.origen) ? oberta.properties.origen : '';
-  return { tipos, props: { tipologia: tipos[0] || '', origen, vessant:'', observacions:'' } };
-}
-
-const optionList = (opts, sel, placeholder) =>
-  (placeholder ? `<option value="">${placeholder}</option>` : '') +
-  opts.map(o => `<option${o === sel ? ' selected' : ''}>${esc(o)}</option>`).join('');
-
-function openPointForm(coords, existing, screenPt){
-  if(ptPopup) ptPopup.remove();
-  if(activePopup) activePopup.remove();
-  const sug = existing ? { tipos:[], props: existing.properties } : suggestFromMap(screenPt);
-  const p = sug.props;
-  const el = document.createElement('div');
-  el.className = 'pt-form';
-  el.innerHTML = `
-    <div class="pt-form-title">${existing ? 'Punt ' + esc(p.id) : 'Nou punt de mostreig'}</div>
-    ${sug.tipos.length > 1 ? `<div class="pt-form-hint">En aquest lloc coincideixen: ${sug.tipos.join(', ')}</div>` : ''}
-    <label>Tipologia<select name="tipologia">${optionList(TIPO_OPTS, p.tipologia, 'Tria una tipologia')}</select></label>
-    <span class="err" data-err="tipologia">Cal triar una tipologia.</span>
-    <label class="f-origen">Origen<select name="origen">${optionList(ORIGEN_OPTS, p.origen, 'Sense definir')}</select></label>
-    <label>Vessant<select name="vessant">${optionList(VESSANT_OPTS, p.vessant, 'Sense definir')}</select></label>
-    <label>Observacions<textarea name="observacions" rows="2">${esc(p.observacions || '')}</textarea></label>
-    <div class="pt-actions">
-      <button type="button" class="pt-save">Desa</button>
-      <button type="button" class="pt-cancel">Cancel·la</button>
-      ${existing ? '<button type="button" class="pt-del">Elimina</button>' : ''}
-    </div>`;
-  const q = (n) => el.querySelector(`[name="${n}"]`);
-  const syncOrigen = () => el.querySelector('.f-origen').style.display = q('tipologia').value === 'Control obert' ? '' : 'none';
-  q('tipologia').addEventListener('change', syncOrigen);
-  syncOrigen();
-
-  el.querySelector('.pt-save').addEventListener('click', () => {
-    const tipologia = q('tipologia').value;
-    if(!tipologia){ el.querySelector('[data-err="tipologia"]').classList.add('on'); q('tipologia').focus(); return; }
-    const props = {
-      ...(existing ? existing.properties : { metode:'Manual' }),
-      id: existing ? existing.properties.id : nextId(),
-      tipologia,
-      origen: tipologia === 'Control obert' ? q('origen').value : '',
-      vessant: q('vessant').value,
-      observacions: q('observacions').value.trim(),
-      data: existing ? existing.properties.data : new Date().toISOString().slice(0, 10)
-    };
-    if(existing) existing.properties = props;
-    else points.features.push({ type:'Feature', geometry:{ type:'Point', coordinates: coords }, properties: props });
-    savePoints();
-    ptPopup.remove();
-  });
-  el.querySelector('.pt-cancel').addEventListener('click', () => ptPopup.remove());
-  if(existing) el.querySelector('.pt-del').addEventListener('click', () => deletePoint(existing.properties.id));
-
-  ptPopup = new maplibregl.Popup({ closeOnClick:false, maxWidth:'280px' })
-    .setLngLat(coords).setDOMContent(el).addTo(map);
-  setTimeout(() => q('tipologia').focus(), 0);
-}
-
-function deletePoint(id){
-  if(!confirm(`Vols eliminar el punt ${id}?`)) return;
-  points.features = points.features.filter(f => f.properties.id !== id);
-  savePoints();
-  if(ptPopup) ptPopup.remove();
-  if(activePopup) activePopup.remove();
-}
-
-// Botons Edita / Elimina dins del popup d'informació
-document.addEventListener('click', (e) => {
-  const b = e.target.closest('[data-pt-edit], [data-pt-del]');
-  if(!b) return;
-  const id = b.dataset.ptEdit || b.dataset.ptDel;
-  const f = findPoint(id);
-  if(!f) return;
-  if(b.dataset.ptDel) deletePoint(id);
-  else openPointForm(f.geometry.coordinates, f);
-});
-
-// Mode edició
-function setEditMode(on){
-  editMode = on;
-  const btn = document.getElementById('pt-mode');
-  btn.setAttribute('aria-pressed', String(on));
-  btn.textContent = on ? 'Surt del mode edició' : 'Afegir punts';
-  document.getElementById('edit-banner').classList.toggle('on', on);
-  map.getCanvas().style.cursor = on ? 'crosshair' : '';
-  if(on){
-    if(activePopup) activePopup.remove();
-    const chk = document.getElementById('chk-punts');
-    if(!chk.checked){ chk.checked = true; chk.dispatchEvent(new Event('change')); }
-  } else if(ptPopup) ptPopup.remove();
-}
-document.getElementById('pt-mode').addEventListener('click', () => setEditMode(!editMode));
-document.addEventListener('keydown', (e) => {
-  if(e.key !== 'Escape' || !editMode) return;
-  if(ptPopup && ptPopup.isOpen && ptPopup.isOpen()) ptPopup.remove();
-  else setEditMode(false);
-});
-
-// Exportació i importació
-function download(name, text, type){
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([text], { type }));
-  a.download = name;
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-}
-const stamp = () => new Date().toISOString().slice(0, 10).replace(/-/g, '');
-document.getElementById('pt-export-geojson').addEventListener('click', () => {
-  if(!points.features.length) return alert('Encara no hi ha cap punt per descarregar.');
-  download(`punts_mostreig_${stamp()}.geojson`, JSON.stringify(points, null, 1), 'application/geo+json');
-});
-document.getElementById('pt-export-csv').addEventListener('click', () => {
-  if(!points.features.length) return alert('Encara no hi ha cap punt per descarregar.');
-  const cols = ['id','tipologia','origen','zona','vessant','metode','llavor','observacions','data'];
-  const q = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
-  const lines = [[...cols, 'lon', 'lat'].join(',')].concat(points.features.map(f =>
-    [...cols.map(c => q(f.properties[c])), f.geometry.coordinates[0], f.geometry.coordinates[1]].join(',')));
-  download(`punts_mostreig_${stamp()}.csv`, '\uFEFF' + lines.join('\r\n'), 'text/csv;charset=utf-8');
-});
-document.getElementById('pt-import').addEventListener('change', async (e) => {
-  const file = e.target.files[0];
-  e.target.value = '';
-  if(!file) return;
-  try {
-    const fc = JSON.parse(await file.text());
-    const feats = (fc.features || []).filter(f => f.geometry && f.geometry.type === 'Point');
-    if(!feats.length) return alert("El fitxer no conté cap punt.");
-    const norm = (v, opts) => opts.find(o => o.toLowerCase() === String(v ?? '').trim().toLowerCase()) || '';
-    feats.forEach(f => {
-      const p = f.properties || {};
-      const tip = norm(p.tipologia, TIPO_OPTS) || (/^franja/i.test(p.tipologia || '') ? 'Franja' : '');
-      let id = p.id ? String(p.id) : '';
-      if(!id || findPoint(id)) id = nextId();
-      points.features.push({ type:'Feature',
-        geometry:{ type:'Point', coordinates:[r6(f.geometry.coordinates[0]), r6(f.geometry.coordinates[1])] },
-        properties:{ id, tipologia: tip, origen: norm(p.origen, ORIGEN_OPTS), vessant: norm(p.vessant, VESSANT_OPTS),
-          observacions: p.observacions || '',
-          zona: p.zona || '', metode: p.metode || 'Manual', llavor: p.llavor || '',
-          data: p.data || new Date().toISOString().slice(0, 10) } });
-    });
-    savePoints();
-    alert(`S'han importat ${feats.length} punts.`);
-  } catch(err){
-    alert("No s'ha pogut llegir el fitxer. Comprova que és un GeoJSON en EPSG:4326.");
-  }
-});
-document.getElementById('pt-clear').addEventListener('click', () => {
-  if(!points.features.length) return;
-  if(!confirm(`Vols esborrar els ${points.features.length} punts? Descarrega'ls abans si els vols conservar.`)) return;
-  points.features = [];
-  savePoints();
-});
-renderPtSummary();
-document.getElementById('count-punts').textContent = points.features.length;
-
-// =====================================================================
-// ---- Generació aleatòria de punts dins de cada tipologia ----
-// Mostreig estratificat: N punts per tipologia (i per origen al
-// control obert), amb distància mínima entre punts i a la vora del polígon.
-// La llavor permet reproduir exactament la mateixa selecció.
-// =====================================================================
-const GEN_SOURCES = {
-  'Franja':        { key:'franges',  label:(p) => p.nom || p.codi || p.codizonac || '' },
-  'PEG':           { key:'pegs',     label:(p) => p.nom_peg || p.codi_peg || '' },
-  'AFG':           { key:'afg',      label:(p) => p.nom_peg || p.codi_peg || '' },
-  'Control obert': { key:'obertes',  label:(p) => p.categoria || '' },
-  'Control bosc':  { key:'tancades', label:(p) => p.nom || p.codi || '' }
-};
-const LAT0 = 41.43, MX = 111320 * Math.cos(LAT0 * Math.PI / 180), MY = 110540;
-const toM = ([lon, lat]) => [lon * MX, lat * MY];
-const toLL = ([x, y]) => [r6(x / MX), r6(y / MY)];
-
-function mulberry32(a){
-  return function(){
-    a |= 0; a = a + 0x6D2B79F5 | 0;
-    let t = Math.imul(a ^ a >>> 15, 1 | a);
-    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-    return ((t ^ t >>> 14) >>> 0) / 4294967296;
-  };
-}
-const ringArea = (r) => Math.abs(r.reduce((a, p, i) => { const q = r[(i + 1) % r.length]; return a + p[0] * q[1] - q[0] * p[1]; }, 0)) / 2;
-function inRings(x, y, rings){
-  let inside = false;
-  rings.forEach(r => {
-    for(let i = 0, j = r.length - 1; i < r.length; j = i++){
-      const [xi, yi] = r[i], [xj, yj] = r[j];
-      if((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) inside = !inside;
-    }
-  });
-  return inside;
-}
-function edgeDist(x, y, rings){
-  let d = Infinity;
-  rings.forEach(r => {
-    for(let i = 0; i < r.length - 1; i++){
-      const [ax, ay] = r[i], [bx, by] = r[i + 1];
-      const dx = bx - ax, dy = by - ay, L = dx * dx + dy * dy;
-      const t = L ? Math.max(0, Math.min(1, ((x - ax) * dx + (y - ay) * dy) / L)) : 0;
-      d = Math.min(d, Math.hypot(x - ax - t * dx, y - ay - t * dy));
-    }
-  });
-  return d;
-}
-// Converteix les entitats d'una capa en "zones" amb polígons en metres
-function buildZones(features, labelFn){
-  return features.map((f, i) => {
-    const g = f.geometry; if(!g) return null;
-    const polys = (g.type === 'Polygon' ? [g.coordinates] : g.type === 'MultiPolygon' ? g.coordinates : []).map(poly => {
-      const rings = poly.map(r => r.map(toM));
-      const xs = rings[0].map(p => p[0]), ys = rings[0].map(p => p[1]);
-      const area = ringArea(rings[0]) - rings.slice(1).reduce((a, r) => a + ringArea(r), 0);
-      return { rings, area, bbox:[Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)] };
-    }).filter(p => p.area > 0);
-    const area = polys.reduce((a, p) => a + p.area, 0);
-    return area > 0 ? { i, polys, area, label: labelFn(f.properties || {}) } : null;
-  }).filter(Boolean);
-}
-const pickWeighted = (items, rnd) => {
-  const tot = items.reduce((a, z) => a + z.area, 0);
-  let r = rnd() * tot;
-  for(const z of items){ r -= z.area; if(r <= 0) return z; }
-  return items[items.length - 1];
-};
-function pointInZone(zone, rnd, edgeMin, tries = 60){
-  for(let k = 0; k < tries; k++){
-    const poly = pickWeighted(zone.polys, rnd);
-    const [x0, y0, x1, y1] = poly.bbox;
-    const x = x0 + rnd() * (x1 - x0), y = y0 + rnd() * (y1 - y0);
-    if(inRings(x, y, poly.rings) && edgeDist(x, y, poly.rings) >= edgeMin) return [x, y];
-  }
-  return null;
-}
-// Tria n punts: en cada ronda, com a màxim un punt per zona (triades ponderant per superfície)
-function samplePoints(zones, n, rnd, opts, taken){
-  const out = [];
-  const farEnough = (xy) => taken.every(t => Math.hypot(t[0] - xy[0], t[1] - xy[1]) >= opts.minDist);
-  // Cada ronda dona com a màxim un punt per zona; s'atura després de 3 rondes seguides sense èxit
-  let idle = 0;
-  for(let round = 0; out.length < n && idle < 3 && round < n + 10; round++){
-    const before = out.length;
-    let pool = zones.slice();
-    while(out.length < n && pool.length){
-      const z = pickWeighted(pool, rnd);
-      pool = pool.filter(x => x !== z);
-      for(let k = 0; k < 10; k++){
-        const xy = pointInZone(z, rnd, opts.edgeMin);
-        if(xy && farEnough(xy)){ out.push({ xy, zone: z }); taken.push(xy); break; }
-      }
-    }
-    idle = out.length === before ? idle + 1 : 0;
-  }
-  return out;
-}
-
-function openGenerator(){
-  const rows = TIPO_OPTS.map(t => `<tr>
-      <td><span class="pt-sw" style="background:${PT_COLORS[t]}"></span>${t}</td>
-      <td><input type="number" min="0" max="500" name="n-${t}" value="${GEN_DEFAULT}" aria-label="Punts ${t}"></td>
-    </tr>`).join('');
-  document.getElementById('modal-content').innerHTML = `
-    <div class="gen-form">
-      <h2>Genera punts aleatoris</h2>
-      <p class="gen-intro">Situa punts a l'atzar dins de cada tipologia. Les zones grans tenen més probabilitat de ser triades i, mentre n'hi hagi prou, cada punt cau en una zona diferent.</p>
-      <table class="gen-table">
-        <thead><tr><th>Tipologia</th><th>Punts</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
-      <p class="gen-hint">Al control obert, els punts es reparteixen a parts iguals entre antics conreus i antic sòl forestal.</p>
-      <label class="gen-check"><input type="checkbox" name="nomesExec" checked> Només franges executades</label>
-      <label class="gen-check"><input type="checkbox" name="nomesExecPeg"> Només PEG i AFG executats <span class="gen-hint-inline">(ara gairebé cap no ho és)</span></label>
-      <label class="gen-check"><input type="checkbox" name="substitueix" checked> Substitueix els punts aleatoris generats abans (els manuals es conserven)</label>
-      <div class="gen-grid">
-        <label>Distància mínima entre punts (m)<input type="number" name="minDist" min="0" value="200"></label>
-        <label>Distància mínima a la vora (m)<input type="number" name="edgeMin" min="0" value="5"></label>
-        <label>Llavor (opcional)<input type="text" name="seed" placeholder="Aleatòria" inputmode="numeric"></label>
-      </div>
-      <div class="pt-actions">
-        <button type="button" class="pt-save" id="gen-run">Genera els punts</button>
-        <button type="button" id="gen-cancel">Cancel·la</button>
-      </div>
-      <div id="gen-result" role="status"></div>
-    </div>`;
-  document.getElementById('modal-backdrop').classList.add('open');
-  document.getElementById('gen-cancel').addEventListener('click', closeModal);
-  document.getElementById('gen-run').addEventListener('click', runGenerator);
-}
-const closeModal = () => document.getElementById('modal-backdrop').classList.remove('open');
-
-function runGenerator(){
-  const form = document.querySelector('.gen-form');
-  const v = (n) => form.querySelector(`[name="${n}"]`);
-  const num = (n) => Math.max(0, parseInt(v(n).value) || 0);
-  const opts = { minDist: num('minDist'), edgeMin: num('edgeMin') };
-  let seed = parseInt(v('seed').value);
-  if(isNaN(seed)){ seed = Math.floor(Math.random() * 1e6); }
-  const rnd = mulberry32(seed);
-
-  if(v('substitueix').checked) points.features = points.features.filter(f => f.properties.metode !== 'Aleatori');
-  const taken = points.features.map(f => toM(f.geometry.coordinates));
-  const today = new Date().toISOString().slice(0, 10);
-  const report = [];
-
-  TIPO_OPTS.forEach(t => {
-    const n = num('n-' + t);
-    if(!n) return;
-    const src = GEN_SOURCES[t];
-    let feats = (dataCache[src.key] || { features:[] }).features;
-    if(t === 'Franja' && v('nomesExec').checked) feats = feats.filter(f => f.properties.feta === 1);
-    if((t === 'PEG' || t === 'AFG') && v('nomesExecPeg').checked) feats = feats.filter(f => f.properties.executat_a);
-
-    // Estrats: el control obert es divideix per origen
-    const strata = t === 'Control obert'
-      ? ORIGEN_OPTS.map((o, k) => ({ origen:o, feats: feats.filter(f => f.properties.origen === o),
-          n: k === 0 ? Math.ceil(n / 2) : Math.floor(n / 2) }))
-      : [{ origen:'', feats, n }];
-
-    let got = 0;
-    strata.forEach(s => {
-      const zones = buildZones(s.feats, src.label);
-      samplePoints(zones, s.n, rnd, opts, taken).forEach(g => {
-        got++;
-        points.features.push({ type:'Feature', geometry:{ type:'Point', coordinates: toLL(g.xy) },
-          properties:{ id: nextId(), tipologia: t, origen: s.origen, vessant:'',
-            observacions:'', zona: g.zone.label, metode:'Aleatori', llavor: String(seed), data: today } });
-      });
-    });
-    report.push({ t, n, got, zones: feats.length });
-  });
-
-  savePoints();
-  const lines = report.map(r => {
-    const short = r.got < r.n;
-    return `<li${short ? ' class="short"' : ''}><strong>${r.t}</strong>: ${r.got}/${r.n} punts` +
-      (r.zones === 0 ? ' (cap zona disponible amb aquests filtres)' : short ? ' (no hi ha prou espai amb aquestes distàncies)' : '') + '</li>';
-  }).join('');
-  document.getElementById('gen-result').innerHTML = `
-    <div class="gen-done">
-      <p>Punts generats amb la llavor <strong>${seed}</strong>. Amb la mateixa llavor i les mateixes opcions obtindràs exactament la mateixa selecció.</p>
-      <ul>${lines || '<li>No s\'ha demanat cap punt.</li>'}</ul>
-      <p class="gen-hint">El vessant queda buit: cal completar-lo consultant la pendent i l'orientació al projecte SIG.</p>
-    </div>`;
-  v('seed').value = seed;
-}
-document.getElementById('pt-generate').addEventListener('click', openGenerator);
 </script>
 </body>
 </html>
