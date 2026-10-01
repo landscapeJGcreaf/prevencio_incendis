@@ -117,9 +117,11 @@
   table.attr{ border-collapse:collapse; width:100%; font-size:11.5px; font-family: var(--mono); }
   table.attr th{
     position:sticky; top:0; background:#f1efe8; text-align:left; padding:6px 10px;
-    border-bottom:1px solid var(--line); cursor:pointer; white-space:nowrap;
+    border-bottom:1px solid var(--line); cursor:pointer; white-space:nowrap; user-select:none;
   }
+  table.attr th:hover{ background:#e6e4da; }
   table.attr td{ padding:5px 10px; border-bottom:1px solid #f0efe9; white-space:nowrap; }
+  table.attr tbody tr.sel{ background:#fff3cf; }
   table.attr tbody tr:hover{ background:#f6f8f5; cursor:pointer; }
 
   /* ---------- Map controls ---------- */
@@ -439,19 +441,6 @@
         </div>
         <button class="table-toggle" data-table="obertes">Veure taula d'atributs (3249 registres)</button>
       </div>
-
-      <div class="layer-row" data-target="tancades">
-        <input type="checkbox" id="chk-tancades">
-        <label for="chk-tancades">Zones de control tancades</label>
-        <span class="layer-count" id="count-tancades">11</span>
-        <button class="info-btn" data-meta="tancades">i</button>
-      </div>
-      <div class="sublayer-panel open" id="panel-tancades">
-        <div class="legend">
-          <div class="legend-item"><span class="swatch" style="background:#2d5a3d"></span> Bosc d'evolució natural</div>
-        </div>
-        <button class="table-toggle" data-table="tancades">Veure taula d'atributs (11 registres)</button>
-      </div>
       </div>
     </div>
 
@@ -556,7 +545,6 @@
           <div class="legend-item"><span class="pt-sw" style="background:#4a7c94"></span> PEG</div>
           <div class="legend-item"><span class="pt-sw" style="background:#7b3fa0"></span> AFG</div>
           <div class="legend-item"><span class="pt-sw" style="background:#b8894a"></span> Control obert</div>
-          <div class="legend-item"><span class="pt-sw" style="background:#2d5a3d"></span> Control bosc</div>
         </div>
         <table class="pt-summary" id="pt-summary" aria-label="Recompte de punts per tipologia"></table>
         <button type="button" id="pt-mode" class="pt-mode" aria-pressed="false">Afegir punts</button>
@@ -711,16 +699,6 @@ const META = {
       ["Sistema de referència", "ETRS89 / WGS84 (EPSG:4326)"],
       ["Nombre de registres", "3249"]
     ]
-  },
-  tancades: {
-    title: "Zones de control tancades",
-    fields: [
-      ["Font", "Cartografia facilitada pel Parc Natural de la Serra de Collserola"],
-      ["Àmbit", "Parc Natural de la Serra de Collserola"],
-      ["Descripció", "Boscos d'evolució natural, reserves naturals parcials i sectors d'interès estratègic sense actuacions de gestió."],
-      ["Sistema de referència", "ETRS89 / WGS84 (EPSG:4326)"],
-      ["Nombre de registres", "11"]
-    ]
   }
 };
 
@@ -779,19 +757,17 @@ map.on('load', async () => {
     return r.json();
   }).catch(err => { console.warn('No s\'ha pogut carregar', url, err); return empty; });
 
-  const [franges, pegs, afg, obertes, tancades, xpn] = await Promise.all([
+  const [franges, pegs, afg, obertes, xpn] = await Promise.all([
     loadJSON('dades/franges_xpn.geojson'),
     loadJSON('dades/pegs_xpn.geojson'),
     loadJSON('dades/afg_xpn.geojson'),
     loadJSON('dades/zones_control_obertes.geojson'),
-    loadJSON('dades/zones_control_tancades.geojson'),
     loadJSON('dades/limit_xpn.geojson')
   ]);
   dataCache.franges = franges;
   dataCache.pegs = pegs;
   dataCache.afg = afg;
   dataCache.obertes = obertes;
-  dataCache.tancades = tancades;
 
   // franges: 'feta' 1/0 = capa oficial (executada/pendent); 'feta' null = zona planificada/proposta (capa "Difference")
   map.addSource('franges', { type:'geojson', data: franges });
@@ -855,16 +831,6 @@ map.on('load', async () => {
     paint: { 'line-color': '#6b6555', 'line-width': 0.5 }
   });
 
-  map.addSource('tancades', { type:'geojson', data: tancades });
-  map.addLayer({
-    id: 'tancades-fill', type:'fill', source:'tancades',
-    paint: { 'fill-color': '#2d5a3d', 'fill-opacity': 0.45 }
-  });
-  map.addLayer({
-    id: 'tancades-line', type:'line', source:'tancades',
-    paint: { 'line-color': '#173a26', 'line-width': 1.2 }
-  });
-
   // Màscara fora del Parc: rectangle gran amb el Parc com a forat (sota les capes de dades)
   map.addSource('xpn-mask', { type:'geojson', data: buildOutsideMask(xpn) });
   map.addLayer({
@@ -901,6 +867,23 @@ map.on('load', async () => {
   map.addLayer({
     id: 'xpn-line', type:'line', source:'xpn',
     paint: { 'line-color': '#26302b', 'line-width': 1.6 }
+  });
+
+  // Ressaltat del registre seleccionat des de la taula d'atributs (per sobre de tot)
+  map.addSource('selected', { type:'geojson', data: empty });
+  map.addLayer({
+    id: 'selected-fill', type:'fill', source:'selected',
+    filter: ['==', ['geometry-type'], 'Polygon'],
+    paint: { 'fill-color': '#ffd400', 'fill-opacity': 0.3 }
+  });
+  map.addLayer({
+    id: 'selected-line', type:'line', source:'selected',
+    paint: { 'line-color': '#ff9900', 'line-width': 3.5 }
+  });
+  map.addLayer({
+    id: 'selected-point', type:'circle', source:'selected',
+    filter: ['==', ['geometry-type'], 'Point'],
+    paint: { 'circle-radius': 10, 'circle-color': 'rgba(0,0,0,0)', 'circle-stroke-color': '#ff9900', 'circle-stroke-width': 3.5 }
   });
   initPointsLayer();
   loadRelleuValues();
@@ -996,11 +979,6 @@ function popupContent(key, p){
           <button type="button" data-pt-edit="${esc(p.id)}">Edita</button>
           <button type="button" data-pt-del="${esc(p.id)}">Elimina</button>
         </div>`;
-    } else if(key === 'tancades'){
-      html = `<div class="popup-title">${p.nom || 'Zona de control tancada'}</div>
-        <div class="popup-row"><span class="k">Codi</span><span class="v">${p.codi || '—'}</span></div>
-        <div class="popup-row"><span class="k">Tipus</span><span class="v">${p.tipus || '—'}</span></div>
-        <div class="popup-row"><span class="k">Superfície</span><span class="v">${p.hectares ? p.hectares.toFixed(2)+' ha' : '—'}</span></div>`;
     } else {
       html = `<div class="popup-title">${p.nom_peg || 'PEG ' + p.id_peg}</div>
         <div class="popup-row"><span class="k">Codi</span><span class="v">${p.codi_peg || '—'}</span></div>
@@ -1021,7 +999,6 @@ const POPUP_LAYERS = {
   'pegs-fill':     { key:'pegs',     name:'Punts Estratègics de Gestió',    color:'#4a7c94' },
   'afg-fill':      { key:'afg',      name:'Àrees de Foment de la Gestió',   color:'#7b3fa0' },
   'obertes-fill':  { key:'obertes',  name:'Zones de control obertes',       color:'#c9a66b' },
-  'tancades-fill': { key:'tancades', name:'Zones de control tancades',      color:'#2d5a3d' },
   'punts-circle':  { key:'punts',    name:'Punts de mostreig',              color:'#26302b' },
   'cob2020-fill':  { key:'cob',      name:'Cobertes del sòl 2020',          color:'#2d5a3d' },
   'cob1956-fill':  { key:'cob',      name:'Cobertes del sòl 1956',          color:'#c98a4b' }
@@ -1074,7 +1051,6 @@ const LAYER_GROUPS = {
   pegs: ['pegs-fill','pegs-line'],
   afg: ['afg-fill','afg-line'],
   obertes: ['obertes-fill','obertes-line'],
-  tancades: ['tancades-fill','tancades-line'],
   xpn: ['xpn-mask','xpn-halo','xpn-line'],
   pendent: ['pendent-img'],
   orientacio: ['orientacio-img'],
@@ -1141,6 +1117,7 @@ document.querySelectorAll('.table-toggle').forEach(btn => {
 });
 document.getElementById('table-close').addEventListener('click', () => {
   document.getElementById('table-overlay').classList.remove('open');
+  if(map.getSource('selected')) map.getSource('selected').setData({ type:'FeatureCollection', features:[] });
 });
 
 function openTable(key){
@@ -1159,44 +1136,90 @@ function openTable(key){
     obertes: { title: 'Zones de control obertes',
       cols: ['categoria','origen','cat_niv_1','acronim'],
       labels: ['Categoria','Origen','Categoria nivell 1','Acrònim'] },
-    tancades: { title: 'Zones de control tancades',
-      cols: ['nom','codi','tipus','hectares'],
-      labels: ['Nom','Codi','Tipus','Ha'] },
     punts: { title: 'Punts de mostreig',
       cols: ['id','tipologia','origen','zona','vessant','metode','observacions','data'],
       labels: ['Id','Tipologia','Origen','Zona','Vessant','Mètode','Observacions','Data'] }
   };
   const { cols, labels } = TABLES[key];
 
-  let thead = '<thead><tr>' + labels.map(l => `<th>${l}</th>`).join('') + '</tr></thead>';
-  let rows = data.features.map((f, i) => {
-    const p = f.properties;
-    const cells = cols.map(c => {
-      let v = p[c];
-      if(c === 'feta') v = (v == 1) ? 'Executada' : (v == 0 ? 'Pendent' : 'Planificada');
-      if(c === 'id_objecti') v = OBJ_LABELS[v] || v || '—';
-      if(c === 'area_ha' && (v === null || v === undefined)) v = p.area_1;
-      if((c === 'area_ha' || c === 'hectares') && typeof v === 'number') v = v.toFixed(2);
-      return `<td>${v ?? '—'}</td>`;
-    }).join('');
-    return `<tr data-idx="${i}">${cells}</tr>`;
-  }).join('');
+  function cellValue(p, c){
+    let v = p[c];
+    if(c === 'feta') v = (v == 1) ? 'Executada' : (v == 0 ? 'Pendent' : 'Planificada');
+    if(c === 'id_objecti') v = OBJ_LABELS[v] || v || '—';
+    if(c === 'area_ha' && (v === null || v === undefined)) v = p.area_1;
+    if((c === 'area_ha' || c === 'hectares') && typeof v === 'number') v = v.toFixed(2);
+    return v;
+  }
+  function sortValue(p, c){
+    let v = p[c];
+    if(c === 'area_ha' && (v === null || v === undefined)) v = p.area_1;
+    if(v === null || v === undefined || v === '') return null;
+    return v;
+  }
 
-  document.getElementById('attr-table').innerHTML = thead + '<tbody>' + rows + '</tbody>';
+  let order = data.features.map((_, i) => i);
+  let sortCol = null, sortDir = 1;
+
+  function renderHead(){
+    return '<thead><tr>' + labels.map((l, ci) => {
+      const arrow = cols[ci] === sortCol ? (sortDir === 1 ? ' ▲' : ' ▼') : '';
+      return `<th data-col="${ci}">${l}${arrow}</th>`;
+    }).join('') + '</tr></thead>';
+  }
+
+  function renderBody(){
+    return '<tbody>' + order.map(i => {
+      const p = data.features[i].properties;
+      const cells = cols.map(c => `<td>${cellValue(p, c) ?? '—'}</td>`).join('');
+      return `<tr data-idx="${i}">${cells}</tr>`;
+    }).join('') + '</tbody>';
+  }
+
+  function attachRowClicks(){
+    document.querySelectorAll('#attr-table tbody tr').forEach(tr => {
+      tr.addEventListener('click', () => {
+        document.querySelectorAll('#attr-table tbody tr.sel').forEach(x => x.classList.remove('sel'));
+        tr.classList.add('sel');
+        const feat = data.features[+tr.dataset.idx];
+        map.getSource('selected').setData({ type:'FeatureCollection', features:[feat] });
+        const coords = feat.geometry.coordinates;
+        if(feat.geometry.type === 'Point'){ map.flyTo({ center: coords, zoom: 16 }); return; }
+        let ring = feat.geometry.type === 'MultiPolygon' ? coords[0][0] : coords[0];
+        const bounds = ring.reduce((b, c) => b.extend(c), new maplibregl.LngLatBounds(ring[0], ring[0]));
+        map.fitBounds(bounds, { padding: 60, maxZoom: 16 });
+      });
+    });
+  }
+
+  function attachHeaderClicks(){
+    document.querySelectorAll('#attr-table thead th').forEach(th => {
+      th.addEventListener('click', () => {
+        const c = cols[+th.dataset.col];
+        sortDir = (sortCol === c) ? -sortDir : 1;
+        sortCol = c;
+        order.sort((ia, ib) => {
+          const va = sortValue(data.features[ia].properties, c);
+          const vb = sortValue(data.features[ib].properties, c);
+          if(va === null && vb === null) return 0;
+          if(va === null) return 1;
+          if(vb === null) return -1;
+          if(typeof va === 'number' && typeof vb === 'number') return sortDir * (va - vb);
+          return sortDir * String(va).localeCompare(String(vb), 'ca', { numeric:true, sensitivity:'base' });
+        });
+        document.getElementById('attr-table').innerHTML = renderHead() + renderBody();
+        attachHeaderClicks();
+        attachRowClicks();
+      });
+    });
+  }
+
+  document.getElementById('attr-table').innerHTML = renderHead() + renderBody();
   document.getElementById('table-title').textContent =
     TABLES[key].title + ` — ${data.features.length} registres`;
   document.getElementById('table-overlay').classList.add('open');
 
-  document.querySelectorAll('#attr-table tbody tr').forEach(tr => {
-    tr.addEventListener('click', () => {
-      const feat = data.features[+tr.dataset.idx];
-      const coords = feat.geometry.coordinates;
-      if(feat.geometry.type === 'Point'){ map.flyTo({ center: coords, zoom: 16 }); return; }
-      let ring = feat.geometry.type === 'MultiPolygon' ? coords[0][0] : coords[0];
-      const bounds = ring.reduce((b, c) => b.extend(c), new maplibregl.LngLatBounds(ring[0], ring[0]));
-      map.fitBounds(bounds, { padding: 60, maxZoom: 16 });
-    });
-  });
+  attachHeaderClicks();
+  attachRowClicks();
 }
 
 
@@ -1626,11 +1649,11 @@ document.querySelectorAll('.stats-tab').forEach(tab => {
 // =====================================================================
 const PT_STORE = 'collserola_punts_mostreig_v1';
 const GEN_DEFAULT = 10;  // valor inicial del generador (es pot canviar lliurement)
-const TIPO_OPTS = ['Franja', 'PEG', 'AFG', 'Control obert', 'Control bosc'];
+const TIPO_OPTS = ['Franja', 'PEG', 'AFG', 'Control obert'];
 const ORIGEN_OPTS = ['Antics conreus', 'Antic sòl forestal'];
 const VESSANT_OPTS = ['Obaga', 'Solana', 'Transició', 'Pla'];
-const PT_COLORS = { 'Franja':'#5f8a70', 'PEG':'#4a7c94', 'AFG':'#7b3fa0', 'Control obert':'#b8894a', 'Control bosc':'#2d5a3d' };
-const LAYER_TO_TIPO = { 'franges-fill':'Franja', 'pegs-fill':'PEG', 'afg-fill':'AFG', 'obertes-fill':'Control obert', 'tancades-fill':'Control bosc' };
+const PT_COLORS = { 'Franja':'#5f8a70', 'PEG':'#4a7c94', 'AFG':'#7b3fa0', 'Control obert':'#b8894a' };
+const LAYER_TO_TIPO = { 'franges-fill':'Franja', 'pegs-fill':'PEG', 'afg-fill':'AFG', 'obertes-fill':'Control obert' };
 
 let points = loadPoints();
 let editMode = false;
@@ -1898,8 +1921,7 @@ const GEN_SOURCES = {
   'Franja':        { key:'franges',  label:(p) => p.nom || p.codi || p.codizonac || '' },
   'PEG':           { key:'pegs',     label:(p) => p.nom_peg || p.codi_peg || '' },
   'AFG':           { key:'afg',      label:(p) => p.nom_peg || p.codi_peg || '' },
-  'Control obert': { key:'obertes',  label:(p) => p.categoria || '' },
-  'Control bosc':  { key:'tancades', label:(p) => p.nom || p.codi || '' }
+  'Control obert': { key:'obertes',  label:(p) => p.categoria || '' }
 };
 const LAT0 = 41.43, MX = 111320 * Math.cos(LAT0 * Math.PI / 180), MY = 110540;
 const toM = ([lon, lat]) => [lon * MX, lat * MY];
