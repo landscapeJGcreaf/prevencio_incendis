@@ -1137,8 +1137,15 @@ function isTypingTarget(t){
   return t.tagName === 'INPUT' && TEXT_INPUT_TYPES.includes((t.type || 'text').toLowerCase());
 }
 document.addEventListener('keydown', (e) => {
-  if(e.key !== 'Delete') return;
+  if(e.key !== 'Delete' && e.key !== 'Escape') return;
   if(isTypingTarget(e.target)) return;
+  if(e.key === 'Escape'){
+    // Les estadístiques i el mode d'edició de punts ja gestionen la seva pròpia tecla Esc
+    if(statsDrawer.classList.contains('open')) return;
+    if(document.getElementById('table-overlay').classList.contains('open')) closeTable();
+    if(activePopup) activePopup.remove();
+    return;
+  }
   if(document.getElementById('table-overlay').classList.contains('open')) closeTable();
   if(activePopup) activePopup.remove();
   if(ptPopup && ptPopup.isOpen && ptPopup.isOpen()) ptPopup.remove();
