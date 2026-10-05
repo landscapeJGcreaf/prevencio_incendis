@@ -430,16 +430,17 @@
       <div class="layer-row" data-target="obertes">
         <input type="checkbox" id="chk-obertes">
         <label for="chk-obertes">Zones de control obertes</label>
-        <span class="layer-count" id="count-obertes">3249</span>
+        <span class="layer-count" id="count-obertes">5070</span>
         <button class="info-btn" data-meta="obertes">i</button>
       </div>
       <div class="sublayer-panel open" id="panel-obertes">
         <div class="legend">
           <div class="legend-item"><span class="swatch" style="background:#c9a66b"></span> Antics conreus</div>
           <div class="legend-item"><span class="swatch" style="background:#7d8a4c"></span> Antic sòl forestal</div>
-          <div class="legend-item"><span class="swatch" style="background:#a8a49a"></span> Sense canvis / sense classificar</div>
+          <div class="legend-item"><span class="swatch" style="background:#a8a49a"></span> Sense canvis</div>
+          <div class="legend-item"><span class="swatch" style="background:#9aa7b0"></span> Altres</div>
         </div>
-        <button class="table-toggle" data-table="obertes">Veure taula d'atributs (3249 registres)</button>
+        <button class="table-toggle" data-table="obertes">Veure taula d'atributs (5070 registres)</button>
       </div>
       </div>
     </div>
@@ -693,11 +694,11 @@ const META = {
   obertes: {
     title: "Zones de control obertes",
     fields: [
-      ["Font", "Cartografia facilitada pel Parc Natural de la Serra de Collserola (2020)"],
+      ["Font", "Elaboració pròpia a partir dels mapes de cobertes del sòl de 2020, 2005, 1993 i 1956"],
       ["Àmbit", "Parc Natural de la Serra de Collserola"],
-      ["Descripció", "Espais oberts històrics (matollars, prats i herbassars) classificats segons el seu origen: antics conreus, antic sòl forestal, o sense canvis."],
+      ["Descripció", "Espais oberts de 2020 (matollars, prats i herbassars) amb la coberta que tenien el 2005, el 1993 i el 1956. D'aquesta trajectòria se'n deriva l'origen (antics conreus, antic sòl forestal, sense canvis o altres) i l'edat de l'obertura. Alguns polígons duen una marca «Revisar» per a l'any 2005 o 1993."],
       ["Sistema de referència", "ETRS89 / WGS84 (EPSG:4326)"],
-      ["Nombre de registres", "3249"]
+      ["Nombre de registres", "5070 (1.244 ha). S'han eliminat els polígons de menys de 0,01 ha (100 m²): 7.630 polígons, 8,3 ha (0,7 % de la superfície)."]
     ]
   }
 };
@@ -761,7 +762,7 @@ map.on('load', async () => {
     loadJSON('dades/franges_xpn.geojson'),
     loadJSON('dades/pegs_xpn.geojson'),
     loadJSON('dades/afg_xpn.geojson'),
-    loadJSON('dades/zones_control_obertes.geojson'),
+    loadJSON('dades/espais_oberts.geojson'),
     loadJSON('dades/limit_xpn.geojson')
   ]);
   dataCache.franges = franges;
@@ -822,6 +823,7 @@ map.on('load', async () => {
       'fill-color': ['match', ['get','origen'],
         'Antics conreus', '#c9a66b',
         'Antic sòl forestal', '#7d8a4c',
+        'Altres', '#9aa7b0',
         '#a8a49a'],
       'fill-opacity': 0.5
     }
@@ -960,10 +962,14 @@ function popupContent(key, p){
         <div class="popup-row"><span class="k">Superfície</span><span class="v">${p.hectares ? p.hectares.toFixed(2)+' ha' : '—'}</span></div>
         ${p.comentaris ? `<div class="popup-row"><span class="k">Comentaris</span><span class="v">${p.comentaris}</span></div>` : ''}`;
     } else if(key === 'obertes'){
-      html = `<div class="popup-title">${p.categoria || 'Zona de control oberta'}</div>
-        <div class="popup-row"><span class="k">Origen</span><span class="v">${p.origen || 'Sense classificar'}</span></div>
-        <div class="popup-row"><span class="k">Categoria (nivell 1)</span><span class="v">${p.cat_niv_1 || '—'}</span></div>
-        <div class="popup-row"><span class="k">Acrònim</span><span class="v">${p.acronim || '—'}</span></div>`;
+      html = `<div class="popup-title">${esc(p.cob2020 || 'Zona de control oberta')}</div>
+        <div class="popup-row"><span class="k">Origen</span><span class="v">${esc(p.origen || 'Sense classificar')}</span></div>
+        <div class="popup-row"><span class="k">Edat</span><span class="v">${esc(p.edat || '—')}</span></div>
+        <div class="popup-row"><span class="k">Coberta 2005</span><span class="v">${esc(p.cob2005 || '—')}</span></div>
+        <div class="popup-row"><span class="k">Coberta 1993</span><span class="v">${esc(p.cob1993 || '—')}</span></div>
+        <div class="popup-row"><span class="k">Coberta 1956</span><span class="v">${esc(p.cob1956 || '—')}</span></div>
+        <div class="popup-row"><span class="k">Superfície</span><span class="v">${typeof p.area_ha === 'number' ? (p.area_ha < 0.01 ? '< 0,01 ha' : p.area_ha.toLocaleString('ca-ES', { minimumFractionDigits:2, maximumFractionDigits:2 }) + ' ha') : '—'}</span></div>
+        ${p.revisar ? `<div class="popup-row"><span class="k">Nota</span><span class="v">${esc(p.revisar)}</span></div>` : ''}`;
     } else if(key === 'cob'){
       html = `<div class="popup-title">${esc(p.coberta || '—')}</div>
         <div class="popup-row"><span class="k">Tipologia</span><span class="v">${esc(p.tipologia || '—')}</span></div>
@@ -1115,9 +1121,27 @@ document.getElementById('modal-backdrop').addEventListener('click', (e) => {
 document.querySelectorAll('.table-toggle').forEach(btn => {
   btn.addEventListener('click', () => openTable(btn.dataset.table));
 });
-document.getElementById('table-close').addEventListener('click', () => {
+function closeTable(){
   document.getElementById('table-overlay').classList.remove('open');
   if(map.getSource('selected')) map.getSource('selected').setData({ type:'FeatureCollection', features:[] });
+}
+document.getElementById('table-close').addEventListener('click', closeTable);
+
+// Tecla Supr: tanca la taula d'atributs i els popups oberts. Si s'està escrivint en un camp de
+// text, no fa res. Les caselles de capes, els controls d'opacitat i els botons no compten: després
+// d'activar una capa el focus hi queda i, si no, Supr no respondria en clicar el mapa.
+const TEXT_INPUT_TYPES = ['text','number','search','email','url','tel','password','date','datetime-local','time','month','week'];
+function isTypingTarget(t){
+  if(!t) return false;
+  if(t.isContentEditable || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT') return true;
+  return t.tagName === 'INPUT' && TEXT_INPUT_TYPES.includes((t.type || 'text').toLowerCase());
+}
+document.addEventListener('keydown', (e) => {
+  if(e.key !== 'Delete') return;
+  if(isTypingTarget(e.target)) return;
+  if(document.getElementById('table-overlay').classList.contains('open')) closeTable();
+  if(activePopup) activePopup.remove();
+  if(ptPopup && ptPopup.isOpen && ptPopup.isOpen()) ptPopup.remove();
 });
 
 function openTable(key){
@@ -1134,8 +1158,8 @@ function openTable(key){
       cols: ['nom_peg','codi_peg','nom_tracta','id_priorit','executat_a','executat_e','hectares'],
       labels: ['Nom','Codi','Tram','Prioritat','Any exec.','Entitat/mes','Ha'] },
     obertes: { title: 'Zones de control obertes',
-      cols: ['categoria','origen','cat_niv_1','acronim'],
-      labels: ['Categoria','Origen','Categoria nivell 1','Acrònim'] },
+      cols: ['cob2020','origen','edat','cob2005','cob1993','cob1956','area_ha','revisar'],
+      labels: ['Espai obert 2020','Origen','Edat','Coberta 2005','Coberta 1993','Coberta 1956','Ha','Revisar'] },
     punts: { title: 'Punts de mostreig',
       cols: ['id','tipologia','origen','zona','vessant','metode','observacions','data'],
       labels: ['Id','Tipologia','Origen','Zona','Vessant','Mètode','Observacions','Data'] }
@@ -1147,7 +1171,7 @@ function openTable(key){
     if(c === 'feta') v = (v == 1) ? 'Executada' : (v == 0 ? 'Pendent' : 'Planificada');
     if(c === 'id_objecti') v = OBJ_LABELS[v] || v || '—';
     if(c === 'area_ha' && (v === null || v === undefined)) v = p.area_1;
-    if((c === 'area_ha' || c === 'hectares') && typeof v === 'number') v = v.toFixed(2);
+    if((c === 'area_ha' || c === 'hectares') && typeof v === 'number') v = v < 0.01 ? '<0.01' : v.toFixed(2);
     return v;
   }
   function sortValue(p, c){
@@ -1921,7 +1945,7 @@ const GEN_SOURCES = {
   'Franja':        { key:'franges',  label:(p) => p.nom || p.codi || p.codizonac || '' },
   'PEG':           { key:'pegs',     label:(p) => p.nom_peg || p.codi_peg || '' },
   'AFG':           { key:'afg',      label:(p) => p.nom_peg || p.codi_peg || '' },
-  'Control obert': { key:'obertes',  label:(p) => p.categoria || '' }
+  'Control obert': { key:'obertes',  label:(p) => p.cob2020 || '' }
 };
 const LAT0 = 41.43, MX = 111320 * Math.cos(LAT0 * Math.PI / 180), MY = 110540;
 const toM = ([lon, lat]) => [lon * MX, lat * MY];
