@@ -409,7 +409,8 @@
       </div>
       <div class="sublayer-panel open" id="panel-pegs">
         <div class="legend">
-          <div class="legend-item"><span class="swatch" style="background:#4a7c94"></span> Punt Estratègic de Gestió</div>
+          <div class="legend-item"><span class="swatch" style="background:#2f8f4e"></span> Executat</div>
+          <div class="legend-item"><span class="swatch" style="background:#bfe3c0"></span> No executat</div>
         </div>
         <button class="table-toggle" data-table="pegs">Veure taula d'atributs (178 registres)</button>
       </div>
@@ -676,7 +677,7 @@ const META = {
     fields: [
       ["Font", "Cartografia facilitada pel Parc Natural de la Serra de Collserola"],
       ["Àmbit", "Parc Natural de la Serra de Collserola"],
-      ["Descripció", "Perímetres de gestió estratègica per a la prevenció d'incendis forestals, classificats per prioritat i objectiu de gestió. Cap PEG d'aquesta capa consta com a executat."],
+      ["Descripció", "Perímetres de gestió estratègica per a la prevenció d'incendis forestals, classificats per prioritat i objectiu de gestió. Consten com a executats els PEG 18, 19 i 22 (lot A) i els PEG 1, 3, 4 i 15 (lot B), segons la informació facilitada."],
       ["Sistema de referència", "ETRS89 / WGS84 (EPSG:4326)"],
       ["Nombre de registres", "178"]
     ]
@@ -697,8 +698,7 @@ const META = {
       ["Font", "Elaboració pròpia a partir dels mapes de cobertes del sòl de 2020, 2005, 1993 i 1956"],
       ["Àmbit", "Parc Natural de la Serra de Collserola"],
       ["Descripció", "Espais oberts de 2020 (matollars, prats i herbassars) amb la coberta que tenien el 2005, el 1993 i el 1956. D'aquesta trajectòria se'n deriva l'origen (antics conreus, antic sòl forestal, sense canvis o altres) i l'edat de l'obertura. Alguns polígons duen una marca «Revisar» per a l'any 2005 o 1993."],
-      ["Sistema de referència", "ETRS89 / WGS84 (EPSG:4326)"],
-      ["Nombre de registres", "5070 (1.244 ha). S'han eliminat els polígons de menys de 0,01 ha (100 m²): 7.630 polígons, 8,3 ha (0,7 % de la superfície)."]
+      ["Sistema de referència", "ETRS89 / WGS84 (EPSG:4326)"]
     ]
   }
 };
@@ -799,11 +799,17 @@ map.on('load', async () => {
   map.addSource('pegs', { type:'geojson', data: pegs });
   map.addLayer({
     id: 'pegs-fill', type:'fill', source:'pegs',
-    paint: { 'fill-color': '#4a7c94', 'fill-opacity': 0.45 }
+    paint: {
+      'fill-color': ['case', ['==', ['get','executat'], 1], '#2f8f4e', '#bfe3c0'],
+      'fill-opacity': ['case', ['==', ['get','executat'], 1], 0.6, 0.4]
+    }
   });
   map.addLayer({
     id: 'pegs-line', type:'line', source:'pegs',
-    paint: { 'line-color': '#2f5568', 'line-width': 1, 'line-dasharray':[2,1] }
+    paint: {
+      'line-color': ['case', ['==', ['get','executat'], 1], '#1b5e32', '#6fa381'],
+      'line-width': 1, 'line-dasharray':[2,1]
+    }
   });
 
   map.addSource('afg', { type:'geojson', data: afg });
@@ -957,7 +963,7 @@ function popupContent(key, p){
       html = `<div class="popup-title">${p.nom_peg || 'AFG'}</div>
         <div class="popup-row"><span class="k">Codi</span><span class="v">${p.codi_peg || '—'}</span></div>
         <div class="popup-row"><span class="k">Tram</span><span class="v">${p.nom_tracta || '—'}</span></div>
-        <div class="popup-row"><span class="k">Estat</span><span class="v">${p.executat_a ? 'Executada (' + p.executat_a + (p.executat_e ? ', ' + p.executat_e : '') + ')' : 'No executada'}</span></div>
+        <div class="popup-row"><span class="k">Estat</span><span class="v">${estatExec(p, true)}</span></div>
         <div class="popup-row"><span class="k">Prioritat</span><span class="v">${p.id_priorit || p.grup_prio || 'Sense classificar'}</span></div>
         <div class="popup-row"><span class="k">Superfície</span><span class="v">${p.hectares ? p.hectares.toFixed(2)+' ha' : '—'}</span></div>
         ${p.comentaris ? `<div class="popup-row"><span class="k">Comentaris</span><span class="v">${p.comentaris}</span></div>` : ''}`;
@@ -990,7 +996,7 @@ function popupContent(key, p){
         <div class="popup-row"><span class="k">Codi</span><span class="v">${p.codi_peg || '—'}</span></div>
         <div class="popup-row"><span class="k">Objectiu</span><span class="v">${OBJ_LABELS[p.id_objecti] || p.id_objecti || '—'}</span></div>
         <div class="popup-row"><span class="k">Prioritat</span><span class="v">${p.id_priorit || 'Sense classificar'}</span></div>
-        <div class="popup-row"><span class="k">Estat</span><span class="v">${p.executat_a ? 'Executada (' + p.executat_a + (p.executat_e ? ', ' + p.executat_e : '') + ')' : 'No executada'}</span></div>
+        <div class="popup-row"><span class="k">Estat</span><span class="v">${estatExec(p, false)}</span></div>
         <div class="popup-row"><span class="k">Autor</span><span class="v">${p.autor || '—'}</span></div>
         <div class="popup-row"><span class="k">Superfície</span><span class="v">${p.hectares ? p.hectares.toFixed(2)+' ha' : '—'}</span></div>
         ${p.comentaris ? `<div class="popup-row"><span class="k">Comentaris</span><span class="v">${p.comentaris}</span></div>` : ''}`;
@@ -1121,6 +1127,14 @@ document.getElementById('modal-backdrop').addEventListener('click', (e) => {
 document.querySelectorAll('.table-toggle').forEach(btn => {
   btn.addEventListener('click', () => openTable(btn.dataset.table));
 });
+// Estat d'execució d'un PEG o AFG: l'any (executat_a) i/o el lot (lot_exec) indiquen que s'ha executat
+function isExecutat(p){ return p.executat === 1 || !!p.executat_a; }
+function estatExec(p, fem){
+  if(!isExecutat(p)) return fem ? 'No executada' : 'No executat';
+  const dades = [p.executat_a || null, p.lot_exec || null, p.executat_e || null].filter(Boolean);
+  return (fem ? 'Executada' : 'Executat') + (dades.length ? ' (' + dades.join(', ') + ')' : '');
+}
+
 function closeTable(){
   document.getElementById('table-overlay').classList.remove('open');
   if(map.getSource('selected')) map.getSource('selected').setData({ type:'FeatureCollection', features:[] });
@@ -1159,8 +1173,8 @@ function openTable(key){
       cols: ['nom','codi','codizonac','feta','anyexec','nom_muni','area_ha','tipus_zona','origen','anualitat'],
       labels: ['Nom','Codi','Codi zona planif.','Estat','Any exec.','Municipi','Ha','Tipus','Origen','Anualitat prevista'] },
     pegs: { title: 'Punts Estratègics de Gestió',
-      cols: ['nom_peg','codi_peg','id_objecti','id_priorit','executat_a','executat_e','autor','hectares'],
-      labels: ['Nom','Codi','Objectiu','Prioritat','Any exec.','Entitat/mes','Autor','Ha'] },
+      cols: ['nom_peg','codi_peg','id_objecti','id_priorit','executat','lot_exec','autor','hectares'],
+      labels: ['Nom','Codi','Objectiu','Prioritat','Estat','Lot','Autor','Ha'] },
     afg: { title: 'Àrees de Foment de la Gestió',
       cols: ['nom_peg','codi_peg','nom_tracta','id_priorit','executat_a','executat_e','hectares'],
       labels: ['Nom','Codi','Tram','Prioritat','Any exec.','Entitat/mes','Ha'] },
@@ -1176,6 +1190,7 @@ function openTable(key){
   function cellValue(p, c){
     let v = p[c];
     if(c === 'feta') v = (v == 1) ? 'Executada' : (v == 0 ? 'Pendent' : 'Planificada');
+    if(c === 'executat') v = (v == 1) ? 'Executat' : 'No executat';
     if(c === 'id_objecti') v = OBJ_LABELS[v] || v || '—';
     if(c === 'area_ha' && (v === null || v === undefined)) v = p.area_1;
     if((c === 'area_ha' || c === 'hectares') && typeof v === 'number') v = v < 0.01 ? '<0.01' : v.toFixed(2);
@@ -2055,7 +2070,7 @@ function openGenerator(){
       </table>
       <p class="gen-hint">Al control obert, els punts es reparteixen a parts iguals entre antics conreus i antic sòl forestal.</p>
       <label class="gen-check"><input type="checkbox" name="nomesExec" checked> Només franges executades</label>
-      <label class="gen-check"><input type="checkbox" name="nomesExecPeg"> Només PEG i AFG executats <span class="gen-hint-inline">(ara gairebé cap no ho és)</span></label>
+      <label class="gen-check"><input type="checkbox" name="nomesExecPeg"> Només PEG i AFG executats</label>
       <label class="gen-check"><input type="checkbox" name="substitueix" checked> Substitueix els punts aleatoris generats abans (els manuals es conserven)</label>
       <div class="gen-grid">
         <label>Distància mínima entre punts (m)<input type="number" name="minDist" min="0" value="200"></label>
@@ -2094,7 +2109,7 @@ function runGenerator(){
     const src = GEN_SOURCES[t];
     let feats = (dataCache[src.key] || { features:[] }).features;
     if(t === 'Franja' && v('nomesExec').checked) feats = feats.filter(f => f.properties.feta === 1);
-    if((t === 'PEG' || t === 'AFG') && v('nomesExecPeg').checked) feats = feats.filter(f => f.properties.executat_a);
+    if((t === 'PEG' || t === 'AFG') && v('nomesExecPeg').checked) feats = feats.filter(f => isExecutat(f.properties));
 
     // Estrats: el control obert es divideix per origen
     const strata = t === 'Control obert'
