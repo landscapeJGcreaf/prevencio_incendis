@@ -551,6 +551,8 @@
         <table class="pt-summary" id="pt-summary" aria-label="Recompte de punts per tipologia"></table>
         <button type="button" id="pt-mode" class="pt-mode" aria-pressed="false">Afegir punts</button>
         <button type="button" id="pt-generate" class="pt-generate">Genera punts aleatoris</button>
+        <button type="button" id="pt-orientacio" class="pt-generate">Omple l'orientació i la pendent des del relleu</button>
+        <div id="pt-orientacio-msg" class="gen-hint" role="status"></div>
         <button class="table-toggle" data-table="punts">Veure taula de punts</button>
         <div class="pt-files">
           <button type="button" id="pt-export-geojson">Descarrega GeoJSON</button>
@@ -984,7 +986,8 @@ function popupContent(key, p){
       html = `<div class="popup-title">${esc(p.id)} · ${esc(p.tipologia || 'Sense tipologia')}</div>
         ${p.origen ? `<div class="popup-row"><span class="k">Origen</span><span class="v">${esc(p.origen)}</span></div>` : ''}
         ${p.zona ? `<div class="popup-row"><span class="k">Zona</span><span class="v">${esc(p.zona)}</span></div>` : ''}
-        <div class="popup-row"><span class="k">Vessant</span><span class="v">${esc(p.vessant || '—')}</span></div>
+        <div class="popup-row"><span class="k">Orientació</span><span class="v">${esc(p.orientacio || '—')}</span></div>
+        <div class="popup-row"><span class="k">Pendent</span><span class="v">${typeof p.pendent === 'number' ? p.pendent.toLocaleString('ca-ES', { minimumFractionDigits:1, maximumFractionDigits:1 }) + '°' : '—'}</span></div>
         <div class="popup-row"><span class="k">Mètode</span><span class="v">${esc(p.metode || 'Manual')}${p.llavor ? ' (llavor ' + esc(p.llavor) + ')' : ''}</span></div>
         ${p.observacions ? `<div class="popup-row"><span class="k">Notes</span><span class="v">${esc(p.observacions)}</span></div>` : ''}
         <div class="popup-pt-actions pt-popup-actions">
@@ -1182,8 +1185,8 @@ function openTable(key){
       cols: ['cob2020','origen','edat','cob2005','cob1993','cob1956','area_ha','revisar'],
       labels: ['Espai obert 2020','Origen','Edat','Coberta 2005','Coberta 1993','Coberta 1956','Ha','Revisar'] },
     punts: { title: 'Punts de mostreig',
-      cols: ['id','tipologia','origen','zona','vessant','metode','observacions','data'],
-      labels: ['Id','Tipologia','Origen','Zona','Vessant','Mètode','Observacions','Data'] }
+      cols: ['id','tipologia','origen','zona','orientacio','pendent','metode','observacions','data'],
+      labels: ['Id','Tipologia','Origen','Zona','Orientació','Pendent (°)','Mètode','Observacions','Data'] }
   };
   const { cols, labels } = TABLES[key];
 
@@ -1191,6 +1194,7 @@ function openTable(key){
     let v = p[c];
     if(c === 'feta') v = (v == 1) ? 'Executada' : (v == 0 ? 'Pendent' : 'Planificada');
     if(c === 'executat') v = (v == 1) ? 'Executat' : 'No executat';
+    if(c === 'pendent' && typeof v === 'number') v = v.toFixed(1);
     if(c === 'id_objecti') v = OBJ_LABELS[v] || v || '—';
     if(c === 'area_ha' && (v === null || v === undefined)) v = p.area_1;
     if((c === 'area_ha' || c === 'hectares') && typeof v === 'number') v = v < 0.01 ? '<0.01' : v.toFixed(2);
@@ -1697,7 +1701,7 @@ const PT_STORE = 'collserola_punts_mostreig_v1';
 const GEN_DEFAULT = 10;  // valor inicial del generador (es pot canviar lliurement)
 const TIPO_OPTS = ['Franja', 'PEG', 'AFG', 'Control obert'];
 const ORIGEN_OPTS = ['Antics conreus', 'Antic sòl forestal'];
-const VESSANT_OPTS = ['Obaga', 'Solana', 'Transició', 'Pla'];
+const ORIENTACIO_OPTS = ['Nord', 'Est', 'Sud', 'Oest', 'Pla'];
 const PT_COLORS = { 'Franja':'#5f8a70', 'PEG':'#4a7c94', 'AFG':'#7b3fa0', 'Control obert':'#b8894a' };
 const LAYER_TO_TIPO = { 'franges-fill':'Franja', 'pegs-fill':'PEG', 'afg-fill':'AFG', 'obertes-fill':'Control obert' };
 
@@ -1726,6 +1730,43 @@ function refreshPoints(){
   renderPtSummary();
 }
 const findPoint = (id) => points.features.find(f => f.properties.id === id);
+
+// ---- Orientació i pendent a partir del relleu ----
+// Classes d'orientació del ràster: Nord, Est, Sud, Oest, i Pla quan la pendent és inferior a 3°.
+function orientacioAt(lng, lat){
+  const v = relleuAt(lng, lat);
+  if(!v || v.orientacio === null) return '';
+  return ORI_LABELS[v.orientacio] || '';
+}
+function pendentAt(lng, lat){
+  const v = relleuAt(lng, lat);
+  return v && v.pendent !== null ? v.pendent : null;
+}
+// Omple l'orientació i la pendent dels punts que no en tenen (o només els que compleixen el filtre `triar`).
+// No toca els valors que ja hi són.
+async function omplirRelleu(triar){
+  await loadRelleuValues();
+  let omplerts = 0, senseDades = 0;
+  points.features.forEach(f => {
+    const p = f.properties;
+    const falta = !p.orientacio || p.pendent === null || p.pendent === undefined;
+    if(!falta) return;
+    if(triar && !triar(f)) return;
+    const [lng, lat] = f.geometry.coordinates;
+    const o = orientacioAt(lng, lat), pe = pendentAt(lng, lat);
+    if(o === '' && pe === null){ senseDades++; return; }
+    if(!p.orientacio && o) p.orientacio = o;
+    if((p.pendent === null || p.pendent === undefined) && pe !== null) p.pendent = pe;
+    omplerts++;
+  });
+  if(omplerts) savePoints();
+  return { omplerts, senseDades };
+}
+function relleuHint(coords){
+  const v = coords && relleuAt(coords[0], coords[1]);
+  if(!v || v.pendent === null) return '';
+  return `<div class="pt-form-hint">Pendent en aquest punt: ${v.pendent.toLocaleString('ca-ES', { minimumFractionDigits:1, maximumFractionDigits:1 })}° (${classePendent(v.pendent).toLowerCase()}).</div>`;
+}
 const r6 = (v) => Math.round(v * 1e6) / 1e6;
 function nextId(){
   const n = points.features.reduce((m, f) => Math.max(m, parseInt(String(f.properties.id).replace(/\D/g, '')) || 0), 0) + 1;
@@ -1758,7 +1799,8 @@ function initPointsLayer(){
   map.on('mousedown', 'punts-circle', (e) => {
     if(!editMode) return;
     e.preventDefault();
-    drag = { id: e.features[0].properties.id, moved:false };
+    const f0 = findPoint(e.features[0].properties.id);
+    drag = { id: e.features[0].properties.id, moved:false, start: f0 ? f0.geometry.coordinates.slice() : null };
     map.getCanvas().style.cursor = 'grabbing';
     map.on('mousemove', onDragMove);
     map.once('mouseup', onDragEnd);
@@ -1791,19 +1833,27 @@ function onDragEnd(){
   if(drag && drag.moved){
     justDragged = true;
     setTimeout(() => justDragged = false, 60);
+    const f = findPoint(drag.id);
+    if(f){
+      const [lng, lat] = f.geometry.coordinates;
+      // L'orientació només s'actualitza si era l'automàtica del lloc d'origen (no si s'havia fixat a mà)
+      const eraAuto = !f.properties.orientacio || (drag.start && f.properties.orientacio === orientacioAt(drag.start[0], drag.start[1]));
+      if(eraAuto) f.properties.orientacio = orientacioAt(lng, lat);
+      f.properties.pendent = pendentAt(lng, lat);
+    }
     savePoints();
   }
   drag = null;
 }
 
 // Proposa tipologia i origen segons les capes visibles sota el clic
-function suggestFromMap(screenPt){
+function suggestFromMap(screenPt, coords){
   const layers = Object.keys(LAYER_TO_TIPO).filter(id => map.getLayer(id));
   const feats = screenPt ? map.queryRenderedFeatures(screenPt, { layers }) : [];
   const tipos = [...new Set(feats.map(f => LAYER_TO_TIPO[f.layer.id]))];
   const oberta = feats.find(f => f.layer.id === 'obertes-fill');
   const origen = oberta && ORIGEN_OPTS.includes(oberta.properties.origen) ? oberta.properties.origen : '';
-  return { tipos, props: { tipologia: tipos[0] || '', origen, vessant:'', observacions:'' } };
+  return { tipos, props: { tipologia: tipos[0] || '', origen, orientacio: coords ? orientacioAt(coords[0], coords[1]) : '', observacions:'' } };
 }
 
 const optionList = (opts, sel, placeholder) =>
@@ -1813,7 +1863,7 @@ const optionList = (opts, sel, placeholder) =>
 function openPointForm(coords, existing, screenPt){
   if(ptPopup) ptPopup.remove();
   if(activePopup) activePopup.remove();
-  const sug = existing ? { tipos:[], props: existing.properties } : suggestFromMap(screenPt);
+  const sug = existing ? { tipos:[], props: existing.properties } : suggestFromMap(screenPt, coords);
   const p = sug.props;
   const el = document.createElement('div');
   el.className = 'pt-form';
@@ -1823,7 +1873,8 @@ function openPointForm(coords, existing, screenPt){
     <label>Tipologia<select name="tipologia">${optionList(TIPO_OPTS, p.tipologia, 'Tria una tipologia')}</select></label>
     <span class="err" data-err="tipologia">Cal triar una tipologia.</span>
     <label class="f-origen">Origen<select name="origen">${optionList(ORIGEN_OPTS, p.origen, 'Sense definir')}</select></label>
-    <label>Vessant<select name="vessant">${optionList(VESSANT_OPTS, p.vessant, 'Sense definir')}</select></label>
+    <label>Orientació<select name="orientacio">${optionList(ORIENTACIO_OPTS, p.orientacio, 'Sense definir')}</select></label>
+    ${relleuHint(coords)}
     <label>Observacions<textarea name="observacions" rows="2">${esc(p.observacions || '')}</textarea></label>
     <div class="pt-actions">
       <button type="button" class="pt-save">Desa</button>
@@ -1843,7 +1894,8 @@ function openPointForm(coords, existing, screenPt){
       id: existing ? existing.properties.id : nextId(),
       tipologia,
       origen: tipologia === 'Control obert' ? q('origen').value : '',
-      vessant: q('vessant').value,
+      orientacio: q('orientacio').value,
+      pendent: (existing && existing.properties.pendent != null) ? existing.properties.pendent : pendentAt(coords[0], coords[1]),
       observacions: q('observacions').value.trim(),
       data: existing ? existing.properties.data : new Date().toISOString().slice(0, 10)
     };
@@ -1915,7 +1967,7 @@ document.getElementById('pt-export-geojson').addEventListener('click', () => {
 });
 document.getElementById('pt-export-csv').addEventListener('click', () => {
   if(!points.features.length) return alert('Encara no hi ha cap punt per descarregar.');
-  const cols = ['id','tipologia','origen','zona','vessant','metode','llavor','observacions','data'];
+  const cols = ['id','tipologia','origen','zona','orientacio','pendent','metode','llavor','observacions','data'];
   const q = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
   const lines = [[...cols, 'lon', 'lat'].join(',')].concat(points.features.map(f =>
     [...cols.map(c => q(f.properties[c])), f.geometry.coordinates[0], f.geometry.coordinates[1]].join(',')));
@@ -1937,7 +1989,8 @@ document.getElementById('pt-import').addEventListener('change', async (e) => {
       if(!id || findPoint(id)) id = nextId();
       points.features.push({ type:'Feature',
         geometry:{ type:'Point', coordinates:[r6(f.geometry.coordinates[0]), r6(f.geometry.coordinates[1])] },
-        properties:{ id, tipologia: tip, origen: norm(p.origen, ORIGEN_OPTS), vessant: norm(p.vessant, VESSANT_OPTS),
+        properties:{ id, tipologia: tip, origen: norm(p.origen, ORIGEN_OPTS), orientacio: norm(p.orientacio, ORIENTACIO_OPTS),
+          pendent: Number.isFinite(parseFloat(p.pendent)) ? parseFloat(p.pendent) : null,
           observacions: p.observacions || '',
           zona: p.zona || '', metode: p.metode || 'Manual', llavor: p.llavor || '',
           data: p.data || new Date().toISOString().slice(0, 10) } });
@@ -2123,7 +2176,7 @@ function runGenerator(){
       samplePoints(zones, s.n, rnd, opts, taken).forEach(g => {
         got++;
         points.features.push({ type:'Feature', geometry:{ type:'Point', coordinates: toLL(g.xy) },
-          properties:{ id: nextId(), tipologia: t, origen: s.origen, vessant:'',
+          properties:{ id: nextId(), tipologia: t, origen: s.origen, orientacio:'', pendent:null,
             observacions:'', zona: g.zone.label, metode:'Aleatori', llavor: String(seed), data: today } });
       });
     });
@@ -2140,11 +2193,26 @@ function runGenerator(){
     <div class="gen-done">
       <p>Punts generats amb la llavor <strong>${seed}</strong>. Amb la mateixa llavor i les mateixes opcions obtindràs exactament la mateixa selecció.</p>
       <ul>${lines || '<li>No s\'ha demanat cap punt.</li>'}</ul>
-      <p class="gen-hint">El vessant queda buit: cal completar-lo consultant la pendent i l'orientació al projecte SIG.</p>
+      <p class="gen-hint" id="gen-orientacio-msg">Omplint l'orientació i la pendent a partir del relleu…</p>
     </div>`;
   v('seed').value = seed;
+  omplirRelleu(f => f.properties.metode === 'Aleatori' && f.properties.llavor === String(seed)).then(r => {
+    const el = document.getElementById('gen-orientacio-msg');
+    if(!el) return;
+    el.textContent = `Orientació i pendent omplertes automàticament a ${r.omplerts} punts a partir del relleu (orientació: nord, est, sud, oest, o pla si la pendent és inferior a 3°).` +
+      (r.senseDades ? ` ${r.senseDades} punts queden sense dades perquè cauen fora de la zona del relleu.` : '');
+  });
 }
 document.getElementById('pt-generate').addEventListener('click', openGenerator);
+document.getElementById('pt-orientacio').addEventListener('click', async () => {
+  const msg = document.getElementById('pt-orientacio-msg');
+  if(!points.features.length){ msg.textContent = "Encara no hi ha cap punt."; return; }
+  msg.textContent = 'Consultant el relleu…';
+  const r = await omplirRelleu();
+  msg.textContent = r.omplerts || r.senseDades
+    ? `Orientació i pendent omplertes a ${r.omplerts} punts` + (r.senseDades ? `; ${r.senseDades} no s'han pogut calcular (fora de la zona del relleu).` : '.')
+    : 'Tots els punts ja tenen orientació i pendent.';
+});
 </script>
 </body>
 </html>
