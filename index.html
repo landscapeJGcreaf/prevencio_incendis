@@ -350,6 +350,24 @@
   .popup-sub{ font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; color:#8a8d85; margin:8px 0 2px; border-top:1px solid var(--line); padding-top:6px; }
 
   /* ---------- Pestanya Punts de mostreig ---------- */
+  .sel{ cursor:pointer; }
+  .stack span.sel:hover{ filter:brightness(.9); }
+  .stack span.sel:focus-visible{ outline:2px solid var(--green-dark); outline-offset:-2px; }
+  .stack span.active{ outline:2px solid #1f2a22; outline-offset:-2px; position:relative; z-index:1; }
+  body.has-stat-sel .stack span.sel:not(.active){ opacity:.35; }
+  .pt-kpi.sel:hover{ border-color:#9aa396; }
+  .pt-kpi.active{ border-color:#1f2a22; box-shadow:0 0 0 1px #1f2a22; }
+  td.sel:hover, tr.sel:hover td{ background:#f1efe8; }
+  td.active{ background:#e3e8dc !important; font-weight:700; }
+  .pt-selpanel{ position:sticky; top:-20px; z-index:5; margin:-20px -22px 16px; padding:12px 22px; background:#f6f8f2; border-bottom:1px solid var(--line); box-shadow:0 2px 6px rgba(0,0,0,.06); }
+  .pt-selpanel .hd{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:12.5px; }
+  .pt-selpanel .hd button{ margin-left:auto; font:inherit; font-size:11.5px; padding:3px 9px; border:1px solid var(--line); border-radius:5px; background:#fff; cursor:pointer; }
+  .pt-selpanel .lst{ max-height:170px; overflow:auto; margin-top:8px; }
+  .pt-selpanel table{ width:100%; border-collapse:collapse; font-size:11.5px; }
+  .pt-selpanel td{ padding:3px 8px 3px 0; border-bottom:1px solid #e7eadf; font-family:var(--mono); white-space:nowrap; }
+  .pt-selpanel tr[data-goto]{ cursor:pointer; }
+  .pt-selpanel tr[data-goto]:hover td{ background:#eaeee2; }
+  .pt-hint-clear{ font:inherit; font-size:inherit; border:0; background:none; color:var(--green-dark); text-decoration:underline; cursor:pointer; padding:0; }
   .pt-kpis{ display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px; margin:0 0 22px; }
   .pt-kpi{ border:1px solid var(--line); border-radius:8px; padding:10px 12px; background:#fff; }
   .pt-kpi .n{ font-size:26px; font-weight:700; line-height:1.1; font-variant-numeric:tabular-nums; }
@@ -618,8 +636,8 @@
     <div class="layer-group">
       <div class="layer-group-title">Anàlisi</div>
       <div class="stats-launch">
-        <p>Estadístiques de les franges, els PEG i les AFG segons les cobertes del sòl de 1956 i 2020 i el Mapa d'Hàbitats de Catalunya (v3, 2022).</p>
-        <button class="table-toggle" id="open-stats" aria-controls="stats-drawer" aria-expanded="false">Veure estadístiques per tipologia</button>
+        <p>Cobertes del sòl (1956 i 2020), hàbitats (Mapa d'Hàbitats de Catalunya, v3, 2022) i punts de mostreig de les franges, els PEG, les AFG i els espais oberts.</p>
+        <button class="table-toggle" id="open-stats" aria-controls="stats-drawer" aria-expanded="false">Veure l'anàlisi per tipologia</button>
       </div>
     </div>
 
@@ -654,10 +672,10 @@
   <div id="stats-head">
     <div id="stats-head-top">
       <div>
-        <h2 id="stats-title">Cobertes i hàbitats per tipologia</h2>
-        <p>Superfície de cada tipologia de gestió segons el Mapa de Cobertes del Sòl (1956 i 2020) i el Mapa d'Hàbitats de Catalunya.</p>
+        <h2 id="stats-title">Anàlisi per tipologia de gestió</h2>
+        <p id="stats-sub">Cobertes del sòl (1956 i 2020), hàbitats i punts de mostreig de cada tipologia de gestió.</p>
       </div>
-      <button id="stats-close" aria-label="Tanca les estadístiques">✕</button>
+      <button id="stats-close" aria-label="Tanca l'anàlisi">✕</button>
     </div>
     <div class="stats-tabs" role="tablist">
       <button class="stats-tab" role="tab" data-tab="c1956" aria-selected="true">Cobertes 1956</button>
@@ -1291,8 +1309,8 @@ async function openTable(key){
       cols: ['cob2020','origen','edat','incendi','cob2005','cob1993','cob1956','area_ha'],
       labels: ['Espai obert 2020','Origen','Edat','Incendi','Coberta 2005','Coberta 1993','Coberta 1956','Ha'] },
     punts: { title: 'Punts de mostreig',
-      cols: ['id','tipologia','rol','origen','cob_actual','tr_edat','tr_cob2005','tr_cob1993','tr_cob1956','zona','orientacio','pendent','observacions'],
-      labels: ['Id','Tipologia','Rol','Origen','Coberta 2020','Edat','Coberta 2005','Coberta 1993','Coberta 1956','Zona','Orientació','Pendent (°)','Observacions'] }
+      cols: ['id','tipologia','rol','origen','cob_actual','tr_edat','tr_incendi','tr_cob2005','tr_cob1993','tr_cob1956','zona','orientacio','pendent','observacions'],
+      labels: ['Id','Tipologia','Rol','Origen','Coberta 2020','Edat','Incendi','Coberta 2005','Coberta 1993','Coberta 1956','Zona','Orientació','Pendent (°)','Observacions'] }
   };
   const { cols, labels } = TABLES[key];
 
@@ -1300,6 +1318,7 @@ async function openTable(key){
     if(c === 'rol') return rolText(p);
     if(c === 'edat') return edatText(p.edat) ?? '—';
     if(c === 'incendi') return incendiText(p.id) || '—';
+    if(c === 'tr_incendi') return (f && incendiPunt(f)) || '—';
     if(c === 'cob_actual') return (f && cobertaActual(f)) || '—';
     if(c === 'revisio') return (f && revisioText(f)) ?? '—';
     if(TRAJ_COLS[c]) return edatTrajFix(c, (f && f.properties.tipologia === 'Control obert' && trajectoria(f, TRAJ_COLS[c])) || '—');
@@ -1316,6 +1335,7 @@ async function openTable(key){
     if(c === 'rol') return rolText(p);
     if(c === 'edat') return edatText(p.edat) || null;
     if(c === 'incendi') return incendiText(p.id) || null;
+    if(c === 'tr_incendi') return (f && incendiPunt(f)) || null;
     if(c === 'cob_actual') return (f && cobertaActual(f)) || null;
     if(c === 'revisio') return (f && revisioText(f)) ?? null;
     if(TRAJ_COLS[c]) return edatTrajFix(c, (f && f.properties.tipologia === 'Control obert' && trajectoria(f, TRAJ_COLS[c])) || null);
@@ -1812,7 +1832,6 @@ function renderChange(dt){
 }
 
 // ---- Pestanya «Punts de mostreig»: resum en directe dels punts que hi ha al mapa ----
-const PT_OBJECTIU = [10, 15];   // punts per tipologia, segons el briefing
 const ORI_COL = { Nord:'#4a7c94', Est:'#d9a441', Sud:'#c4553d', Oest:'#8b6bb0', Pla:'#b9b6ab' };
 const PENDENT_CLASSES = [
   { l:'0–5°',   max:5,        c:'#dfe9d6' },
@@ -1838,14 +1857,73 @@ function resumPunts(){
   return out;
 }
 const fmt1 = (v) => v.toLocaleString('ca-ES', { minimumFractionDigits:1, maximumFractionDigits:1 });
-function stackBar(segs, total, label){
+function selAttrs(t, d, v){
+  const on = statSel && statSel.t === t && statSel.d === d && statSel.v === v;
+  return ` class="sel${on ? ' active' : ''}" role="button" tabindex="0" data-st="${esc(t)}" data-sd="${esc(d)}" data-sv="${esc(v)}"`;
+}
+function stackBar(segs, total, label, meta){
   // segs: [[etiqueta, n, color]]; mostra el nombre dins de cada tram si hi cap
   if(!total) return `<div class="stack" role="img" aria-label="${esc(label)}"><span class="empty" style="width:100%"></span></div>`;
   return `<div class="stack" role="img" aria-label="${esc(label)}">` + segs.filter(x => x[1] > 0).map(([l, n, c]) => {
     const w = n / total * 100;
-    return `<span style="width:${w.toFixed(3)}%;background:${c}" title="${esc(l)}: ${n} (${fmt1(w)} %)">${w >= 8 ? n : ''}</span>`;
+    return `<span${meta ? selAttrs(meta.t, meta.d, l) : ''} style="width:${w.toFixed(3)}%;background:${c}" title="${esc(l)}: ${n} (${fmt1(w)} %)${meta ? ' · clic per veure\'ls' : ''}">${w >= 8 ? n : ''}</span>`;
   }).join('') + '</div>';
 }
+// ---- Selecció interactiva des de les estadístiques ----
+let statSel = null;     // { t: tipologia ('' = totes), d: dimensió, v: valor }
+let ptSelIds = null;    // ids dels punts seleccionats (filtre del mapa)
+const SEL_DIM = { ori:'Orientació', pend:'Pendent', origen:'Origen', cob:'Coberta 2020', all:'' };
+function matchSel(f, sel){
+  const p = f.properties;
+  if(isSuplent(p) || (sel.t && p.tipologia !== sel.t)) return false;
+  switch(sel.d){
+    case 'ori':    return sel.v === 'Sense dades' ? !p.orientacio : p.orientacio === sel.v;
+    case 'pend':   return typeof p.pendent === 'number' && PENDENT_CLASSES.findIndex(c => p.pendent < c.max) === PENDENT_CLASSES.findIndex(c => c.l === sel.v);
+    case 'origen': return p.origen === sel.v;
+    case 'cob':    return (cobertaActual(f) || 'Fora de la capa') === sel.v;
+    default:       return true;
+  }
+}
+const selFeatures = () => statSel ? points.features.filter(f => matchSel(f, statSel)) : [];
+function selPanelHTML(){
+  if(!statSel) return '';
+  const fs = selFeatures();
+  const lab = (statSel.t || 'Tots els punts titulars') + (SEL_DIM[statSel.d] ? ` · ${SEL_DIM[statSel.d]}: ${statSel.v}` : '');
+  const rows = fs.map(f => { const p = f.properties;
+    return `<tr data-goto="${esc(p.id)}" title="Clic per centrar el mapa en aquest punt"><td>${esc(p.id)}</td><td>${esc(p.tipologia)}</td><td>${esc(p.zona || '—')}</td><td>${esc(p.orientacio || '—')}</td><td>${typeof p.pendent === 'number' ? fmt1(p.pendent) + '°' : '—'}</td></tr>`; }).join('');
+  return `<div class="pt-selpanel"><div class="hd"><b>${esc(lab)}</b><span>${fs.length} ${fs.length === 1 ? 'punt' : 'punts'} — seleccionats al mapa</span><button type="button" data-sel-clear>Treu la selecció</button></div>
+    <div class="lst">${rows ? `<table><tbody>${rows}</tbody></table>` : '<p class="stats-note" style="margin:6px 0">Cap punt coincideix.</p>'}</div></div>`;
+}
+function syncStatSel(fit){
+  const fs = selFeatures();
+  ptSelIds = statSel ? fs.map(f => f.properties.id) : null;
+  document.body.classList.toggle('has-stat-sel', !!statSel);
+  applyPtFilter();
+  if(fit && fs.length){
+    const b = new maplibregl.LngLatBounds();
+    fs.forEach(f => b.extend(f.geometry.coordinates));
+    const rp = window.innerWidth > 800 ? Math.min(statsDrawer.offsetWidth, window.innerWidth * 0.55) + 40 : 40;
+    map.fitBounds(b, { padding:{ top:60, bottom:60, left:60, right:rp }, maxZoom:16, duration:600 });
+  }
+}
+function setStatSel(sel){
+  const same = statSel && sel && statSel.t === sel.t && statSel.d === sel.d && statSel.v === sel.v;
+  statSel = same ? null : sel;
+  syncStatSel(!!statSel);
+  renderStats();
+}
+document.getElementById('stats-body').addEventListener('click', (e) => {
+  if(e.target.closest('[data-sel-clear]')){ statSel = null; syncStatSel(false); renderStats(); return; }
+  const g = e.target.closest('tr[data-goto]');
+  if(g){ const f = findPoint(g.dataset.goto); if(f) map.flyTo({ center:f.geometry.coordinates, zoom:Math.max(map.getZoom(), 16), duration:600 }); return; }
+  const el = e.target.closest('[data-st]');
+  if(el) setStatSel({ t: el.dataset.st, d: el.dataset.sd, v: el.dataset.sv });
+});
+document.getElementById('stats-body').addEventListener('keydown', (e) => {
+  if(e.key !== 'Enter' && e.key !== ' ') return;
+  const el = e.target.closest('[data-st]');
+  if(el){ e.preventDefault(); setStatSel({ t: el.dataset.st, d: el.dataset.sd, v: el.dataset.sv }); }
+});
 function renderPunts(){
   const R = resumPunts();
   const totalN = TIPO_OPTS.reduce((a, t) => a + R[t].n, 0);
@@ -1853,12 +1931,10 @@ function renderPunts(){
   if(!totalN && !totalSup){
     return `<p class="stats-note">Encara no hi ha punts de mostreig. Genera'ls amb el botó «Genera punts aleatoris» de la secció de punts, i aquí apareixerà el resum amb orientació, pendent i zones.</p>`;
   }
-  const [lo, hi] = PT_OBJECTIU;
-  const chip = (n) => n < lo ? `<span class="chip low">falten ${lo - n}</span>` : n > hi ? `<span class="chip high">+${n - hi}</span>` : `<span class="chip ok">objectiu</span>`;
   const kpis = `<div class="pt-kpis">
-    <div class="pt-kpi"><div class="n">${totalN}</div><div class="l">Punts titulars</div>${totalSup ? `<div class="l">+ ${totalSup} suplents</div>` : ''}</div>` +
-    TIPO_OPTS.map(t => `<div class="pt-kpi"><div class="n" style="color:${PT_COLORS[t]}">${R[t].n}</div>
-      <div class="l"><span class="tipo-dot" style="background:${PT_COLORS[t]}"></span>${esc(t)}${chip(R[t].n)}</div>${R[t].sup ? `<div class="l">+ ${R[t].sup} suplents</div>` : ''}</div>`).join('') + '</div>';
+    <div class="pt-kpi${statSel && statSel.t === '' && statSel.d === 'all' ? ' active' : ''}"><div class="n">${totalN}</div><div class="l">Punts titulars</div>${totalSup ? `<div class="l">+ ${totalSup} suplents</div>` : ''}</div>` +
+    TIPO_OPTS.map(t => `<div class="pt-kpi sel${statSel && statSel.t === t && statSel.d === 'all' ? ' active' : ''}" role="button" tabindex="0" data-st="${esc(t)}" data-sd="all" data-sv="" title="Clic per veure els punts"><div class="n" style="color:${PT_COLORS[t]}">${R[t].n}</div>
+      <div class="l"><span class="tipo-dot" style="background:${PT_COLORS[t]}"></span>${esc(t)}</div>${R[t].sup ? `<div class="l">+ ${R[t].sup} suplents</div>` : ''}</div>`).join('') + '</div>';
 
   const oriOrder = ['Nord', 'Est', 'Sud', 'Oest', 'Pla'];
   const oriBars = TIPO_OPTS.map(t => {
@@ -1866,7 +1942,7 @@ function renderPunts(){
     const segs = oriOrder.map(o => [o, r.ori[o] || 0, ORI_COL[o]]);
     if(r.senseOri) segs.push(['Sense dades', r.senseOri, '#e5e3dc']);
     const ns = (r.ori.Nord || 0) + (r.ori.Sud || 0);
-    return `<div><div class="tipo-bar-label"><span class="tipo-dot" style="background:${PT_COLORS[t]}"></span>${esc(t)}<span class="ha">${r.n} punts</span></div>${stackBar(segs, r.n, 'Orientació de ' + t)}</div>`;
+    return `<div><div class="tipo-bar-label"><span class="tipo-dot" style="background:${PT_COLORS[t]}"></span>${esc(t)}<span class="ha">${r.n} punts</span></div>${stackBar(segs, r.n, 'Orientació de ' + t, {t, d:'ori'})}</div>`;
   }).join('');
   const oriLegend = oriOrder.map(o => `<div class="legend-item"><span class="swatch" style="background:${ORI_COL[o]}"></span><span class="txt">${o}</span></div>`).join('')
     + (TIPO_OPTS.some(t => R[t].senseOri) ? `<div class="legend-item"><span class="swatch" style="background:#e5e3dc"></span><span class="txt">Sense dades</span></div>` : '');
@@ -1874,14 +1950,14 @@ function renderPunts(){
   const pendBars = TIPO_OPTS.map(t => {
     const r = R[t];
     const segs = PENDENT_CLASSES.map((c, i) => [c.l, r.pc[i], c.c]);
-    return `<div><div class="tipo-bar-label"><span class="tipo-dot" style="background:${PT_COLORS[t]}"></span>${esc(t)}<span class="ha">${r.pend.length ? 'mitjana ' + fmt1(r.pend.reduce((a, b) => a + b, 0) / r.pend.length) + '°' : 'sense dades'}</span></div>${stackBar(segs, r.pend.length, 'Pendent de ' + t)}</div>`;
+    return `<div><div class="tipo-bar-label"><span class="tipo-dot" style="background:${PT_COLORS[t]}"></span>${esc(t)}<span class="ha">${r.pend.length ? 'mitjana ' + fmt1(r.pend.reduce((a, b) => a + b, 0) / r.pend.length) + '°' : 'sense dades'}</span></div>${stackBar(segs, r.pend.length, 'Pendent de ' + t, {t, d:'pend'})}</div>`;
   }).join('');
   const pendLegend = PENDENT_CLASSES.map(c => `<div class="legend-item"><span class="swatch" style="background:${c.c}"></span><span class="txt">${c.l}</span></div>`).join('');
 
   const co = R['Control obert'];
   const origenBlock = co.n ? `<div class="pt-section"><h3>Control obert segons l'origen</h3>
     <p class="sub">Els punts de control obert es reparteixen entre els dos orígens de l'espai obert.</p>
-    <div class="tipo-bars"><div>${stackBar(ORIGEN_OPTS.map((o, i) => [o, co.origen[o] || 0, i ? '#5b7f4a' : '#c89b52']), co.n, 'Origen del control obert')}
+    <div class="tipo-bars"><div>${stackBar(ORIGEN_OPTS.map((o, i) => [o, co.origen[o] || 0, i ? '#5b7f4a' : '#c89b52']), co.n, 'Origen del control obert', {t:'Control obert', d:'origen'})}
     <div class="stats-legend" style="margin:8px 0 0">${ORIGEN_OPTS.map((o, i) => `<div class="legend-item"><span class="swatch" style="background:${i ? '#5b7f4a' : '#c89b52'}"></span><span class="txt">${esc(o)}: <b>${co.origen[o] || 0}</b></span></div>`).join('')}</div></div></div></div>` : '';
 
   let cobBlock = '';
@@ -1891,14 +1967,14 @@ function renderPunts(){
     const cats = [...new Set(TIPO_OPTS.flatMap(t => Object.keys(cnt[t])))].sort((a, b) => TIPO_OPTS.reduce((x, t) => x + (cnt[t][b] || 0) - (cnt[t][a] || 0), 0));
     const col = (c) => COVER_COLORS[c] || '#cccccc';
     cobBlock = `<div class="pt-section"><h3>Coberta 2020</h3><p class="sub">Coberta del sòl 2020 a la posició de cada punt (Mapa de Cobertes del Sòl de Catalunya, CREAF).</p>
-      <div class="tipo-bars">` + TIPO_OPTS.map(t => `<div><div class="tipo-bar-label"><span class="tipo-dot" style="background:${PT_COLORS[t]}"></span>${esc(t)}<span class="ha">${R[t].n} punts</span></div>${stackBar(cats.map(c => [c, cnt[t][c] || 0, col(c)]), R[t].n, 'Coberta 2020 de ' + t)}</div>`).join('') + `</div>
+      <div class="tipo-bars">` + TIPO_OPTS.map(t => `<div><div class="tipo-bar-label"><span class="tipo-dot" style="background:${PT_COLORS[t]}"></span>${esc(t)}<span class="ha">${R[t].n} punts</span></div>${stackBar(cats.map(c => [c, cnt[t][c] || 0, col(c)]), R[t].n, 'Coberta 2020 de ' + t, {t, d:'cob'})}</div>`).join('') + `</div>
       <div class="stats-legend">` + cats.map(c => `<div class="legend-item"><span class="swatch" style="background:${col(c)}"></span><span class="txt">${esc(c)}</span></div>`).join('') + `</div></div>`;
   }
   const rows = TIPO_OPTS.map(t => {
     const r = R[t], pm = r.pend.length ? fmt1(r.pend.reduce((a, b) => a + b, 0) / r.pend.length) : '—';
     const rng = r.pend.length ? fmt1(Math.min(...r.pend)) + '–' + fmt1(Math.max(...r.pend)) : '—';
     return `<tr><td><div class="cat-cell"><span class="swatch" style="background:${PT_COLORS[t]}"></span>${esc(t)}</div></td>
-      <td>${r.n}</td><td>${r.zones.size}</td>${oriOrder.map(o => `<td>${r.ori[o] || 0}</td>`).join('')}<td>${pm}</td><td>${rng}</td></tr>`;
+      <td${r.n ? selAttrs(t, 'all', '') : ''}>${r.n}</td><td>${r.zones.size}</td>${oriOrder.map(o => r.ori[o] ? `<td${selAttrs(t, 'ori', o)}>${r.ori[o]}</td>` : `<td>0</td>`).join('')}<td>${pm}</td><td>${rng}</td></tr>`;
   }).join('');
   const tot = (f) => TIPO_OPTS.reduce((a, t) => a + f(R[t]), 0);
   const allPend = TIPO_OPTS.flatMap(t => R[t].pend);
@@ -1911,7 +1987,7 @@ function renderPunts(){
   })).join('\n');
   const csvHref = 'data:text/csv;charset=utf-8,' + encodeURIComponent('﻿' + csv);
 
-  return `<p class="stats-note">Resum dels punts de mostreig titulars que hi ha ara al mapa (generats i manuals); els suplents es compten a part. Es recalcula sol quan en generes, mous o edites. L'objectiu del briefing és de ${lo}–${hi} punts per tipologia, amb orientació (nord/sud) i pendent variades.</p>
+  return selPanelHTML() + `<p class="stats-note">Resum dels punts de mostreig titulars que hi ha ara al mapa (generats i manuals); els suplents es compten a part. Clica un tram de qualsevol gràfic, una xifra de la taula o una targeta per veure aquests punts i seleccionar-los al mapa. Es recalcula sol quan en generes, mous o edites.</p>
     ${kpis}
     <div class="pt-section"><h3>Orientació</h3><p class="sub">Per assegurar contrast entre vessants, convé que cada tipologia tingui punts nord i sud.</p>
       <div class="tipo-bars">${oriBars}</div><div class="stats-legend">${oriLegend}</div></div>
@@ -1930,6 +2006,7 @@ async function renderStats(){
     if(statsTab === 'punts'){
       await ensureCob2020();
       body.innerHTML = renderPunts();
+      if(statSel){ ptSelIds = selFeatures().map(f => f.properties.id); applyPtFilter(); }
     } else if(statsTab === 'canvi'){
       if(!statsCache.canvi) statsCache.canvi = loadTransitions('dades/estadistiques/canvi_1956_2020_STATS.csv');
       body.innerHTML = renderChange(await statsCache.canvi);
@@ -2067,6 +2144,7 @@ function applyPtFilter(){
   const conds = [];
   if(ptFilterTipo) conds.push(['==', ['get','tipologia'], ptFilterTipo]);
   if(!ptShowSup) conds.push(['!=', ['get','rol'], 'Suplent']);
+  if(ptSelIds) conds.push(['in', ['get','id'], ['literal', ptSelIds]]);
   if(map.getLayer('punts-circle')) map.setFilter('punts-circle', conds.length ? ['all', ...conds] : null);
   document.querySelectorAll('.legend-item.pt-filter').forEach(el => {
     const on = el.dataset.tipo === ptFilterTipo;
@@ -2076,7 +2154,8 @@ function applyPtFilter(){
   });
   if(currentTableKey === 'punts' && document.getElementById('table-overlay').classList.contains('open')) openTable('punts');
   const hint = document.getElementById('pt-filter-hint');
-  if(hint) hint.textContent = ptFilterTipo ? `Es mostren només els punts de ${ptFilterTipo}. Torna a clicar-lo per veure'ls tots.` : 'Clica un tipus de la llegenda per veure només aquests punts.';
+  if(hint && ptSelIds){ hint.innerHTML = `Hi ha una selecció des de les estadístiques (${ptSelIds.length} punts). <button type="button" class="pt-hint-clear" id="pt-sel-clear">Treu-la</button>`; const b = document.getElementById('pt-sel-clear'); if(b) b.onclick = () => { statSel = null; syncStatSel(false); if(statsDrawer.classList.contains('open') && statsTab === 'punts') renderStats(); }; }
+  else if(hint) hint.textContent = ptFilterTipo ? `Es mostren només els punts de ${ptFilterTipo}. Torna a clicar-lo per veure'ls tots.` : 'Clica un tipus de la llegenda per veure només aquests punts.';
 }
 document.getElementById('pt-show-sup').addEventListener('change', (e) => { ptShowSup = e.target.checked; applyPtFilter(); });
 document.querySelectorAll('.legend-item.pt-filter').forEach(el => {
@@ -2279,10 +2358,10 @@ document.getElementById('pt-export-geojson').addEventListener('click', async () 
 document.getElementById('pt-export-csv').addEventListener('click', async () => {
   if(!points.features.length) return alert('Encara no hi ha cap punt per descarregar.');
   await ensureCob2020();
-  const cols = ['id','tipologia','origen','zona','orientacio','pendent','rol','metode','observacions', 'cobertura_2020'];
+  const cols = ['id','tipologia','origen','zona','orientacio','pendent','rol','metode','observacions', 'cobertura_2020', 'edat_espai_obert', 'incendi', 'coberta_2005', 'coberta_1993', 'coberta_1956'];
   const q = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
   const lines = [[...cols, 'lon', 'lat'].join(',')].concat(points.features.map(f =>
-    [...cols.map(c => q(c === 'cobertura_2020' ? (cobertaActual(f) || '') : f.properties[c])), f.geometry.coordinates[0], f.geometry.coordinates[1]].join(',')));
+    [...cols.map(c => q(c === 'cobertura_2020' ? (cobertaActual(f) || '') : c === 'edat_espai_obert' ? (edatTrajFix('tr_edat', trajectoria(f, 'edat')) || '') : c === 'incendi' ? (incendiPunt(f) || '') : /^coberta_/.test(c) ? ((f.properties.tipologia === 'Control obert' && trajectoria(f, 'cob' + c.slice(8))) || '') : f.properties[c])), f.geometry.coordinates[0], f.geometry.coordinates[1]].join(',')));
   download(`punts_mostreig_${stamp()}.csv`, '\uFEFF' + lines.join('\r\n'), 'text/csv;charset=utf-8');
 });
 document.getElementById('pt-import').addEventListener('change', async (e) => {
@@ -2503,6 +2582,11 @@ function cobertaActual(f){
 // Trajectòria de l'espai obert on cau un punt de control obert (null si no s'aplica o el punt és fora)
 const edatTrajFix = (c, v) => c === 'tr_edat' ? edatText(v) : v;
 const TRAJ_COLS = { tr_edat:'edat', tr_cob2020:'cob2020', tr_cob2005:'cob2005', tr_cob1993:'cob1993', tr_cob1956:'cob1956' };
+function incendiPunt(f){
+  if(!f || f.properties.tipologia !== 'Control obert') return null;
+  const r = revisioPunt(f);
+  return r && !r.fora && r.props ? incendiText(r.props.id) : null;
+}
 function trajectoria(f, camp){
   const r = revisioPunt(f);
   return r && !r.fora && r.props ? (r.props[camp] ?? null) : null;
@@ -2560,7 +2644,7 @@ function pointInZone(zone, rnd, edgeMin, tries = 60){
 // Tria n punts: en cada ronda, com a màxim un punt per zona (triades ponderant per superfície)
 function samplePoints(zones, n, rnd, opts, taken){
   const out = [];
-  const farEnough = (xy) => taken.every(t => Math.hypot(t[0] - xy[0], t[1] - xy[1]) >= opts.minDist);
+  const farEnough = (xy) => taken.every(t => Math.hypot(t[0] - xy[0], t[1] - xy[1]) >= opts.minDist) && (!opts.accept || opts.accept(xy));
   // Cada ronda dona com a màxim un punt per zona; s'atura després de 3 rondes seguides sense èxit
   let idle = 0;
   for(let round = 0; out.length < n && idle < 3 && round < n + 10; round++){
@@ -2569,7 +2653,7 @@ function samplePoints(zones, n, rnd, opts, taken){
     while(out.length < n && pool.length){
       const z = pickWeighted(pool, rnd);
       pool = pool.filter(x => x !== z);
-      for(let k = 0; k < 10; k++){
+      for(let k = 0; k < (opts.accept ? 30 : 10); k++){
         const xy = pointInZone(z, rnd, opts.edgeMin);
         if(xy && farEnough(xy)){ out.push({ xy, zone: z }); taken.push(xy); break; }
       }
@@ -2594,14 +2678,17 @@ function openGenerator(){
         <tbody>${rows}</tbody>
       </table>
       <p class="gen-hint">Els suplents són punts de reserva per si algun titular no es pot mostrejar al camp. No estan vinculats a cap punt concret: es dibuixen com un cercle buit i respecten les mateixes distàncies.</p>
-      <p class="gen-hint">Al control obert, els punts es reparteixen a parts iguals entre antics conreus i antic sòl forestal.</p>
+      <p class="gen-hint">Al control obert, els punts es trien a l'atzar entre els espais oberts d'antics conreus i d'antic sòl forestal, segons la superfície de cada zona.</p>
       <label class="gen-check"><input type="checkbox" name="nomesExec" checked> Només franges executades</label>
-      <label class="gen-check"><input type="checkbox" name="nomesExecPeg"> Només PEG i AFG executats</label>
+      <label class="gen-check"><input type="checkbox" name="nomesExecPeg"> Només PEG executats</label>
+      <label class="gen-check"><input type="checkbox" name="nomesExecAfg"> Només AFG executats</label>
       <label class="gen-check"><input type="checkbox" name="substitueix" checked> Substitueix els punts aleatoris generats abans (els manuals es conserven)</label>
       <div class="gen-grid">
         <label>Distància mínima entre punts (m)<input type="number" name="minDist" min="0" value="200"></label>
         <label>Distància mínima a la vora (m)<input type="number" name="edgeMin" min="0" value="5"></label>
+        <label>Pendent màxima (°)<input type="number" name="maxPend" min="1" max="90" step="1" placeholder="Sense límit"></label>
       </div>
+      <p class="gen-hint">La pendent màxima serveix perquè els punts siguin accessibles al camp: es descarten les posicions més inclinades que el valor indicat (a partir del ràster de pendent). Deixa-ho buit per no limitar-la.</p>
       <div class="pt-actions">
         <button type="button" class="pt-save" id="gen-run">Genera els punts</button>
         <button type="button" id="gen-cancel">Cancel·la</button>
@@ -2614,11 +2701,19 @@ function openGenerator(){
 }
 const closeModal = () => document.getElementById('modal-backdrop').classList.remove('open');
 
-function runGenerator(){
+async function runGenerator(){
   const form = document.querySelector('.gen-form');
   const v = (n) => form.querySelector(`[name="${n}"]`);
   const num = (n) => Math.max(0, parseInt(v(n).value) || 0);
   const opts = { minDist: num('minDist'), edgeMin: num('edgeMin') };
+  const maxPend = parseFloat(v('maxPend').value);
+  let pendNota = '';
+  if(maxPend > 0){
+    try { await loadRelleuValues(); } catch(e){}
+    if(typeof relleuData !== 'undefined' && relleuData){
+      opts.accept = (xy) => { const [lng, lat] = toLL(xy); const pe = pendentAt(lng, lat); return pe !== null && pe <= maxPend; };
+    } else pendNota = " No s'ha pogut carregar el ràster de pendent, així que no s'ha aplicat el límit de pendent.";
+  }
   const rnd = mulberry32(Math.floor(Math.random() * 1e9));
 
   if(v('substitueix').checked) points.features = points.features.filter(f => f.properties.metode !== 'Aleatori');
@@ -2636,14 +2731,13 @@ function runGenerator(){
     const src = GEN_SOURCES[t];
     let feats = (dataCache[src.key] || { features:[] }).features;
     if(t === 'Franja' && v('nomesExec').checked) feats = feats.filter(f => f.properties.feta === 1);
-    if((t === 'PEG' || t === 'AFG') && v('nomesExecPeg').checked) feats = feats.filter(f => isExecutat(f.properties));
+    if(t === 'PEG' && v('nomesExecPeg').checked) feats = feats.filter(f => isExecutat(f.properties));
+    if(t === 'AFG' && v('nomesExecAfg').checked) feats = feats.filter(f => isExecutat(f.properties));
+    if(t === 'Control obert') feats = feats.filter(f => ORIGEN_OPTS.includes(f.properties.origen));
     rep[t].zones = feats.length;
 
-    // Estrats: el control obert es divideix per origen
-    const strata = t === 'Control obert'
-      ? ORIGEN_OPTS.map((o, k) => ({ origen:o, feats: feats.filter(f => f.properties.origen === o),
-          n: k === 0 ? Math.ceil(n / 2) : Math.floor(n / 2) }))
-      : [{ origen:'', feats, n }];
+    // Control obert: mostreig aleatori entre tots els espais oberts elegibles; l'origen del punt és el del polígon on cau
+    const strata = [{ feats, n }];
 
     let got = 0;
     strata.forEach(s => {
@@ -2651,7 +2745,7 @@ function runGenerator(){
       samplePoints(zones, s.n, rnd, opts, taken).forEach(g => {
         got++;
         const nf = { type:'Feature', geometry:{ type:'Point', coordinates: toLL(g.xy) },
-          properties:{ id: nextId(), tipologia: t, rol, origen: s.origen, orientacio:'', pendent:null,
+          properties:{ id: nextId(), tipologia: t, rol, origen: t === 'Control obert' ? (s.feats[g.zone.i].properties.origen || '') : '', orientacio:'', pendent:null,
             observacions:'', zona: g.zone.label, metode:'Aleatori' } };
         points.features.push(nf);
         created[t][rol].push(nf);
@@ -2666,11 +2760,11 @@ function runGenerator(){
   const lines = report.map(r => {
     const short = r.got < r.n || r.gotS < r.ns;
     return `<li${short ? ' class="short"' : ''}><strong>${r.t}</strong>: ${r.got}/${r.n} punts` + (r.ns ? ` + ${r.gotS}/${r.ns} suplents` : '') +
-      (r.zones === 0 ? ' (cap zona disponible amb aquests filtres)' : short ? ' (no hi ha prou espai amb aquestes distàncies)' : '') + '</li>';
+      (r.zones === 0 ? ' (cap zona disponible amb aquests filtres)' : short ? (maxPend > 0 ? ' (no hi ha prou espai amb aquestes distàncies i aquesta pendent màxima)' : ' (no hi ha prou espai amb aquestes distàncies)') : '') + '</li>';
   }).join('');
   document.getElementById('gen-result').innerHTML = `
     <div class="gen-done">
-      <ul>${lines || '<li>No s\'ha demanat cap punt.</li>'}</ul>
+      <ul>${lines || '<li>No s\'ha demanat cap punt.</li>'}</ul>${pendNota ? `<p class="gen-hint">${pendNota}</p>` : ''}
       <p class="gen-hint" id="gen-orientacio-msg">Omplint l'orientació i la pendent a partir del relleu…</p>
     </div>`;
   const nous = new Set(Object.values(created).flatMap(o => [...(o.Titular || []), ...(o.Suplent || [])]));
