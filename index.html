@@ -2282,7 +2282,7 @@ document.getElementById('pt-export-geojson').addEventListener('click', async () 
 document.getElementById('pt-export-csv').addEventListener('click', async () => {
   if(!points.features.length) return alert('Encara no hi ha cap punt per descarregar.');
   await ensureCob2020();
-  const cols = ['id','tipologia','origen','zona','orientacio','pendent','rol','metode','llavor','observacions','data', 'cobertura_2020'];
+  const cols = ['id','tipologia','origen','zona','orientacio','pendent','rol','metode','observacions','data', 'cobertura_2020'];
   const q = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
   const lines = [[...cols, 'lon', 'lat'].join(',')].concat(points.features.map(f =>
     [...cols.map(c => q(c === 'cobertura_2020' ? (cobertaActual(f) || '') : f.properties[c])), f.geometry.coordinates[0], f.geometry.coordinates[1]].join(',')));
@@ -2308,7 +2308,7 @@ document.getElementById('pt-import').addEventListener('change', async (e) => {
           pendent: Number.isFinite(parseFloat(p.pendent)) ? parseFloat(p.pendent) : null,
           rol: p.rol === 'Suplent' ? 'Suplent' : 'Titular',
           observacions: p.observacions || '',
-          zona: p.zona || '', metode: p.metode || 'Manual', llavor: p.llavor || '',
+          zona: p.zona || '', metode: p.metode || 'Manual',
           data: p.data || new Date().toISOString().slice(0, 10) } });
     });
     savePoints();
@@ -2330,7 +2330,6 @@ document.getElementById('count-punts').textContent = points.features.length;
 // ---- Generació aleatòria de punts dins de cada tipologia ----
 // Mostreig estratificat: N punts per tipologia (i per origen al
 // control obert), amb distància mínima entre punts i a la vora del polígon.
-// La llavor permet reproduir exactament la mateixa selecció.
 // =====================================================================
 const GEN_SOURCES = {
   'Franja':        { key:'franges',  label:(p) => p.nom || p.codi || p.codizonac || '' },
@@ -2606,7 +2605,6 @@ function openGenerator(){
       <div class="gen-grid">
         <label>Distància mínima entre punts (m)<input type="number" name="minDist" min="0" value="200"></label>
         <label>Distància mínima a la vora (m)<input type="number" name="edgeMin" min="0" value="5"></label>
-        <label>Llavor (opcional)<input type="text" name="seed" placeholder="Aleatòria" inputmode="numeric"></label>
       </div>
       <div class="pt-actions">
         <button type="button" class="pt-save" id="gen-run">Genera els punts</button>
@@ -2625,9 +2623,7 @@ function runGenerator(){
   const v = (n) => form.querySelector(`[name="${n}"]`);
   const num = (n) => Math.max(0, parseInt(v(n).value) || 0);
   const opts = { minDist: num('minDist'), edgeMin: num('edgeMin') };
-  let seed = parseInt(v('seed').value);
-  if(isNaN(seed)){ seed = Math.floor(Math.random() * 1e6); }
-  const rnd = mulberry32(seed);
+  const rnd = mulberry32(Math.floor(Math.random() * 1e9));
 
   if(v('substitueix').checked) points.features = points.features.filter(f => f.properties.metode !== 'Aleatori');
   const taken = points.features.map(f => toM(f.geometry.coordinates));
@@ -2661,7 +2657,7 @@ function runGenerator(){
         got++;
         const nf = { type:'Feature', geometry:{ type:'Point', coordinates: toLL(g.xy) },
           properties:{ id: nextId(), tipologia: t, rol, origen: s.origen, orientacio:'', pendent:null,
-            observacions:'', zona: g.zone.label, metode:'Aleatori', llavor: String(seed), data: today } };
+            observacions:'', zona: g.zone.label, metode:'Aleatori', data: today } };
         points.features.push(nf);
         created[t][rol].push(nf);
       });
@@ -2679,12 +2675,11 @@ function runGenerator(){
   }).join('');
   document.getElementById('gen-result').innerHTML = `
     <div class="gen-done">
-      <p>Punts generats amb la llavor <strong>${seed}</strong>. Amb la mateixa llavor i les mateixes opcions obtindràs exactament la mateixa selecció.</p>
       <ul>${lines || '<li>No s\'ha demanat cap punt.</li>'}</ul>
       <p class="gen-hint" id="gen-orientacio-msg">Omplint l'orientació i la pendent a partir del relleu…</p>
     </div>`;
-  v('seed').value = seed;
-  omplirRelleu(f => f.properties.metode === 'Aleatori' && f.properties.llavor === String(seed)).then(r => {
+  const nous = new Set(Object.values(created).flatMap(o => [...(o.Titular || []), ...(o.Suplent || [])]));
+  omplirRelleu(f => nous.has(f)).then(r => {
     const el = document.getElementById('gen-orientacio-msg');
     if(!el) return;
     el.textContent = `Orientació i pendent omplertes automàticament a ${r.omplerts} punts a partir del relleu (orientació: nord, est, sud, oest, o pla si la pendent és inferior a 3°).` +
