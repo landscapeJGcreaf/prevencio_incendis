@@ -636,7 +636,7 @@
     <div class="layer-group">
       <div class="layer-group-title">Anàlisi</div>
       <div class="stats-launch">
-        <p>Cobertes del sòl (1956 i 2020), hàbitats (Mapa d'Hàbitats de Catalunya, v3, 2022) i punts de mostreig de les franges, els PEG, les AFG i els espais oberts.</p>
+        <p>Cobertes del sòl (1956 i 2020), pendent i orientació i punts de mostreig de les franges, els PEG, les AFG i els espais oberts.</p>
         <button class="table-toggle" id="open-stats" aria-controls="stats-drawer" aria-expanded="false">Veure l'anàlisi per tipologia</button>
       </div>
     </div>
@@ -673,7 +673,7 @@
     <div id="stats-head-top">
       <div>
         <h2 id="stats-title">Anàlisi per tipologia de gestió</h2>
-        <p id="stats-sub">Cobertes del sòl (1956 i 2020), hàbitats i punts de mostreig de cada tipologia de gestió.</p>
+        <p id="stats-sub">Cobertes del sòl (1956 i 2020), pendent i orientació i punts de mostreig de cada tipologia de gestió.</p>
       </div>
       <button id="stats-close" aria-label="Tanca l'anàlisi">✕</button>
     </div>
@@ -681,7 +681,7 @@
       <button class="stats-tab" role="tab" data-tab="c1956" aria-selected="true">Cobertes 1956</button>
       <button class="stats-tab" role="tab" data-tab="c2020" aria-selected="false">Cobertes 2020</button>
       <button class="stats-tab" role="tab" data-tab="canvi" aria-selected="false">Canvi 1956–2020</button>
-      <button class="stats-tab" role="tab" data-tab="hab" aria-selected="false">Hàbitats</button>
+      <button class="stats-tab" role="tab" data-tab="relleu" aria-selected="false">Pendent i orientació</button>
       <button class="stats-tab" role="tab" data-tab="punts" aria-selected="false">Punts de mostreig</button>
     </div>
   </div>
@@ -1834,10 +1834,10 @@ function renderChange(dt){
 // ---- Pestanya «Punts de mostreig»: resum en directe dels punts que hi ha al mapa ----
 const ORI_COL = { Nord:'#4a7c94', Est:'#d9a441', Sud:'#c4553d', Oest:'#8b6bb0', Pla:'#b9b6ab' };
 const PENDENT_CLASSES = [
-  { l:'0–5°',   max:5,        c:'#dfe9d6' },
-  { l:'5–15°',  max:15,       c:'#a9c48f' },
-  { l:'15–25°', max:25,       c:'#6f9a5b' },
-  { l:'> 25°',  max:Infinity, c:'#3f6b3a' }
+  { l:'0–5°',   max:5,        c:'#4575b4' },
+  { l:'5–15°',  max:15,       c:'#91bfdb' },
+  { l:'15–25°', max:25,       c:'#fc8d59' },
+  { l:'> 25°',  max:Infinity, c:'#d73027' }
 ];
 function resumPunts(){
   const out = {};
@@ -1866,7 +1866,7 @@ function stackBar(segs, total, label, meta){
   if(!total) return `<div class="stack" role="img" aria-label="${esc(label)}"><span class="empty" style="width:100%"></span></div>`;
   return `<div class="stack" role="img" aria-label="${esc(label)}">` + segs.filter(x => x[1] > 0).map(([l, n, c]) => {
     const w = n / total * 100;
-    return `<span${meta ? selAttrs(meta.t, meta.d, l) : ''} style="width:${w.toFixed(3)}%;background:${c}" title="${esc(l)}: ${n} (${fmt1(w)} %)${meta ? ' · clic per veure\'ls' : ''}">${w >= 8 ? n : ''}</span>`;
+    return `<span${meta && meta.t ? selAttrs(meta.t, meta.d, l) : ''} style="width:${w.toFixed(3)}%;background:${c}" title="${esc(l)}: ${n}${meta && meta.unit ? meta.unit : ''} (${fmt1(w)} %)${meta && meta.t ? ' · clic per veure\'ls' : ''}">${w >= 8 ? n : ''}</span>`;
   }).join('') + '</div>';
 }
 // ---- Selecció interactiva des de les estadístiques ----
@@ -1999,11 +1999,105 @@ function renderPunts(){
     <div class="stats-table-wrap"><table class="stats"><thead><tr><th>Tipologia</th><th>Punts</th><th>Polígons diferents</th><th>Nord</th><th>Est</th><th>Sud</th><th>Oest</th><th>Pla</th><th>Pend. mitjana (°)</th><th>Pend. mín–màx (°)</th></tr></thead><tbody>${rows}${foot}</tbody></table></div>`;
 }
 
+// ---- Pestanya «Pendent i orientació»: relleu de cada tipologia de gestió i dels espais oberts ----
+// Es calcula en directe al navegador: es rasteritzen els polígons sobre la graella del ràster de relleu (5 m)
+// i es compten les cel·les per classe de pendent i d'orientació. Les vores tenen una precisió d'una cel·la.
+const RELLEU_CAPES = [
+  ['Franges', 'franges'], ['PEG', 'pegs'], ['AFG', 'afg'], ['Espais oberts', 'obertes'], ['Tot el parc', null]
+];
+const RELLEU_LLINDARS = [15, 20, 25, 30];
+let relleuStatsKey = null, relleuStatsVal = null;
+function computeRelleuStats(){
+  const g = RELLEU_GRID, W = g.W, H = g.H;
+  const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const ctx = cv.getContext('2d', { willReadFrequently:true });
+  ctx.fillStyle = '#000';
+  const out = [];
+  RELLEU_CAPES.forEach(([nom, key]) => {
+    const fc = key && dataCache[key];
+    let mask = null;
+    if(key){
+      if(!fc || !fc.features.length){ out.push({ nom, buit:true }); return; }
+      ctx.clearRect(0, 0, W, H);
+      fc.features.forEach(f => {
+        if(!f.geometry) return;
+        const polys = f.geometry.type === 'MultiPolygon' ? f.geometry.coordinates : f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : [];
+        ctx.beginPath();
+        polys.forEach(rings => rings.forEach(r => {
+          r.forEach(([lng, lat], i) => {
+            const [E, N] = utm31(lng, lat);
+            const x = (E - g.x0) / g.cell, y = (g.y0 - N) / g.cell;
+            if(i) ctx.lineTo(x, y); else ctx.moveTo(x, y);
+          });
+          ctx.closePath();
+        }));
+        ctx.fill('evenodd');
+      });
+      mask = ctx.getImageData(0, 0, W, H).data;
+    }
+    const pc = PENDENT_CLASSES.map(() => 0), oc = [0, 0, 0, 0, 0], hist = new Uint32Array(256);
+    let n = 0, sum = 0;
+    for(let i = 0, p = 0; i < W * H; i++, p += 4){
+      if(mask && mask[p + 3] < 128) continue;
+      const vp = relleuData[p];
+      if(vp === 255) continue;
+      const pe = vp / 2;
+      n++; sum += pe; hist[vp]++;
+      pc[PENDENT_CLASSES.findIndex(c => pe < c.max)]++;
+      const vo = relleuData[p + 1];
+      if(vo < 5) oc[vo]++;
+    }
+    const cum = (lim) => { let a = 0; for(let v = 0; v <= lim * 2; v++) a += hist[v]; return n ? a / n : 0; };
+    out.push({ nom, n, ha: n * g.cell * g.cell / 10000, mitjana: n ? sum / n : null, pc, oc,
+               llindars: RELLEU_LLINDARS.map(l => cum(l)) });
+  });
+  return out;
+}
+async function renderRelleuStats(){
+  await loadRelleuValues();
+  if(!relleuData) return `<p class="stats-msg">No s'ha pogut carregar el ràster de relleu (<code>dades/raster/valors.png</code>).</p>`;
+  const key = RELLEU_CAPES.map(([, k]) => k && dataCache[k] ? dataCache[k].features.length : 0).join('-');
+  if(relleuStatsKey !== key){
+    await new Promise(r => setTimeout(r, 30));   // deixa pintar el missatge de càrrega
+    relleuStatsVal = computeRelleuStats(); relleuStatsKey = key;
+  }
+  const R = relleuStatsVal;
+  const pc = (x) => (x * 100).toLocaleString('ca-ES', { minimumFractionDigits:1, maximumFractionDigits:1 }) + ' %';
+  const haOf = (n) => Math.round(n * RELLEU_GRID.cell * RELLEU_GRID.cell / 10000);
+  const oriOrder = ['Nord', 'Est', 'Sud', 'Oest', 'Pla'];
+  const oriIdx = { Pla:0, Nord:1, Est:2, Sud:3, Oest:4 };
+  const bars = (kind) => R.map(r => {
+    if(r.buit) return `<div><div class="tipo-bar-label">${esc(r.nom)}<span class="ha">sense dades</span></div>${stackBar([], 0, r.nom)}</div>`;
+    const segs = kind === 'pend'
+      ? PENDENT_CLASSES.map((c, i) => [c.l, haOf(r.pc[i]), c.c])
+      : oriOrder.map(o => [o, haOf(r.oc[oriIdx[o]]), ORI_COL[o]]);
+    const tot = segs.reduce((a, x) => a + x[1], 0);
+    return `<div><div class="tipo-bar-label">${esc(r.nom)}<span class="ha">${Math.round(r.ha).toLocaleString('ca-ES')} ha${kind === 'pend' && r.mitjana !== null ? ' · mitjana ' + fmt1(r.mitjana) + '°' : ''}</span></div>${stackBar(segs, tot, kind === 'pend' ? 'Pendent de ' + r.nom : 'Orientació de ' + r.nom, { unit:' ha' })}</div>`;
+  }).join('');
+  const pendLegend = PENDENT_CLASSES.map(c => `<div class="legend-item"><span class="swatch" style="background:${c.c}"></span><span class="txt">${c.l}</span></div>`).join('');
+  const oriLegend = oriOrder.map(o => `<div class="legend-item"><span class="swatch" style="background:${ORI_COL[o]}"></span><span class="txt">${o}</span></div>`).join('');
+  const rows = R.filter(r => !r.buit).map(r => `<tr${r.nom === 'Tot el parc' ? ' class="total"' : ''}><td>${esc(r.nom)}</td><td>${Math.round(r.ha).toLocaleString('ca-ES')}</td><td>${fmt1(r.mitjana)}</td>${r.llindars.map(x => `<td>${pc(x)}</td>`).join('')}</tr>`).join('');
+  const csv = ['capa;superficie_ha;pendent_mitjana;' + RELLEU_LLINDARS.map(l => 'pct_fins_' + l).join(';')].concat(R.filter(r => !r.buit).map(r =>
+    [r.nom, r.ha.toFixed(1), r.mitjana.toFixed(1), ...r.llindars.map(x => (x * 100).toFixed(1))].join(';'))).join('\n');
+  const csvHref = 'data:text/csv;charset=utf-8,' + encodeURIComponent('﻿' + csv);
+  const orientNS = R.filter(r => !r.buit && r.nom !== 'Tot el parc');
+  return `<p class="stats-note">Superfície de cada capa segons la classe de pendent i l'orientació del terreny (ràster de relleu de 5 m). «Franges» inclou totes les franges (oficials i planificades) i «Espais oberts» tots els polígons de la capa de control. «Tot el parc» és la referència amb totes les cel·les amb dades.</p>
+    <div class="pt-section"><h3>Pendent</h3><p class="sub">Hectàrees de cada capa per classe de pendent.</p>
+      <div class="tipo-bars">${bars('pend')}</div><div class="stats-legend">${pendLegend}</div></div>
+    <div class="pt-section"><h3>Orientació</h3><p class="sub">Hectàrees de cada capa per orientació; «Pla» és el terreny amb pendent inferior a 3°.</p>
+      <div class="tipo-bars">${bars('ori')}</div><div class="stats-legend">${oriLegend}</div></div>
+    <div class="stats-tools"><h3>Accessibilitat segons la pendent</h3><a href="${csvHref}" download="relleu_per_capa.csv">Descarrega CSV</a></div>
+    <p class="stats-note" style="margin-top:0">Percentatge de la superfície amb pendent igual o inferior a cada llindar. Serveix per triar la pendent màxima del generador de punts: com més baixa, menys zona disponible.</p>
+    <div class="stats-table-wrap"><table class="stats"><thead><tr><th>Capa</th><th>Superfície (ha)</th><th>Pendent mitjana (°)</th>${RELLEU_LLINDARS.map(l => `<th>≤ ${l}°</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
 async function renderStats(){
   const body = document.getElementById('stats-body');
   body.innerHTML = '<p class="stats-note">Carregant dades…</p>';
   try {
-    if(statsTab === 'punts'){
+    if(statsTab === 'relleu'){
+      body.innerHTML = await renderRelleuStats();
+    } else if(statsTab === 'punts'){
       await ensureCob2020();
       body.innerHTML = renderPunts();
       if(statSel){ ptSelIds = selFeatures().map(f => f.properties.id); applyPtFilter(); }
