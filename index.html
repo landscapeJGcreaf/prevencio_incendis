@@ -1065,7 +1065,6 @@ function popupContent(key, p, f){
         <div class="popup-row"><span class="k">Superfície</span><span class="v">${typeof p.area_ha === 'number' ? p.area_ha.toLocaleString('ca-ES', { minimumFractionDigits:2, maximumFractionDigits:2 }) + ' ha' : '—'}</span></div>`;
     } else if(key === 'incendis'){
       html = `<div class="popup-title">Incendi del ${esc(p.any)}</div>
-        <div class="popup-row"><span class="k">Data</span><span class="v">${esc(p.data || '—')}</span></div>
         <div class="popup-row"><span class="k">Municipi</span><span class="v">${esc(p.municipi || '—')}</span></div>
         <div class="popup-row"><span class="k">Codi</span><span class="v">${esc(p.codi || '—')}</span></div>`;
     } else if(key === 'punts'){
@@ -1081,7 +1080,6 @@ function popupContent(key, p, f){
         ${(() => { const r = revisioPunt(f); if(!r || r.fora || !r.props) return '';
           const q = r.props, row = (k, v) => `<div class="popup-row"><span class="k">${k}</span><span class="v">${esc(v || '—')}</span></div>`;
           return `<div class="popup-sub">Trajectòria de l'espai obert</div>` + row('Edat', edatText(q.edat)) + (incendiText(q.id) ? row('Incendi', incendiText(q.id)) : '') + row('Coberta 2005', q.cob2005) + row('Coberta 1993', q.cob1993) + row('Coberta 1956', q.cob1956); })()}
-        ${(() => { const t = revisioText(f); return t === null ? '' : `<div class="popup-row"><span class="k">Revisió polígon</span><span class="v">${esc(t)}</span></div>`; })()}
         ${p.observacions ? `<div class="popup-row"><span class="k">Notes</span><span class="v">${esc(p.observacions)}</span></div>` : ''}
         <div class="popup-pt-actions pt-popup-actions">
           <button type="button" data-pt-edit="${esc(p.id)}">Edita</button>
@@ -1293,8 +1291,8 @@ async function openTable(key){
       cols: ['cob2020','origen','edat','incendi','cob2005','cob1993','cob1956','area_ha'],
       labels: ['Espai obert 2020','Origen','Edat','Incendi','Coberta 2005','Coberta 1993','Coberta 1956','Ha'] },
     punts: { title: 'Punts de mostreig',
-      cols: ['id','tipologia','rol','origen','cob_actual','tr_edat','tr_cob2005','tr_cob1993','tr_cob1956','zona','orientacio','pendent','revisio','observacions','data'],
-      labels: ['Id','Tipologia','Rol','Origen','Coberta 2020','Edat','Coberta 2005','Coberta 1993','Coberta 1956','Zona','Orientació','Pendent (°)','Revisió polígon','Observacions','Data'] }
+      cols: ['id','tipologia','rol','origen','cob_actual','tr_edat','tr_cob2005','tr_cob1993','tr_cob1956','zona','orientacio','pendent','observacions'],
+      labels: ['Id','Tipologia','Rol','Origen','Coberta 2020','Edat','Coberta 2005','Coberta 1993','Coberta 1956','Zona','Orientació','Pendent (°)','Observacions'] }
   };
   const { cols, labels } = TABLES[key];
 
@@ -2208,8 +2206,7 @@ function openPointForm(coords, existing, screenPt){
       origen: tipologia === 'Control obert' ? q('origen').value : '',
       orientacio: q('orientacio').value,
       pendent: (existing && existing.properties.pendent != null) ? existing.properties.pendent : pendentAt(coords[0], coords[1]),
-      observacions: q('observacions').value.trim(),
-      data: existing ? existing.properties.data : new Date().toISOString().slice(0, 10)
+      observacions: q('observacions').value.trim()
     };
     if(existing) existing.properties = props;
     else points.features.push({ type:'Feature', geometry:{ type:'Point', coordinates: coords }, properties: props });
@@ -2282,7 +2279,7 @@ document.getElementById('pt-export-geojson').addEventListener('click', async () 
 document.getElementById('pt-export-csv').addEventListener('click', async () => {
   if(!points.features.length) return alert('Encara no hi ha cap punt per descarregar.');
   await ensureCob2020();
-  const cols = ['id','tipologia','origen','zona','orientacio','pendent','rol','metode','observacions','data', 'cobertura_2020'];
+  const cols = ['id','tipologia','origen','zona','orientacio','pendent','rol','metode','observacions', 'cobertura_2020'];
   const q = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
   const lines = [[...cols, 'lon', 'lat'].join(',')].concat(points.features.map(f =>
     [...cols.map(c => q(c === 'cobertura_2020' ? (cobertaActual(f) || '') : f.properties[c])), f.geometry.coordinates[0], f.geometry.coordinates[1]].join(',')));
@@ -2308,8 +2305,7 @@ document.getElementById('pt-import').addEventListener('change', async (e) => {
           pendent: Number.isFinite(parseFloat(p.pendent)) ? parseFloat(p.pendent) : null,
           rol: p.rol === 'Suplent' ? 'Suplent' : 'Titular',
           observacions: p.observacions || '',
-          zona: p.zona || '', metode: p.metode || 'Manual',
-          data: p.data || new Date().toISOString().slice(0, 10) } });
+          zona: p.zona || '', metode: p.metode || 'Manual' } });
     });
     savePoints();
     alert(`S'han importat ${feats.length} punts.`);
@@ -2627,7 +2623,6 @@ function runGenerator(){
 
   if(v('substitueix').checked) points.features = points.features.filter(f => f.properties.metode !== 'Aleatori');
   const taken = points.features.map(f => toM(f.geometry.coordinates));
-  const today = new Date().toISOString().slice(0, 10);
 
   const created = {};   // per tipologia: { Titular:[feature], Suplent:[feature] }
   const rep = {};       // per tipologia: recomptes per al resum
@@ -2657,7 +2652,7 @@ function runGenerator(){
         got++;
         const nf = { type:'Feature', geometry:{ type:'Point', coordinates: toLL(g.xy) },
           properties:{ id: nextId(), tipologia: t, rol, origen: s.origen, orientacio:'', pendent:null,
-            observacions:'', zona: g.zone.label, metode:'Aleatori', data: today } };
+            observacions:'', zona: g.zone.label, metode:'Aleatori' } };
         points.features.push(nf);
         created[t][rol].push(nf);
       });
