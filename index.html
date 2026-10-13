@@ -2500,6 +2500,41 @@ document.getElementById('count-punts').textContent = points.features.length;
 // Mostreig estratificat: N punts per tipologia (i per origen al
 // control obert), amb distància mínima entre punts i a la vora del polígon.
 // =====================================================================
+const FOREST_COVERS = ['Arbrat dens', 'Arbrat clar'];
+// Màscara de bosc: es rasteritzen una sola vegada els polígons de bosc de la coberta 2020 sobre la graella del relleu (5 m),
+// de manera que comprovar si un punt candidat és a bosc és immediat (en lloc de recórrer tota la capa a cada intent).
+let forestMask = null, forestMaskSrc = null;
+function buildForestMask(){
+  const fc = dataCache.cob2020;
+  if(forestMask && forestMaskSrc === fc) return forestMask;
+  const g = RELLEU_GRID, W = g.W, H = g.H;
+  const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const ctx = cv.getContext('2d', { willReadFrequently:true });
+  ctx.fillStyle = '#000';
+  fc.features.forEach(f => {
+    if(!f.geometry || !FOREST_COVERS.includes(f.properties && f.properties.coberta)) return;
+    const polys = f.geometry.type === 'MultiPolygon' ? f.geometry.coordinates : f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : [];
+    ctx.beginPath();
+    polys.forEach(rings => rings.forEach(r => {
+      r.forEach(([lng, lat], i) => {
+        const [E, N] = utm31(lng, lat);
+        const x = (E - g.x0) / g.cell, y = (g.y0 - N) / g.cell;
+        if(i) ctx.lineTo(x, y); else ctx.moveTo(x, y);
+      });
+      ctx.closePath();
+    }));
+    ctx.fill('evenodd');
+  });
+  const d = ctx.getImageData(0, 0, W, H).data, m = new Uint8Array(W * H);
+  for(let i = 0; i < W * H; i++) m[i] = d[i * 4 + 3] >= 128 ? 1 : 0;
+  forestMask = m; forestMaskSrc = fc;
+  return m;
+}
+const enBosc = (lng, lat) => {
+  const g = RELLEU_GRID, [E, N] = utm31(lng, lat);
+  const col = Math.floor((E - g.x0) / g.cell), row = Math.floor((g.y0 - N) / g.cell);
+  return col >= 0 && col < g.W && row >= 0 && row < g.H && forestMask[row * g.W + col] === 1;
+};
 const GEN_SOURCES = {
   'Franja':        { key:'franges',  label:(p) => p.nom || p.codi || p.codizonac || '' },
   'PEG':           { key:'pegs',     label:(p) => p.nom_peg || p.codi_peg || '' },
@@ -2726,19 +2761,20 @@ const pickWeighted = (items, rnd) => {
   for(const z of items){ r -= z.area; if(r <= 0) return z; }
   return items[items.length - 1];
 };
-function pointInZone(zone, rnd, edgeMin, tries = 60){
+function pointInZone(zone, rnd, edgeMin, tries = 60, pre = null){
   for(let k = 0; k < tries; k++){
     const poly = pickWeighted(zone.polys, rnd);
     const [x0, y0, x1, y1] = poly.bbox;
     const x = x0 + rnd() * (x1 - x0), y = y0 + rnd() * (y1 - y0);
-    if(inRings(x, y, poly.rings) && edgeDist(x, y, poly.rings) >= edgeMin) return [x, y];
+    // pre = filtre barat (bosc, pendent) abans del càlcul de la distància a la vora, que és el pas més car
+    if(inRings(x, y, poly.rings) && (!pre || pre([x, y])) && edgeDist(x, y, poly.rings) >= edgeMin) return [x, y];
   }
   return null;
 }
 // Tria n punts: en cada ronda, com a màxim un punt per zona (triades ponderant per superfície)
 function samplePoints(zones, n, rnd, opts, taken){
   const out = [];
-  const farEnough = (xy) => taken.every(t => Math.hypot(t[0] - xy[0], t[1] - xy[1]) >= opts.minDist) && (!opts.accept || opts.accept(xy));
+  const farEnough = (xy) => taken.every(t => Math.hypot(t[0] - xy[0], t[1] - xy[1]) >= opts.minDist);
   // Cada ronda dona com a màxim un punt per zona; s'atura després de 3 rondes seguides sense èxit
   let idle = 0;
   for(let round = 0; out.length < n && idle < 3 && round < n + 10; round++){
@@ -2747,8 +2783,8 @@ function samplePoints(zones, n, rnd, opts, taken){
     while(out.length < n && pool.length){
       const z = pickWeighted(pool, rnd);
       pool = pool.filter(x => x !== z);
-      for(let k = 0; k < (opts.accept ? 30 : 10); k++){
-        const xy = pointInZone(z, rnd, opts.edgeMin);
+      for(let k = 0; k < 10; k++){
+        const xy = pointInZone(z, rnd, opts.edgeMin, opts.accept ? 150 : 60, opts.accept);
         if(xy && farEnough(xy)){ out.push({ xy, zone: z }); taken.push(xy); break; }
       }
     }
@@ -2773,9 +2809,8 @@ function openGenerator(){
       </table>
       <p class="gen-hint">Els suplents són punts de reserva per si algun titular no es pot mostrejar al camp. No estan vinculats a cap punt concret: es dibuixen com un cercle buit i respecten les mateixes distàncies.</p>
       <p class="gen-hint">Al control obert, els punts es trien a l'atzar entre els espais oberts d'antics conreus i d'antic sòl forestal, segons la superfície de cada zona.</p>
-      <label class="gen-check"><input type="checkbox" name="nomesExec" checked> Només franges executades</label>
-      <label class="gen-check"><input type="checkbox" name="nomesExecPeg"> Només PEG executats</label>
-      <label class="gen-check"><input type="checkbox" name="nomesExecAfg"> Només AFG executats</label>
+      <p class="gen-hint">Les franges, els PEG i les AFG només es mostregen on la gestió ja està executada.</p>
+      <label class="gen-check"><input type="checkbox" name="nomesBosc" checked> A franges, PEG i AFG, només punts en zones de bosc (arbrat dens i arbrat clar, segons la coberta del 2020)</label>
       <label class="gen-check"><input type="checkbox" name="substitueix" checked> Substitueix els punts aleatoris generats abans (els manuals es conserven)</label>
       <div class="gen-grid">
         <label>Distància mínima entre punts (m)<input type="number" name="minDist" min="0" value="200"></label>
@@ -2802,11 +2837,17 @@ async function runGenerator(){
   const opts = { minDist: num('minDist'), edgeMin: num('edgeMin') };
   const maxPend = parseFloat(v('maxPend').value);
   let pendNota = '';
+  let boscOn = v('nomesBosc').checked;
+  if(boscOn){
+    try { await ensureCob2020(); } catch(e){}
+    if(!dataCache.cob2020){ boscOn = false; pendNota += " No s'ha pogut carregar la capa de cobertes del 2020, així que no s'ha aplicat el filtre de bosc."; }
+    else { await new Promise(r => setTimeout(r, 20)); buildForestMask(); }
+  }
   if(maxPend > 0){
     try { await loadRelleuValues(); } catch(e){}
     if(typeof relleuData !== 'undefined' && relleuData){
       opts.accept = (xy) => { const [lng, lat] = toLL(xy); const pe = pendentAt(lng, lat); return pe !== null && pe <= maxPend; };
-    } else pendNota = " No s'ha pogut carregar el ràster de pendent, així que no s'ha aplicat el límit de pendent.";
+    } else pendNota += " No s'ha pogut carregar el ràster de pendent, així que no s'ha aplicat el límit de pendent.";
   }
   const rnd = mulberry32(Math.floor(Math.random() * 1e9));
 
@@ -2824,19 +2865,25 @@ async function runGenerator(){
     if(!n) return;
     const src = GEN_SOURCES[t];
     let feats = (dataCache[src.key] || { features:[] }).features;
-    if(t === 'Franja' && v('nomesExec').checked) feats = feats.filter(f => f.properties.feta === 1);
-    if(t === 'PEG' && v('nomesExecPeg').checked) feats = feats.filter(f => isExecutat(f.properties));
-    if(t === 'AFG' && v('nomesExecAfg').checked) feats = feats.filter(f => isExecutat(f.properties));
+    if(t === 'Franja') feats = feats.filter(f => f.properties.feta === 1);
+    if(t === 'PEG') feats = feats.filter(f => isExecutat(f.properties));
+    if(t === 'AFG') feats = feats.filter(f => isExecutat(f.properties));
     if(t === 'Control obert') feats = feats.filter(f => ORIGEN_OPTS.includes(f.properties.origen));
     rep[t].zones = feats.length;
 
     // Control obert: mostreig aleatori entre tots els espais oberts elegibles; l'origen del punt és el del polígon on cau
     const strata = [{ feats, n }];
 
+    // Franges, PEG i AFG: només punts sobre bosc (coberta 2020); el control obert no s'hi aplica
+    const optsT = { ...opts };
+    if(boscOn && t !== 'Control obert'){
+      const base = opts.accept;
+      optsT.accept = (xy) => { const [lng, lat] = toLL(xy); return enBosc(lng, lat) && (!base || base(xy)); };
+    }
     let got = 0;
     strata.forEach(s => {
       const zones = buildZones(s.feats, src.label);
-      samplePoints(zones, s.n, rnd, opts, taken).forEach(g => {
+      samplePoints(zones, s.n, rnd, optsT, taken).forEach(g => {
         got++;
         const nf = { type:'Feature', geometry:{ type:'Point', coordinates: toLL(g.xy) },
           properties:{ id: nextId(), tipologia: t, rol, origen: t === 'Control obert' ? (s.feats[g.zone.i].properties.origen || '') : '', orientacio:'', pendent:null,
@@ -2854,7 +2901,7 @@ async function runGenerator(){
   const lines = report.map(r => {
     const short = r.got < r.n || r.gotS < r.ns;
     return `<li${short ? ' class="short"' : ''}><strong>${r.t}</strong>: ${r.got}/${r.n} punts` + (r.ns ? ` + ${r.gotS}/${r.ns} suplents` : '') +
-      (r.zones === 0 ? ' (cap zona disponible amb aquests filtres)' : short ? (maxPend > 0 ? ' (no hi ha prou espai amb aquestes distàncies i aquesta pendent màxima)' : ' (no hi ha prou espai amb aquestes distàncies)') : '') + '</li>';
+      (r.zones === 0 ? ' (cap zona disponible amb aquests filtres)' : short ? ' (no hi ha prou espai amb aquestes distàncies i filtres)' : '') + '</li>';
   }).join('');
   document.getElementById('gen-result').innerHTML = `
     <div class="gen-done">
