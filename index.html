@@ -225,6 +225,7 @@
   .pt-files summary::after{ content:'▾'; font-size:11px; }
   .pt-files[open] summary::after{ content:'▴'; }
   .pt-files summary:hover{ border-color:var(--green-dark); }
+  .pt-tools-body{ margin-top:8px; }
   .pt-files-list{ display:flex; flex-direction:column; gap:5px; margin-top:5px; }
   .pt-files-list button, .pt-files-list .pt-import{ text-align:left; }
   .pt-files button, .pt-import{
@@ -512,11 +513,11 @@
     </div>
 
     <div class="layer-group">
-      <button type="button" class="layer-group-title group-toggle" aria-expanded="false" aria-controls="group-punts">
+      <button type="button" class="layer-group-title group-toggle" aria-expanded="true" aria-controls="group-punts">
         <span>Punts de mostreig</span>
         <svg class="chev" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M3 4.5 6 7.5l3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
-      <div class="layer-group-body" id="group-punts" hidden>
+      <div class="layer-group-body" id="group-punts">
       <div class="layer-row" data-target="punts">
         <input type="checkbox" id="chk-punts" checked>
         <label for="chk-punts">Punts proposats</label>
@@ -531,6 +532,9 @@
         </div>
         <label class="gen-check"><input type="checkbox" id="pt-show-sup"> Mostra els punts suplents <span class="pt-sw pt-sw-hollow" aria-hidden="true"></span></label>
         <p class="gen-hint" id="pt-filter-hint">Clica un tipus de la llegenda per veure només aquests punts.</p>
+        <details class="pt-files pt-tools" id="pt-tools">
+          <summary>Taula resum i eines</summary>
+          <div class="pt-tools-body">
         <table class="pt-summary" id="pt-summary" aria-label="Recompte de punts per tipologia"></table>
         <button type="button" id="pt-mode" class="pt-mode" aria-pressed="false">Afegir punts</button>
         <button type="button" id="pt-generate" class="pt-generate">Genera punts aleatoris</button>
@@ -547,6 +551,8 @@
         </details>
         <p class="pt-note" id="pt-note">Els punts es desen en aquest navegador. Descarrega'ls en acabar la sessió per no perdre'ls.</p>
         <button type="button" id="pt-clear" class="pt-clear">Esborra tots els punts</button>
+          </div>
+        </details>
       </div>
       </div>
     </div>
