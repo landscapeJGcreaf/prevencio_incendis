@@ -692,8 +692,8 @@
   <div id="stats-head">
     <div id="stats-head-top">
       <div>
-        <h2 id="stats-title">Anàlisi per tipologia de gestió</h2>
-        <p id="stats-sub">Cobertes del sòl (1956 i 2020), pendent i orientació i punts de mostreig de cada tipologia de gestió.</p>
+        <h2 id="stats-title">Anàlisi de les zones de gestió i dels espais oberts</h2>
+        <p id="stats-sub">Cobertes del sòl, evolució 1956–2020, pendent i orientació de les zones de gestió executades i dels espais oberts de control, i punts de mostreig.</p>
       </div>
       <button id="stats-close" aria-label="Tanca l'anàlisi">✕</button>
     </div>
@@ -1191,7 +1191,7 @@ function popupContent(key, p, f){
         ${(() => { const c = cobertaActual(f);
           if(c === undefined){ ensureCob2020().then(() => { const el = document.querySelector('.maplibregl-popup [data-cob-pending]'); if(el){ const v = cobertaActual(f); el.textContent = v || '—'; el.removeAttribute('data-cob-pending'); } }); }
           return `<div class="popup-row"><span class="k">Coberta 2020</span><span class="v"${c === undefined ? ' data-cob-pending' : ''}>${c === undefined ? 'carregant…' : esc(c || '—')}</span></div>`; })()}
-        ${p.zona ? `<div class="popup-row"><span class="k">Zona</span><span class="v">${esc(p.zona)}</span></div>` : ''}
+        ${p.zona && p.tipologia !== 'Control obert' ? `<div class="popup-row"><span class="k">Zona</span><span class="v">${esc(p.zona)}</span></div>` : ''}
         <div class="popup-row"><span class="k">Orientació</span><span class="v">${esc(p.orientacio || '—')}</span></div>
         <div class="popup-row"><span class="k">Pendent</span><span class="v">${typeof p.pendent === 'number' ? p.pendent.toLocaleString('ca-ES', { minimumFractionDigits:1, maximumFractionDigits:1 }) + '°' : '—'}</span></div>
         ${(() => { const r = revisioPunt(f); if(!r || r.fora || !r.props) return '';
@@ -1424,6 +1424,7 @@ async function openTable(key){
     if(c === 'incendi') return incendiText(p.id) || '—';
     if(c === 'tr_incendi') return (f && incendiPunt(f)) || '—';
     if(c === 'cob_actual') return (f && cobertaActual(f)) || '—';
+    if(key === 'punts' && c === 'zona' && p.tipologia === 'Control obert') return '—';
     if(HIST_COLS[c]) return (f && cobHist(f, HIST_COLS[c])) || '—';
     if(key === 'punts' && c === 'origen') return (f && origenPunt(f)) || '—';
     if(c === 'tr_edat') return (f && edatPunt(f)) || '—';
@@ -1937,7 +1938,7 @@ function selPanelHTML(){
   const fs = selFeatures();
   const lab = (statSel.t || 'Tots els punts titulars') + (SEL_DIM[statSel.d] ? ` · ${SEL_DIM[statSel.d]}: ${statSel.v}` : '');
   const rows = fs.map(f => { const p = f.properties;
-    return `<tr data-goto="${esc(p.id)}" title="Clic per centrar el mapa en aquest punt"><td>${esc(p.id)}</td><td>${esc(p.tipologia)}</td><td>${esc(p.zona || '—')}</td><td>${esc(p.orientacio || '—')}</td><td>${typeof p.pendent === 'number' ? fmt1(p.pendent) + '°' : '—'}</td></tr>`; }).join('');
+    return `<tr data-goto="${esc(p.id)}" title="Clic per centrar el mapa en aquest punt"><td>${esc(p.id)}</td><td>${esc(p.tipologia)}</td><td>${esc(p.tipologia !== 'Control obert' && p.zona || '—')}</td><td>${esc(p.orientacio || '—')}</td><td>${typeof p.pendent === 'number' ? fmt1(p.pendent) + '°' : '—'}</td></tr>`; }).join('');
   return `<div class="pt-selpanel"><div class="hd"><b>${esc(lab)}</b><span>${fs.length} ${fs.length === 1 ? 'punt' : 'punts'} — seleccionats al mapa</span><button type="button" data-sel-clear>Treu la selecció</button></div>
     <div class="lst">${rows ? `<table><tbody>${rows}</tbody></table>` : '<p class="stats-note" style="margin:6px 0">Cap punt coincideix.</p>'}</div></div>`;
 }
@@ -2626,7 +2627,7 @@ async function exportCSV(){
   const cols = ['id','tipologia','origen','zona','orientacio','pendent','rol','metode','observacions', 'cobertura_2020', 'edat_espai_obert', 'incendi', 'coberta_2005', 'coberta_1993', 'coberta_1956'];
   const q = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
   const lines = [[...cols, 'lon', 'lat'].join(',')].concat(points.features.map(f =>
-    [...cols.map(c => q(c === 'cobertura_2020' ? (cobertaActual(f) || '') : c === 'edat_espai_obert' ? (edatPunt(f) || '') : c === 'origen' ? (origenPunt(f) || '') : c === 'incendi' ? (incendiPunt(f) || '') : /^coberta_/.test(c) ? (cobHist(f, c.slice(8)) || '') : f.properties[c])), f.geometry.coordinates[0], f.geometry.coordinates[1]].join(',')));
+    [...cols.map(c => q(c === 'cobertura_2020' ? (cobertaActual(f) || '') : c === 'edat_espai_obert' ? (edatPunt(f) || '') : c === 'origen' ? (origenPunt(f) || '') : c === 'incendi' ? (incendiPunt(f) || '') : c === 'zona' && f.properties.tipologia === 'Control obert' ? '' : /^coberta_/.test(c) ? (cobHist(f, c.slice(8)) || '') : f.properties[c])), f.geometry.coordinates[0], f.geometry.coordinates[1]].join(',')));
   download(`punts_mostreig_${stamp()}.csv`, '\uFEFF' + lines.join('\r\n'), 'text/csv;charset=utf-8');
 }
 // Un sol botó: baixa el GeoJSON (per publicar-lo al visor) i el CSV (per treballar-hi en full de càlcul)
@@ -2717,7 +2718,7 @@ const GEN_SOURCES = {
   'Franja':        { key:'franges',  label:(p) => p.nom || p.codi || p.codizonac || '' },
   'PEG':           { key:'pegs',     label:(p) => p.nom_peg || p.codi_peg || '' },
   'AFG':           { key:'afg',      label:(p) => p.nom_peg || p.codi_peg || '' },
-  'Control obert': { key:'obertes',  label:(p) => p.cob2020 || '' }
+  'Control obert': { key:'obertes',  label:() => '' }   // la «zona» d'un punt de control obert no aporta res: ja té origen i cobertes
 };
 const LAT0 = 41.43, MX = 111320 * Math.cos(LAT0 * Math.PI / 180), MY = 110540;
 const toM = ([lon, lat]) => [lon * MX, lat * MY];
