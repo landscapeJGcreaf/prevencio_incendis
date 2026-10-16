@@ -512,6 +512,46 @@
     </div>
 
     <div class="layer-group">
+      <button type="button" class="layer-group-title group-toggle" aria-expanded="false" aria-controls="group-punts">
+        <span>Punts de mostreig</span>
+        <svg class="chev" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M3 4.5 6 7.5l3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="layer-group-body" id="group-punts" hidden>
+      <div class="layer-row" data-target="punts">
+        <input type="checkbox" id="chk-punts" checked>
+        <label for="chk-punts">Punts proposats</label>
+        <span class="layer-count" id="count-punts">0</span>
+      </div>
+      <div class="sublayer-panel open" id="panel-punts">
+        <div class="legend">
+          <div class="legend-item pt-filter" role="button" tabindex="0" aria-pressed="false" data-tipo="Franja" title="Clic per veure només aquests punts"><span class="pt-sw" style="background:#5f8a70"></span> Franja</div>
+          <div class="legend-item pt-filter" role="button" tabindex="0" aria-pressed="false" data-tipo="PEG" title="Clic per veure només aquests punts"><span class="pt-sw" style="background:#4a7c94"></span> PEG</div>
+          <div class="legend-item pt-filter" role="button" tabindex="0" aria-pressed="false" data-tipo="AFG" title="Clic per veure només aquests punts"><span class="pt-sw" style="background:#7b3fa0"></span> AFG</div>
+          <div class="legend-item pt-filter" role="button" tabindex="0" aria-pressed="false" data-tipo="Control obert" title="Clic per veure només aquests punts"><span class="pt-sw" style="background:#b8894a"></span> Control obert</div>
+        </div>
+        <label class="gen-check"><input type="checkbox" id="pt-show-sup"> Mostra els punts suplents <span class="pt-sw pt-sw-hollow" aria-hidden="true"></span></label>
+        <p class="gen-hint" id="pt-filter-hint">Clica un tipus de la llegenda per veure només aquests punts.</p>
+        <table class="pt-summary" id="pt-summary" aria-label="Recompte de punts per tipologia"></table>
+        <button type="button" id="pt-mode" class="pt-mode" aria-pressed="false">Afegir punts</button>
+        <button type="button" id="pt-generate" class="pt-generate">Genera punts aleatoris</button>
+        <button type="button" id="pt-orientacio" class="pt-generate">Omple l'orientació i la pendent des del relleu</button>
+        <div id="pt-orientacio-msg" class="gen-hint" role="status"></div>
+        <button class="table-toggle" data-table="punts">Veure taula de punts</button>
+        <details class="pt-files" id="pt-files">
+          <summary>Fitxers</summary>
+          <div class="pt-files-list">
+          <button type="button" id="pt-export" title="Descarrega els punts en GeoJSON i en CSV">Descarrega els punts</button>
+          <button type="button" id="pt-load-published" hidden title="Substitueix els punts d'aquest navegador pels de dades/punts_mostreig.geojson">Carrega la capa publicada</button>
+          <label class="pt-import">Importa GeoJSON<input type="file" id="pt-import" accept=".geojson,.json" hidden></label>
+          </div>
+        </details>
+        <p class="pt-note" id="pt-note">Els punts es desen en aquest navegador. Descarrega'ls en acabar la sessió per no perdre'ls.</p>
+        <button type="button" id="pt-clear" class="pt-clear">Esborra tots els punts</button>
+      </div>
+      </div>
+    </div>
+
+    <div class="layer-group">
       <button type="button" class="layer-group-title group-toggle" aria-expanded="false" aria-controls="group-relleu">
         <span>Més dades</span>
         <svg class="chev" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M3 4.5 6 7.5l3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -601,46 +641,6 @@
           <div class="legend-item sel-filter" role="button" tabindex="0" aria-pressed="false" data-sel="incendis" data-prop="any" data-val="2021" title="Clic per ressaltar al mapa" data-num="1"><span class="swatch" style="background:#542788"></span> 2021</div>
         </div>
         <label class="opacity-ctl">Opacitat <input type="range" min="0" max="100" value="55" data-opacity="incendis-fill" data-prop="fill-opacity" aria-label="Opacitat dels incendis"></label>
-      </div>
-      </div>
-    </div>
-
-    <div class="layer-group">
-      <button type="button" class="layer-group-title group-toggle" aria-expanded="false" aria-controls="group-punts">
-        <span>Punts de mostreig</span>
-        <svg class="chev" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M3 4.5 6 7.5l3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <div class="layer-group-body" id="group-punts" hidden>
-      <div class="layer-row" data-target="punts">
-        <input type="checkbox" id="chk-punts" checked>
-        <label for="chk-punts">Punts proposats</label>
-        <span class="layer-count" id="count-punts">0</span>
-      </div>
-      <div class="sublayer-panel open" id="panel-punts">
-        <div class="legend">
-          <div class="legend-item pt-filter" role="button" tabindex="0" aria-pressed="false" data-tipo="Franja" title="Clic per veure només aquests punts"><span class="pt-sw" style="background:#5f8a70"></span> Franja</div>
-          <div class="legend-item pt-filter" role="button" tabindex="0" aria-pressed="false" data-tipo="PEG" title="Clic per veure només aquests punts"><span class="pt-sw" style="background:#4a7c94"></span> PEG</div>
-          <div class="legend-item pt-filter" role="button" tabindex="0" aria-pressed="false" data-tipo="AFG" title="Clic per veure només aquests punts"><span class="pt-sw" style="background:#7b3fa0"></span> AFG</div>
-          <div class="legend-item pt-filter" role="button" tabindex="0" aria-pressed="false" data-tipo="Control obert" title="Clic per veure només aquests punts"><span class="pt-sw" style="background:#b8894a"></span> Control obert</div>
-        </div>
-        <label class="gen-check"><input type="checkbox" id="pt-show-sup" checked> Mostra els punts suplents <span class="pt-sw pt-sw-hollow" aria-hidden="true"></span></label>
-        <p class="gen-hint" id="pt-filter-hint">Clica un tipus de la llegenda per veure només aquests punts.</p>
-        <table class="pt-summary" id="pt-summary" aria-label="Recompte de punts per tipologia"></table>
-        <button type="button" id="pt-mode" class="pt-mode" aria-pressed="false">Afegir punts</button>
-        <button type="button" id="pt-generate" class="pt-generate">Genera punts aleatoris</button>
-        <button type="button" id="pt-orientacio" class="pt-generate">Omple l'orientació i la pendent des del relleu</button>
-        <div id="pt-orientacio-msg" class="gen-hint" role="status"></div>
-        <button class="table-toggle" data-table="punts">Veure taula de punts</button>
-        <details class="pt-files" id="pt-files">
-          <summary>Fitxers</summary>
-          <div class="pt-files-list">
-          <button type="button" id="pt-export" title="Descarrega els punts en GeoJSON i en CSV">Descarrega els punts</button>
-          <button type="button" id="pt-load-published" hidden title="Substitueix els punts d'aquest navegador pels de dades/punts_mostreig.geojson">Carrega la capa publicada</button>
-          <label class="pt-import">Importa GeoJSON<input type="file" id="pt-import" accept=".geojson,.json" hidden></label>
-          </div>
-        </details>
-        <p class="pt-note" id="pt-note">Els punts es desen en aquest navegador. Descarrega'ls en acabar la sessió per no perdre'ls.</p>
-        <button type="button" id="pt-clear" class="pt-clear">Esborra tots els punts</button>
       </div>
       </div>
     </div>
@@ -2378,7 +2378,7 @@ function renderPtSummary(){
 }
 
 // ---- Filtre per tipologia a la llegenda dels punts ----
-let ptFilterTipo = null, ptShowSup = true;
+let ptFilterTipo = null, ptShowSup = false;
 function applyPtFilter(){
   const conds = [];
   if(ptFilterTipo) conds.push(['==', ['get','tipologia'], ptFilterTipo]);
