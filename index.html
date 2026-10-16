@@ -698,10 +698,9 @@
       <button id="stats-close" aria-label="Tanca l'anàlisi">✕</button>
     </div>
     <div class="stats-tabs" role="tablist">
-      <button class="stats-tab" role="tab" data-tab="cob" aria-selected="true">Cobertes 1956–2020</button>
-      <button class="stats-tab" role="tab" data-tab="evol" aria-selected="false">Evolució zones de gestió executades</button>
+      <button class="stats-tab" role="tab" data-tab="gestio" aria-selected="true">Zones de gestió executades</button>
+      <button class="stats-tab" role="tab" data-tab="obert" aria-selected="false">Espais oberts de control</button>
       <button class="stats-tab" role="tab" data-tab="punts" aria-selected="false">Punts de mostreig</button>
-      <button class="stats-tab" role="tab" data-tab="relleu" aria-selected="false">Pendent i orientació</button>
     </div>
   </div>
   <div id="stats-body" role="tabpanel"></div>
@@ -1740,14 +1739,12 @@ const COVER_COLORS = {
 const OTHER_COLOR = '#d9d6cc';
 
 const STATS_SOURCES = {
-  c1956: { file:'dades/estadistiques/1956_tipologies_STATS.csv',
-           note:"Coberta de cada tipologia l'any 1956 (Mapa de Cobertes del Sòl de 1956, Diputació de Barcelona i CREAF, nivell 1F). Mostra si les zones gestionades avui eren bosc, matollar o conreu fa 70 anys." },
-  c2020: { file:'dades/estadistiques/2020_tipologies_STATS.csv',
-           note:"Coberta actual de cada tipologia (Mapa de Cobertes del Sòl de Catalunya 2020, CREAF, nivell 1F)." }
+  c1956: { note:"Coberta de cada tipologia l'any 1956 (Mapa de Cobertes del Sòl de 1956, Diputació de Barcelona i CREAF, nivell 1F). Mostra si les zones executades eren bosc, matollar o conreu fa 70 anys. «Sense dades» és la part que el mapa no cobreix." },
+  c2020: { note:"Coberta actual de cada tipologia (Mapa de Cobertes del Sòl de Catalunya 2020, CREAF, nivell 1F)." }
 };
 
 const statsCache = {};
-let statsTab = 'cob';
+let statsTab = 'gestio';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmtHa  = (v) => v > 0 ? v.toLocaleString('ca-ES', { minimumFractionDigits:1, maximumFractionDigits:1 }) : '—';
@@ -1775,37 +1772,7 @@ function parseCSV(text){
 }
 
 // Llegeix en UTF-8 i, si no ho és, en Windows-1252 (exportacions de QGIS en Latin-1)
-async function loadStatsCSV(url){
-  const r = await fetch(url);
-  if(!r.ok) throw new Error(`${url} (${r.status})`);
-  const buf = await r.arrayBuffer();
-  let text;
-  try { text = new TextDecoder('utf-8', { fatal:true }).decode(buf); }
-  catch(e){ text = new TextDecoder('windows-1252').decode(buf); }
-  const rows = parseCSV(text.replace(/^\uFEFF/, ''));
-  const byTipo = {}, totals = {}, catTotals = {};
-  rows.slice(1).forEach(([layer, cat, sum]) => {
-    const ha = parseFloat(sum);
-    if(!layer || !cat || isNaN(ha)) return;
-    const t = (TIPOLOGIES[layer] || { label: layer }).label;
-    (byTipo[t] = byTipo[t] || {})[cat] = (byTipo[t][cat] || 0) + ha;
-    totals[t] = (totals[t] || 0) + ha;
-    catTotals[cat] = (catTotals[cat] || 0) + ha;
-  });
-  const tipos = Object.keys(byTipo).sort((a, b) => {
-    const ia = TIPO_ORDER.indexOf(a), ib = TIPO_ORDER.indexOf(b);
-    return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
-  });
-  const cats = Object.keys(catTotals).sort((a, b) => catTotals[b] - catTotals[a]);
-  return { byTipo, totals, cats, tipos, file:url };
-}
-
 const tipoColor = (label) => (Object.values(TIPOLOGIES).find(t => t.label === label) || { color:'#9a9a94' }).color;
-
-async function getStats(key){
-  if(!statsCache[key]) statsCache[key] = loadStatsCSV(STATS_SOURCES[key].file);
-  return statsCache[key];
-}
 
 // ---- Composició (1956, 2020) ----
 function renderComposition(d, key){
@@ -1846,7 +1813,7 @@ function renderComposition(d, key){
     <div class="stats-legend">${legendItems.join('')}</div>
     <div class="stats-tools">
       <h3>Taula de superfícies</h3>
-      <a href="${d.file}" download>Descarrega CSV</a>
+      <a href="${d.file}" download="${d.name}">Descarrega CSV</a>
     </div>
     <div class="stats-table-wrap"><table class="stats"><thead>${head}</thead><tbody>${body}${foot}</tbody></table></div>`;
 }
@@ -1854,31 +1821,6 @@ function renderComposition(d, key){
 // ---- Canvi 1956 → 2020 sobre la superfície comuna ----
 // Es fa servir una taula de transicions (coberta 1956 → coberta 2020, en ha) calculada només
 // on hi ha dades als dos mapes, de manera que els dos anys tenen exactament el mateix total.
-async function loadTransitions(url){
-  const r = await fetch(url);
-  if(!r.ok) throw new Error(`${url} (${r.status})`);
-  const buf = await r.arrayBuffer();
-  let text;
-  try { text = new TextDecoder('utf-8', { fatal:true }).decode(buf); }
-  catch(e){ text = new TextDecoder('windows-1252').decode(buf); }
-  const byTipo = {};
-  parseCSV(text.replace(/^\uFEFF/, '')).slice(1).forEach(([layer, c56, c20, ha]) => {
-    const v = parseFloat(ha);
-    if(!layer || !c56 || !c20 || isNaN(v)) return;
-    const t = (TIPOLOGIES[layer] || { label: layer }).label;
-    const T = byTipo[t] = byTipo[t] || { total:0, p56:{}, p20:{}, m:{} };
-    T.total += v;
-    T.p56[c56] = (T.p56[c56] || 0) + v;
-    T.p20[c20] = (T.p20[c20] || 0) + v;
-    (T.m[c56] = T.m[c56] || {})[c20] = (T.m[c56][c20] || 0) + v;
-  });
-  const tipos = Object.keys(byTipo).sort((a, b) => {
-    const ia = TIPO_ORDER.indexOf(a), ib = TIPO_ORDER.indexOf(b);
-    return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
-  });
-  return { byTipo, tipos, file:url };
-}
-
 function renderChange(dt){
   const fmt1 = (v) => v.toLocaleString('ca-ES', { minimumFractionDigits:1, maximumFractionDigits:1 });
   const rowsOf = (T) => [...new Set([...Object.keys(T.p56), ...Object.keys(T.p20)])].map(c => {
@@ -1928,7 +1870,7 @@ function renderChange(dt){
   }).join('');
 
   return `<p class="stats-note">Canvi de coberta entre 1956 i 2020.</p>
-    <div class="stats-tools"><h3>Canvi per tipologia</h3><a href="${dt.file}" download>Descarrega CSV</a></div>
+    <div class="stats-tools"><h3>Canvi per tipologia</h3><a href="${dt.file}" download="${dt.name}">Descarrega CSV</a></div>
     ${blocks}`;
 }
 
@@ -2116,8 +2058,10 @@ function renderPunts(){
 // Es calcula en directe al navegador: es rasteritzen els polígons sobre la graella del ràster de relleu (5 m)
 // i es compten les cel·les per classe de pendent i d'orientació. Les vores tenen una precisió d'una cel·la.
 const RELLEU_CAPES = [
-  ['Franges', 'franges'], ['PEG', 'pegs'], ['AFG', 'afg'], ['Espais oberts', 'obertes'], ['Tot el parc', null]
+  ['Franges executades', 'franges', f => f.properties.feta === 1], ['PEG executats', 'pegs', f => isExecutat(f.properties)],
+  ['AFG executades', 'afg', f => isExecutat(f.properties)], ['Espais oberts', 'obertes'], ['Tot el parc', null]
 ];
+const RELLEU_GRUPS = { gestio:['Franges executades', 'PEG executats', 'AFG executades', 'Tot el parc'], obert:['Espais oberts', 'Tot el parc'] };
 const RELLEU_LLINDARS = [15, 20, 25, 30];
 let relleuStatsKey = null, relleuStatsVal = null;
 function computeRelleuStats(){
@@ -2126,13 +2070,14 @@ function computeRelleuStats(){
   const ctx = cv.getContext('2d', { willReadFrequently:true });
   ctx.fillStyle = '#000';
   const out = [];
-  RELLEU_CAPES.forEach(([nom, key]) => {
+  RELLEU_CAPES.forEach(([nom, key, filt]) => {
     const fc = key && dataCache[key];
+    const feats = fc ? (filt ? fc.features.filter(filt) : fc.features) : [];
     let mask = null;
     if(key){
-      if(!fc || !fc.features.length){ out.push({ nom, buit:true }); return; }
+      if(!feats.length){ out.push({ nom, buit:true }); return; }
       ctx.clearRect(0, 0, W, H);
-      fc.features.forEach(f => {
+      feats.forEach(f => {
         if(!f.geometry) return;
         const polys = f.geometry.type === 'MultiPolygon' ? f.geometry.coordinates : f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : [];
         ctx.beginPath();
@@ -2166,7 +2111,7 @@ function computeRelleuStats(){
   });
   return out;
 }
-async function renderRelleuStats(){
+async function renderRelleuStats(grup){
   await loadRelleuValues();
   if(!relleuData) return `<p class="stats-msg">No s'ha pogut carregar el ràster de relleu (<code>dades/raster/valors.png</code>).</p>`;
   const key = RELLEU_CAPES.map(([, k]) => k && dataCache[k] ? dataCache[k].features.length : 0).join('-');
@@ -2174,7 +2119,7 @@ async function renderRelleuStats(){
     await new Promise(r => setTimeout(r, 30));   // deixa pintar el missatge de càrrega
     relleuStatsVal = computeRelleuStats(); relleuStatsKey = key;
   }
-  const R = relleuStatsVal;
+  const R = relleuStatsVal.filter(r => RELLEU_GRUPS[grup].includes(r.nom));
   const pc = (x) => (x * 100).toLocaleString('ca-ES', { minimumFractionDigits:1, maximumFractionDigits:1 }) + ' %';
   const haOf = (n) => Math.round(n * RELLEU_GRID.cell * RELLEU_GRID.cell / 10000);
   const oriOrder = ['Nord', 'Est', 'Sud', 'Oest', 'Pla'];
@@ -2193,7 +2138,7 @@ async function renderRelleuStats(){
   const csv = ['capa;superficie_ha;pendent_mitjana;' + RELLEU_LLINDARS.map(l => 'pct_fins_' + l).join(';')].concat(R.filter(r => !r.buit).map(r =>
     [r.nom, r.ha.toFixed(1), r.mitjana.toFixed(1), ...r.llindars.map(x => (x * 100).toFixed(1))].join(';'))).join('\n');
   const csvHref = 'data:text/csv;charset=utf-8,' + encodeURIComponent('﻿' + csv);
-  return `<p class="stats-note">Superfície de cada capa segons la classe de pendent i l'orientació del terreny (ràster de relleu de 5 m). «Franges» inclou totes les franges (oficials i planificades) i «Espais oberts» tots els polígons de la capa de control. «Tot el parc» és la referència amb totes les cel·les amb dades.</p>
+  return `<p class="stats-note">Superfície de cada capa segons la classe de pendent i l'orientació del terreny (ràster de relleu de 5 m). Només es compten les zones executades (franges, PEG i AFG) o tots els polígons dels espais oberts de control. «Tot el parc» és la referència amb totes les cel·les amb dades.</p>
     <div class="pt-section"><h3>Pendent</h3><p class="sub">Hectàrees de cada capa per classe de pendent.</p>
       <div class="tipo-bars">${bars('pend')}</div><div class="stats-legend">${pendLegend}</div></div>
     <div class="pt-section"><h3>Orientació</h3><p class="sub">Hectàrees de cada capa per orientació; «Pla» és el terreny amb pendent inferior a 3°.</p>
@@ -2203,11 +2148,28 @@ async function renderRelleuStats(){
     <div class="stats-table-wrap"><table class="stats"><thead><tr><th>Capa</th><th>Superfície (ha)</th><th>Pendent mitjana (°)</th>${RELLEU_LLINDARS.map(l => `<th>≤ ${l}°</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
+// Estructures que esperen renderComposition i renderChange, a partir de dades/cobertes_gestio.json (zones executades)
+const GESTIO_TIPOS = [['Franja', 'Franges'], ['PEG', 'PEG'], ['AFG', 'AFG']];
+function compFromGestio(ev, any){
+  const byTipo = {}, totals = {}, ct = {};
+  GESTIO_TIPOS.forEach(([z, t]) => { byTipo[t] = {}; totals[t] = 0;
+    Object.entries(ev.anys[any][z]).forEach(([c, ha]) => { if(ha <= 0) return; byTipo[t][c] = ha; totals[t] += ha; ct[c] = (ct[c] || 0) + ha; }); });
+  const csv = 'tipologia;coberta;ha\n' + GESTIO_TIPOS.flatMap(([, t]) => Object.entries(byTipo[t]).map(([c, ha]) => [t, c, ha.toFixed(2)].join(';'))).join('\n');
+  return { byTipo, totals, cats:Object.keys(ct).sort((a, b) => ct[b] - ct[a]), tipos:GESTIO_TIPOS.map(x => x[1]), file:'data:text/csv;charset=utf-8,' + encodeURIComponent('\ufeff' + csv), name:'cobertes_' + any + '_zones_executades.csv' };
+}
+function changeFromGestio(ev){
+  const byTipo = {};
+  GESTIO_TIPOS.forEach(([z, t]) => { const T = byTipo[t] = { total:0, p56:{}, p20:{}, m:{} };
+    Object.entries(ev.canvi[z]).forEach(([a, row]) => Object.entries(row).forEach(([b, v]) => {
+      T.total += v; T.p56[a] = (T.p56[a] || 0) + v; T.p20[b] = (T.p20[b] || 0) + v; (T.m[a] = T.m[a] || {})[b] = v; })); });
+  const csv = 'tipologia;coberta_1956;coberta_2020;ha\n' + GESTIO_TIPOS.flatMap(([, t]) => Object.entries(byTipo[t].m).flatMap(([a, row]) => Object.entries(row).map(([b, v]) => [t, a, b, v.toFixed(2)].join(';')))).join('\n');
+  return { byTipo, tipos:GESTIO_TIPOS.map(x => x[1]), file:'data:text/csv;charset=utf-8,' + encodeURIComponent('\ufeff' + csv), name:'canvi_1956_2020_zones_executades.csv' };
+}
 // ---- Evolució de les cobertes (1956, 1993, 2005, 2020) a les zones executades ----
 // dades/cobertes_gestio.json: hectàrees per tipologia, any i coberta 1F (ràster de 2 m de les capes de cobertes retallades a les zones executades)
 function renderEvol(d){
   const ANYS = ['1956', '1993', '2005', '2020'];
-  const ZONES = [['Franja', 'Franges executades'], ['PEG', 'PEG executats'], ['AFG', 'AFG executades'], ['Total', 'Total (unió de les tres)']];
+  const ZONES = [['Franja', 'Franges executades'], ['PEG', 'PEG executats'], ['AFG', 'AFG executades']];
   const col = (c) => COVER_COLORS[c] || (c === 'Aigües continentals' ? COVER_COLORS['Aigues continentals'] : OTHER_COLOR);
   const ORD = ['Arbrat dens', 'Arbrat clar', 'Matollars', 'Prats i herbassars', 'Conreus', 'Improductiu natural', 'Improductiu artificial', 'Aigües continentals', 'Sense dades'];
   const ha = (x) => Math.round(x).toLocaleString('ca-ES');
@@ -2221,35 +2183,82 @@ function renderEvol(d){
   const csv = ['zona;coberta;' + ANYS.map(a => 'ha_' + a + ';pct_' + a).join(';')].concat(ZONES.flatMap(([z, nom]) => classes.map(c =>
     [nom, c, ...ANYS.flatMap(a => { const v = d.anys[a][z][c] || 0; return [v.toFixed(2), (v / d.zones_ha[z] * 100).toFixed(1)]; })].join(';')))).join('\n');
   const href = 'data:text/csv;charset=utf-8,' + encodeURIComponent('\ufeff' + csv);
-  return `<p class="stats-note">Coberta (nivell 1F) de les zones de gestió <b>executades</b> els anys 1956, 1993, 2005 i 2020. Mostra què hi havia abans de la intervenció. Les hectàrees són d'un càlcul sobre ràster de ${d.cell_m} m, i «Sense dades» és la part de la zona que les capes de cobertes no cobreixen. El total és la unió de les tres tipologies: on se superposen, es compta una sola vegada.</p>
+  return `<p class="stats-note">Coberta (nivell 1F) de les zones de gestió <b>executades</b> els anys 1956, 1993, 2005 i 2020. Mostra què hi havia abans de la intervenció. Les hectàrees són d'un càlcul sobre ràster de ${d.cell_m} m, i «Sense dades» és la part de la zona que les capes de cobertes no cobreixen.</p>
     ${groups}<div class="stats-legend">${legend}</div>
     <div class="stats-tools"><h3>Taula</h3><a href="${href}" download="evolucio_cobertes_zones_executades.csv">Descarrega CSV</a></div>
     <div class="stats-table-wrap"><table class="stats"><thead><tr><th>Coberta</th>${ANYS.map(a => `<th>${a} (ha)</th><th>%</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+// ---- Espais oberts de control: origen, evolució de la coberta, edat i incendis ----
+function renderObertStats(){
+  const fc = dataCache.obertes;
+  if(!fc || !fc.features.length) return `<p class="stats-msg">Encara no s'ha carregat la capa d'espais oberts.</p>`;
+  const F = fc.features, ha = (f) => +f.properties.area_ha || 0;
+  const tot = F.reduce((a, f) => a + ha(f), 0);
+  const n0 = (v) => Math.round(v).toLocaleString('ca-ES');
+  const col = (c) => COVER_COLORS[c] || (c === 'Aigües continentals' ? COVER_COLORS['Aigues continentals'] : OTHER_COLOR);
+  const ORIGENS = ['Antics conreus', 'Antic sòl forestal', 'Sense canvis', 'Altres'].filter(o => F.some(f => f.properties.origen === o));
+  const ORD = ['Arbrat dens', 'Arbrat clar', 'Matollars', 'Prats i herbassars', 'Conreus', 'Improductiu natural', 'Improductiu artificial', 'Aigües continentals', COB_SENSE_EQ];
+  const ORIG_COL = { 'Antics conreus':'#c9a66b', 'Antic sòl forestal':'#7d8a4a', 'Sense canvis':'#a8a49a', 'Altres':'#97a3ad' };
+  const swatches = (items) => `<div class="stats-legend">${items.map(([l, c]) => `<div class="legend-item"><span class="swatch" style="background:${c}"></span><span class="txt">${esc(l)}</span></div>`).join('')}</div>`;
+  // 1. Origen
+  const grp = (o) => o ? F.filter(f => f.properties.origen === o) : F;
+  const sumHa = (arr) => arr.reduce((a, f) => a + ha(f), 0);
+  const origRows = ORIGENS.map(o => { const g = grp(o); return `<tr><td><div class="cat-cell"><span class="swatch" style="background:${ORIG_COL[o]}"></span>${esc(o)}</div></td><td>${n0(sumHa(g))}</td><td>${fmt1(sumHa(g) / tot * 100)} %</td></tr>`; }).join('');
+  const origBar = stackBar(ORIGENS.map(o => [o, Math.round(sumHa(grp(o)) * 10) / 10, ORIG_COL[o]]), tot, 'Origen dels espais oberts', { unit:' ha' });
+  // 2. Evolució de la coberta (ha per categoria 1F)
+  const ANYS = [1956, 1993, 2005, 2020];
+  const evolHa = (arr, y) => { const m = {}; arr.forEach(f => { const c = cob1F(f.properties['cob' + y]) || 'Sense dades'; m[c] = (m[c] || 0) + ha(f); }); return m; };
+  const allCats = ORD.filter(c => ANYS.some(y => (evolHa(F, y)[c] || 0) > 0));
+  const evolGroups = [['Tots els espais oberts', null]].map(([nom, o]) => {
+    const g = grp(o), gt = sumHa(g);
+    return `<div class="pt-section"><h3>${esc(nom)} · ${n0(gt)} ha</h3><div class="tipo-bars">` + ANYS.map(y => { const m = evolHa(g, y);
+      return `<div><div class="tipo-bar-label">${y}</div>${stackBar(allCats.map(c => [c, Math.round((m[c] || 0) * 10) / 10, col(c)]), gt, nom + ' ' + y, { unit:' ha' })}</div>`; }).join('') + `</div></div>`; }).join('');
+  const csv = ['origen;coberta;' + ANYS.map(y => 'ha_' + y).join(';')].concat([['Tots', null]].flatMap(([nom, o]) => allCats.map(c =>
+    [nom, c, ...ANYS.map(y => (evolHa(grp(o), y)[c] || 0).toFixed(2))].join(';')))).join('\n');
+  const href = 'data:text/csv;charset=utf-8,' + encodeURIComponent('\ufeff' + csv);
+  // 3. Edat
+  const edats = {}; F.forEach(f => { const e = edatText(f.properties.edat) || 'Sense dades'; (edats[e] = edats[e] || []).push(f); });
+  const edatKeys = Object.keys(edats).sort((a, b) => sumHa(edats[b]) - sumHa(edats[a]));
+  const EP = ['#2d5a3d', '#7d9a5c', '#c98a4b', '#b9a462', '#4a7c94', '#8b6bb0', '#a8a49a'];
+  const edatRows = edatKeys.map((e, i) => `<tr><td><div class="cat-cell"><span class="swatch" style="background:${EP[i % EP.length]}"></span>${esc(e)}</div></td><td>${n0(sumHa(edats[e]))}</td><td>${fmt1(sumHa(edats[e]) / tot * 100)} %</td></tr>`).join('');
+  const edatBar = stackBar(edatKeys.map((e, i) => [e, Math.round(sumHa(edats[e]) * 10) / 10, EP[i % EP.length]]), tot, 'Edat dels espais oberts', { unit:' ha' });
+  return `<p class="stats-note">Estadístiques dels ${n0(F.length)} polígons d'espais oberts de control (${n0(tot)} ha). Les superfícies surten del camp d'àrea de cada polígon.</p>
+    <h2 class="stats-h">Origen i edat</h2>
+    <div class="pt-section"><h3>Origen</h3><div class="tipo-bars"><div>${origBar}</div></div>
+      <div class="stats-table-wrap"><table class="stats"><thead><tr><th>Origen</th><th>Superfície (ha)</th><th>%</th></tr></thead><tbody>${origRows}</tbody></table></div></div>
+    <div class="pt-section"><h3>Edat</h3><div class="tipo-bars"><div>${edatBar}</div></div>
+      <div class="stats-table-wrap"><table class="stats"><thead><tr><th>Edat</th><th>Superfície (ha)</th><th>%</th></tr></thead><tbody>${edatRows}</tbody></table></div></div>
+    <h2 class="stats-h">Evolució de la coberta 1956–2020</h2>
+    <p class="stats-note">Hectàrees de cada categoria (nivell 1F) als anys 1956, 1993, 2005 i 2020, segons la coberta de cada polígon, pel total dels espais oberts.</p>
+    ${evolGroups}${swatches(allCats.map(c => [c, col(c)]))}
+    <div class="stats-tools"><h3>Descàrrega</h3><a href="${href}" download="evolucio_cobertes_espais_oberts.csv">Descarrega CSV</a></div>`;
 }
 
 async function renderStats(){
   const body = document.getElementById('stats-body');
   body.innerHTML = '<p class="stats-note">Carregant dades…</p>';
   try {
-    if(statsTab === 'evol'){
-      if(!statsCache.evol) statsCache.evol = fetch('dades/cobertes_gestio.json').then(r => { if(!r.ok) throw new Error('dades/cobertes_gestio.json'); return r.json(); });
-      body.innerHTML = renderEvol(await statsCache.evol);
-    } else if(statsTab === 'relleu'){
-      body.innerHTML = await renderRelleuStats();
-    } else if(statsTab === 'punts'){
+    if(statsTab === 'punts'){
       await Promise.all([ensureCob2020(), ensureCobHist()]);
       body.innerHTML = renderPunts();
       if(statSel){ ptSelIds = selFeatures().map(f => f.properties.id); applyPtFilter(); }
+    } else if(statsTab === 'obert'){
+      body.innerHTML = renderObertStats() + `<h2 class="stats-h">Pendent i orientació</h2>` + await renderRelleuStats('obert');
     } else {
-      // Cobertes 1956 + Cobertes 2020 + Canvi 1956–2020 en una sola pestanya
-      if(!statsCache.canvi) statsCache.canvi = loadTransitions('dades/estadistiques/canvi_1956_2020_STATS.csv');
-      const [d56, d20, ch] = await Promise.all([getStats('c1956'), getStats('c2020'), statsCache.canvi]);
+      // Zones de gestió executades: cobertes 1956 i 2020, canvi, evolució 1956–2020 i relleu
+      if(!statsCache.evol) statsCache.evol = fetch('dades/cobertes_gestio.json', { cache:'no-cache' }).then(r => { if(!r.ok) throw new Error('dades/cobertes_gestio.json'); return r.json(); })
+        .then(j => { if(!j.canvi) throw new Error('dades/cobertes_gestio.json (versió antiga: puja la nova, amb les dades de canvi)'); return j; });
+      const ev = await statsCache.evol;
+      const d56 = compFromGestio(ev, 1956), d20 = compFromGestio(ev, 2020), ch = changeFromGestio(ev);
       body.innerHTML = `<h2 class="stats-h">Cobertes 1956</h2>${renderComposition(d56, 'c1956')}
         <h2 class="stats-h">Cobertes 2020</h2>${renderComposition(d20, 'c2020')}
-        <h2 class="stats-h">Canvi 1956–2020</h2>${renderChange(ch)}`;
+        <h2 class="stats-h">Canvi 1956–2020</h2>${renderChange(ch)}
+        <h2 class="stats-h">Evolució 1956–2020 de les zones executades</h2>${renderEvol(ev)}
+        <h2 class="stats-h">Pendent i orientació</h2>${await renderRelleuStats('gestio')}`;
     }
   } catch(err){
-    delete statsCache[statsTab]; delete statsCache.canvi;
+    delete statsCache.evol;
     body.innerHTML = `<p class="stats-msg">No s'ha pogut carregar el fitxer ${esc(err.message)}. Comprova que els CSV són a <code>dades/estadistiques/</code> amb el nom correcte.</p>`;
   }
 }
