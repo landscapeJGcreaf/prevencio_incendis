@@ -219,7 +219,14 @@
   }
   .pt-mode:hover{ background:#4f7760; }
   .pt-mode[aria-pressed="true"]{ background:#fff; color:var(--red); border-color:var(--red); }
-  .pt-files{ display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+  .pt-files{ margin-top:8px; }
+  .pt-files summary{ font-family:var(--sans); font-size:11.5px; padding:6px 9px; border-radius:5px; cursor:pointer; border:1px solid var(--line); background:#fbfaf7; color:var(--ink); list-style:none; display:flex; justify-content:space-between; align-items:center; }
+  .pt-files summary::-webkit-details-marker{ display:none; }
+  .pt-files summary::after{ content:'▾'; font-size:11px; }
+  .pt-files[open] summary::after{ content:'▴'; }
+  .pt-files summary:hover{ border-color:var(--green-dark); }
+  .pt-files-list{ display:flex; flex-direction:column; gap:5px; margin-top:5px; }
+  .pt-files-list button, .pt-files-list .pt-import{ text-align:left; }
   .pt-files button, .pt-import{
     font-family:var(--sans); font-size:11.5px; padding:5px 8px; border-radius:5px; cursor:pointer;
     border:1px solid var(--line); background:#fbfaf7; color:var(--ink);
@@ -624,12 +631,14 @@
         <button type="button" id="pt-orientacio" class="pt-generate">Omple l'orientació i la pendent des del relleu</button>
         <div id="pt-orientacio-msg" class="gen-hint" role="status"></div>
         <button class="table-toggle" data-table="punts">Veure taula de punts</button>
-        <div class="pt-files">
-          <button type="button" id="pt-export-geojson">Descarrega GeoJSON</button>
-          <button type="button" id="pt-export-csv">Descarrega CSV</button>
+        <details class="pt-files" id="pt-files">
+          <summary>Fitxers</summary>
+          <div class="pt-files-list">
+          <button type="button" id="pt-export" title="Descarrega els punts en GeoJSON i en CSV">Descarrega els punts</button>
           <button type="button" id="pt-load-published" hidden title="Substitueix els punts d'aquest navegador pels de dades/punts_mostreig.geojson">Carrega la capa publicada</button>
           <label class="pt-import">Importa GeoJSON<input type="file" id="pt-import" accept=".geojson,.json" hidden></label>
-        </div>
+          </div>
+        </details>
         <p class="pt-note" id="pt-note">Els punts es desen en aquest navegador. Descarrega'ls en acabar la sessió per no perdre'ls.</p>
         <button type="button" id="pt-clear" class="pt-clear">Esborra tots els punts</button>
       </div>
@@ -2591,17 +2600,18 @@ function download(name, text, type){
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 const stamp = () => new Date().toISOString().slice(0, 10).replace(/-/g, '');
-document.getElementById('pt-export-geojson').addEventListener('click', async () => {
+async function exportGeoJSON(){
   if(!points.features.length) return alert('Encara no hi ha cap punt per descarregar.');
   await Promise.all([ensureCob2020(), ensureCobHist()]);
   const out = { type:'FeatureCollection', features: points.features.map(f => ({ ...f, properties: { ...f.properties, cobertura_2020: cobertaActual(f) || '', origen: origenPunt(f) || '', edat_espai_obert: edatPunt(f) || '', coberta_2005: cobHist(f, 2005) || '', coberta_1993: cobHist(f, 1993) || '', coberta_1956: cobHist(f, 1956) || '' } })) };
   download(`punts_mostreig_${stamp()}.geojson`, JSON.stringify(out, null, 1), 'application/geo+json');
-});
+}
+document.getElementById('pt-files').addEventListener('click', (e) => { if(e.target.closest('button')) setTimeout(() => document.getElementById('pt-files').open = false, 0); });
 document.getElementById('pt-load-published').addEventListener('click', () => {
   if(points.features.length && !confirm(`Això substitueix els ${points.features.length} punts d'aquest navegador per la capa publicada. Continuar?`)) return;
   loadPublishedPoints(true);
 });
-document.getElementById('pt-export-csv').addEventListener('click', async () => {
+async function exportCSV(){
   if(!points.features.length) return alert('Encara no hi ha cap punt per descarregar.');
   await Promise.all([ensureCob2020(), ensureCobHist()]);
   const cols = ['id','tipologia','origen','zona','orientacio','pendent','rol','metode','observacions', 'cobertura_2020', 'edat_espai_obert', 'incendi', 'coberta_2005', 'coberta_1993', 'coberta_1956'];
@@ -2609,10 +2619,17 @@ document.getElementById('pt-export-csv').addEventListener('click', async () => {
   const lines = [[...cols, 'lon', 'lat'].join(',')].concat(points.features.map(f =>
     [...cols.map(c => q(c === 'cobertura_2020' ? (cobertaActual(f) || '') : c === 'edat_espai_obert' ? (edatPunt(f) || '') : c === 'origen' ? (origenPunt(f) || '') : c === 'incendi' ? (incendiPunt(f) || '') : /^coberta_/.test(c) ? (cobHist(f, c.slice(8)) || '') : f.properties[c])), f.geometry.coordinates[0], f.geometry.coordinates[1]].join(',')));
   download(`punts_mostreig_${stamp()}.csv`, '\uFEFF' + lines.join('\r\n'), 'text/csv;charset=utf-8');
+}
+// Un sol botó: baixa el GeoJSON (per publicar-lo al visor) i el CSV (per treballar-hi en full de càlcul)
+document.getElementById('pt-export').addEventListener('click', async () => {
+  if(!points.features.length) return alert('Encara no hi ha cap punt per descarregar.');
+  await exportGeoJSON();
+  setTimeout(exportCSV, 400);
 });
 document.getElementById('pt-import').addEventListener('change', async (e) => {
   const file = e.target.files[0];
   e.target.value = '';
+  document.getElementById('pt-files').open = false;
   if(!file) return;
   try {
     const fc = JSON.parse(await file.text());
