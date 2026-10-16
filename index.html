@@ -177,6 +177,18 @@
   .popup-n{ color:#9a9d95; }
   .popup-sep{ height:1px; background:#f0efe9; margin:8px 0; }
   .popup-more{ font-size:11px; color:#8a8d85; margin-top:6px; }
+  .stats-h{ font:600 13px var(--mono); letter-spacing:.07em; text-transform:uppercase; color:var(--green-dark,#2f5d40); margin:26px 0 4px; padding-top:14px; border-top:2px solid var(--green,#8db89a); }
+  .stats-h:first-child{ margin-top:0; border-top:0; padding-top:0; }
+  #measure-panel{ position:absolute; left:50%; bottom:34px; transform:translateX(-50%); z-index:3; background:#fff; border:1px solid var(--line,#ddd); border-radius:6px; box-shadow:0 2px 10px rgba(0,0,0,.18); padding:8px 12px; min-width:210px; text-align:center; font-size:12px; }
+  #measure-panel[hidden]{ display:none; }
+  #measure-panel .m-tit{ font:10.5px var(--mono); letter-spacing:.06em; text-transform:uppercase; color:#777; }
+  #measure-panel .m-tot{ font-size:22px; font-weight:600; color:#c0392b; margin:2px 0; }
+  #measure-panel .m-sub{ color:#666; margin-bottom:6px; }
+  #measure-panel .m-btns{ display:flex; gap:6px; justify-content:center; }
+  #measure-panel .m-btns button{ border:1px solid #ccc; background:#f6f6f3; border-radius:4px; padding:3px 9px; font-size:11.5px; cursor:pointer; }
+  #measure-tip{ position:absolute; z-index:3; pointer-events:none; background:#c0392b; color:#fff; font:600 12px var(--mono); padding:3px 7px; border-radius:4px; white-space:nowrap; box-shadow:0 1px 4px rgba(0,0,0,.3); }
+  #measure-tip[hidden]{ display:none; }
+  #measure-btn.active{ background:#fbe4e0; color:#c0392b; }
   .home-btn{ display:flex !important; align-items:center; justify-content:center; color:#333; }
 
   .opacity-ctl{ display:flex; align-items:center; gap:10px; font-size:11px; color:#6b6f68; margin:2px 0 4px; }
@@ -256,7 +268,6 @@
   .gen-table td:first-child .pt-sw{ display:inline-block; vertical-align:-1px; margin-right:8px; }
   .gen-table input{ width:64px; font-family:var(--mono); font-size:12px; padding:4px 6px; border:1px solid var(--line); border-radius:4px; }
   .gen-hint{ font-size:11.5px; color:#8a8d85; margin:4px 0 10px; line-height:1.45; }
-  .gen-hint-inline{ color:#8a8d85; }
   .gen-check{ display:flex; align-items:flex-start; gap:7px; font-size:12.5px; margin-bottom:7px; line-height:1.4; }
   .gen-check input{ margin-top:2px; accent-color:var(--green-dark); }
   .gen-grid{ display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:8px; margin:10px 0 14px; align-items:end; }
@@ -372,8 +383,6 @@
   .pt-kpi{ border:1px solid var(--line); border-radius:8px; padding:10px 12px; background:#fff; }
   .pt-kpi .n{ font-size:26px; font-weight:700; line-height:1.1; font-variant-numeric:tabular-nums; }
   .pt-kpi .l{ font-size:11.5px; color:#6b6f68; margin-top:3px; display:flex; align-items:center; gap:6px; }
-  .pt-kpi .chip{ font-size:10.5px; padding:1px 7px; border-radius:10px; margin-left:auto; white-space:nowrap; }
-  .chip.ok{ background:#e4f0e6; color:#2f6a3c; } .chip.low{ background:#fbf1ea; color:#8a4a2a; } .chip.high{ background:#eef0f7; color:#3d4a8a; }
   .pt-section{ margin:0 0 28px; }
   .pt-section h3{ font-size:13px; margin:0 0 4px; font-weight:700; }
   .pt-section .sub{ font-size:11.5px; color:#6b6f68; margin:0 0 12px; max-width:66ch; line-height:1.45; }
@@ -413,6 +422,7 @@
     .basemap-switch{ font-size:10px; }
     .basemap-switch button{ padding:6px 8px; }
   }
+.evol-row{display:flex;align-items:center;gap:8px;margin:3px 0}.evol-yr{font:11px/1 'JetBrains Mono',monospace;color:var(--muted,#777);width:30px;flex:none}
 </style>
 </head>
 <body>
@@ -617,9 +627,10 @@
         <div class="pt-files">
           <button type="button" id="pt-export-geojson">Descarrega GeoJSON</button>
           <button type="button" id="pt-export-csv">Descarrega CSV</button>
+          <button type="button" id="pt-load-published" hidden title="Substitueix els punts d'aquest navegador pels de dades/punts_mostreig.geojson">Carrega la capa publicada</button>
           <label class="pt-import">Importa GeoJSON<input type="file" id="pt-import" accept=".geojson,.json" hidden></label>
         </div>
-        <p class="pt-note">Els punts es desen en aquest navegador. Descarrega'ls en acabar la sessió per no perdre'ls.</p>
+        <p class="pt-note" id="pt-note">Els punts es desen en aquest navegador. Descarrega'ls en acabar la sessió per no perdre'ls.</p>
         <button type="button" id="pt-clear" class="pt-clear">Esborra tots els punts</button>
       </div>
       </div>
@@ -678,11 +689,10 @@
       <button id="stats-close" aria-label="Tanca l'anàlisi">✕</button>
     </div>
     <div class="stats-tabs" role="tablist">
-      <button class="stats-tab" role="tab" data-tab="c1956" aria-selected="true">Cobertes 1956</button>
-      <button class="stats-tab" role="tab" data-tab="c2020" aria-selected="false">Cobertes 2020</button>
-      <button class="stats-tab" role="tab" data-tab="canvi" aria-selected="false">Canvi 1956–2020</button>
-      <button class="stats-tab" role="tab" data-tab="relleu" aria-selected="false">Pendent i orientació</button>
+      <button class="stats-tab" role="tab" data-tab="cob" aria-selected="true">Cobertes 1956–2020</button>
+      <button class="stats-tab" role="tab" data-tab="evol" aria-selected="false">Evolució zones de gestió executades</button>
       <button class="stats-tab" role="tab" data-tab="punts" aria-selected="false">Punts de mostreig</button>
+      <button class="stats-tab" role="tab" data-tab="relleu" aria-selected="false">Pendent i orientació</button>
     </div>
   </div>
   <div id="stats-body" role="tabpanel"></div>
@@ -830,6 +840,81 @@ class HomeControl {
   onRemove(){ this._c.remove(); }
 }
 map.addControl(new HomeControl(), 'top-right');
+
+// ---- Eina per mesurar distàncies ----
+let measureMode = false;
+const MEASURE_CURSOR = `url("data:image/svg+xml;utf8,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 20 20"><path d="M2.5 13.5 13.5 2.5l4 4-11 11z" fill="#fff8d6" stroke="#222" stroke-width="1.3" stroke-linejoin="round"/><path d="M6 10l2 2M9 7l2 2M12 4.5l1.5 1.5" stroke="#222" stroke-width="1.2" stroke-linecap="round"/></svg>')}") 3 25, crosshair`;
+const measurePts = [];                       // [lng, lat]
+const haversine = (a, b) => { const R = 6371008.8, r = Math.PI / 180, dLat = (b[1] - a[1]) * r, dLng = (b[0] - a[0]) * r;
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(a[1] * r) * Math.cos(b[1] * r) * Math.sin(dLng / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(h)); };
+const fmtDist = (m) => m >= 1000 ? (m / 1000).toLocaleString('ca-ES', { maximumFractionDigits: 3 }) + ' km' : Math.round(m).toLocaleString('ca-ES') + ' m';
+const measureEl = document.createElement('div');
+measureEl.id = 'measure-panel'; measureEl.hidden = true;
+measureEl.innerHTML = `<div class="m-tit">Mesura de distàncies</div><div class="m-tot" id="m-tot">0 m</div><div class="m-sub" id="m-sub">Clica al mapa per afegir punts</div>
+  <div class="m-btns"><button type="button" id="m-undo">Desfés</button><button type="button" id="m-clear">Neteja</button><button type="button" id="m-close">Tanca</button></div>`;
+document.getElementById('map').appendChild(measureEl);
+const measureTip = document.createElement('div');       // etiqueta amb la distància que segueix el cursor
+measureTip.id = 'measure-tip'; measureTip.hidden = true;
+document.getElementById('map').appendChild(measureTip);
+let measureCur = null;                      // posició del cursor mentre falta el segon clic
+function drawMeasure(){
+  const src = map.getSource('measure'); if(!src) return;
+  const pts = measureCur && measurePts.length === 1 ? [...measurePts, measureCur] : measurePts;
+  const feats = measurePts.map((c, i) => ({ type:'Feature', properties:{ end: i === measurePts.length - 1 }, geometry:{ type:'Point', coordinates:c } }));
+  if(pts.length > 1) feats.push({ type:'Feature', properties:{}, geometry:{ type:'LineString', coordinates:pts } });
+  src.setData({ type:'FeatureCollection', features:feats });
+  let tot = 0; for(let i = 1; i < pts.length; i++) tot += haversine(pts[i - 1], pts[i]);
+  document.getElementById('m-tot').textContent = fmtDist(tot);
+  document.getElementById('m-sub').textContent = measurePts.length === 0 ? 'Clica al mapa per començar' : measurePts.length === 1 ? 'Mou el ratolí i clica per acabar' : 'Clica de nou per fer una altra mesura';
+  if((measurePts.length === 1 && measureCur) || measurePts.length === 2){ measureTip.hidden = false; measureTip.textContent = fmtDist(tot); } else measureTip.hidden = true;
+}
+function ensureMeasureLayers(){
+  if(map.getSource('measure')) return;
+  map.addSource('measure', { type:'geojson', data:{ type:'FeatureCollection', features:[] } });
+  map.addLayer({ id:'measure-line', type:'line', source:'measure', filter:['==', ['geometry-type'], 'LineString'],
+    paint:{ 'line-color':'#c0392b', 'line-width':2.5, 'line-dasharray':[2, 1.5] } });
+  map.addLayer({ id:'measure-pts', type:'circle', source:'measure', filter:['==', ['geometry-type'], 'Point'],
+    paint:{ 'circle-radius':4.5, 'circle-color':['case', ['get', 'end'], '#c0392b', '#fff'], 'circle-stroke-color':'#c0392b', 'circle-stroke-width':2 } });
+}
+function setMeasure(on){
+  measureMode = on; measureEl.hidden = !on;
+  document.getElementById('measure-btn').classList.toggle('active', on);
+  map.getCanvas().style.cursor = on ? MEASURE_CURSOR : '';
+  if(!on){ measureCur = null; measureTip.hidden = true; }
+  if(on){ ensureMeasureLayers(); map.doubleClickZoom.disable(); if(activePopup){ activePopup.remove(); } }
+  else { map.doubleClickZoom.enable(); measurePts.length = 0; drawMeasure(); }
+}
+class MeasureControl {
+  onAdd(){
+    this._c = document.createElement('div');
+    this._c.className = 'maplibregl-ctrl maplibregl-ctrl-group';
+    this._c.innerHTML = `<button type="button" id="measure-btn" class="home-btn" title="Mesura distàncies" aria-label="Mesura distàncies">
+      <svg viewBox="0 0 20 20" width="17" height="17" aria-hidden="true"><path d="M2.5 13.5 13.5 2.5l4 4-11 11zM6 10l2 2M9 7l2 2M12 4.5l1.5 1.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/></svg></button>`;
+    this._c.querySelector('button').addEventListener('click', () => setMeasure(!measureMode));
+    return this._c;
+  }
+  onRemove(){ this._c.remove(); }
+}
+map.addControl(new MeasureControl(), 'top-right');
+const placeTip = (pt) => { measureTip.style.left = (pt.x + 14) + 'px'; measureTip.style.top = (pt.y + 14) + 'px'; };
+map.on('click', (e) => {
+  if(!measureMode) return;
+  const p = [e.lngLat.lng, e.lngLat.lat];
+  if(measurePts.length >= 2) measurePts.length = 0;      // nova mesura
+  measurePts.push(p); measureCur = measurePts.length === 1 ? p : null; drawMeasure();
+  placeTip(e.point);
+});
+map.on('mousemove', (e) => {
+  if(!measureMode || measurePts.length !== 1) return;
+  measureCur = [e.lngLat.lng, e.lngLat.lat]; placeTip(e.point); drawMeasure();
+});
+measureEl.addEventListener('click', (e) => {
+  const id = e.target.id;
+  if(id === 'm-undo'){ measurePts.pop(); measureCur = null; drawMeasure(); }
+  else if(id === 'm-clear'){ measurePts.length = 0; measureCur = null; drawMeasure(); }
+  else if(id === 'm-close') setMeasure(false);
+});
+document.addEventListener('keydown', (e) => { if(e.key === 'Escape' && measureMode) setMeasure(false); });
 
 let dataCache = {};
 
@@ -1089,6 +1174,12 @@ function popupContent(key, p, f){
       html = `<div class="popup-title">${esc(p.id)} · ${esc(p.tipologia || 'Sense tipologia')}</div>
         ${isSuplent(p) ? `<div class="popup-row"><span class="k">Rol</span><span class="v">Suplent</span></div>` : ''}
         ${p.origen ? `<div class="popup-row"><span class="k">Origen</span><span class="v">${esc(p.origen)}</span></div>` : ''}
+        ${p.tipologia !== 'Control obert' ? (() => {
+          const rows = () => { const o = origenPunt(f), e = edatPunt(f);
+            return (o ? `<div class="popup-row"><span class="k">Origen</span><span class="v">${esc(o)}</span></div>` : '') + (e ? `<div class="popup-row"><span class="k">Edat</span><span class="v">${esc(e)}</span></div>` : ''); };
+          if(dataCache.obGestio) return `<div data-obg>${rows()}</div>`;
+          ensureCobHist().then(() => { const el = document.querySelector('.maplibregl-popup [data-obg]'); if(el) el.innerHTML = rows(); });
+          return '<div data-obg></div>'; })() : ''}
         ${(() => { const c = cobertaActual(f);
           if(c === undefined){ ensureCob2020().then(() => { const el = document.querySelector('.maplibregl-popup [data-cob-pending]'); if(el){ const v = cobertaActual(f); el.textContent = v || '—'; el.removeAttribute('data-cob-pending'); } }); }
           return `<div class="popup-row"><span class="k">Coberta 2020</span><span class="v"${c === undefined ? ' data-cob-pending' : ''}>${c === undefined ? 'carregant…' : esc(c || '—')}</span></div>`; })()}
@@ -1098,6 +1189,11 @@ function popupContent(key, p, f){
         ${(() => { const r = revisioPunt(f); if(!r || r.fora || !r.props) return '';
           const q = r.props, row = (k, v) => `<div class="popup-row"><span class="k">${k}</span><span class="v">${esc(v || '—')}</span></div>`;
           return `<div class="popup-sub">Trajectòria de l'espai obert</div>` + row('Edat', edatText(q.edat)) + (incendiText(q.id) ? row('Incendi', incendiText(q.id)) : '') + row('Coberta 2005', q.cob2005) + row('Coberta 1993', q.cob1993) + row('Coberta 1956', q.cob1956); })()}
+        ${p.tipologia !== 'Control obert' ? (() => {
+          const row = (any) => { const v = cobHist(f, any);
+            return `<div class="popup-row"><span class="k">Coberta ${any}</span><span class="v"${v === undefined ? ' data-cobh="' + any + '"' : ''}>${v === undefined ? 'carregant…' : esc(v || '—')}</span></div>`; };
+          ensureCobHist().then(() => document.querySelectorAll('.maplibregl-popup [data-cobh]').forEach(el => { el.textContent = cobHist(f, el.dataset.cobh) || '—'; el.removeAttribute('data-cobh'); }));
+          return `<div class="popup-sub">Cobertes anteriors</div>` + row(2005) + row(1993) + row(1956); })() : ''}
         ${p.observacions ? `<div class="popup-row"><span class="k">Notes</span><span class="v">${esc(p.observacions)}</span></div>` : ''}
         <div class="popup-pt-actions pt-popup-actions">
           <button type="button" data-pt-edit="${esc(p.id)}">Edita</button>
@@ -1133,7 +1229,7 @@ let activePopup = null;
 
 function setupMultiPopup(){
   map.on('click', (e) => {
-    if(editMode) return;
+    if(editMode || measureMode) return;
     const layers = Object.keys(POPUP_LAYERS).filter(id => map.getLayer(id));
     const feats = map.queryRenderedFeatures(e.point, { layers });
     const relleu = relleuSection(e.lngLat);
@@ -1288,7 +1384,7 @@ document.addEventListener('keydown', (e) => {
 
 let currentTableKey = null;
 async function openTable(key){
-  if(key === 'punts') await ensureCob2020();
+  if(key === 'punts') await Promise.all([ensureCob2020(), ensureCobHist()]);
   let data = dataCache[key];
   if(!data) return;
   // Amb un filtre actiu a la llegenda dels punts, la taula només mostra aquesta tipologia
@@ -1320,7 +1416,9 @@ async function openTable(key){
     if(c === 'incendi') return incendiText(p.id) || '—';
     if(c === 'tr_incendi') return (f && incendiPunt(f)) || '—';
     if(c === 'cob_actual') return (f && cobertaActual(f)) || '—';
-    if(c === 'revisio') return (f && revisioText(f)) ?? '—';
+    if(HIST_COLS[c]) return (f && cobHist(f, HIST_COLS[c])) || '—';
+    if(key === 'punts' && c === 'origen') return (f && origenPunt(f)) || '—';
+    if(c === 'tr_edat') return (f && edatPunt(f)) || '—';
     if(TRAJ_COLS[c]) return edatTrajFix(c, (f && f.properties.tipologia === 'Control obert' && trajectoria(f, TRAJ_COLS[c])) || '—');
     let v = p[c];
     if(c === 'feta') v = (v == 1) ? 'Executada' : (v == 0 ? 'Pendent' : 'Planificada');
@@ -1337,7 +1435,9 @@ async function openTable(key){
     if(c === 'incendi') return incendiText(p.id) || null;
     if(c === 'tr_incendi') return (f && incendiPunt(f)) || null;
     if(c === 'cob_actual') return (f && cobertaActual(f)) || null;
-    if(c === 'revisio') return (f && revisioText(f)) ?? null;
+    if(HIST_COLS[c]) return (f && cobHist(f, HIST_COLS[c])) || null;
+    if(key === 'punts' && c === 'origen') return (f && origenPunt(f)) || null;
+    if(c === 'tr_edat') return (f && edatPunt(f)) || null;
     if(TRAJ_COLS[c]) return edatTrajFix(c, (f && f.properties.tipologia === 'Control obert' && trajectoria(f, TRAJ_COLS[c])) || null);
     let v = p[c];
     if(c === 'area_ha' && (v === null || v === undefined)) v = p.area_1;
@@ -1500,17 +1600,22 @@ map.on('mousemove', (e) => {
 
 // ---- Càrrega diferida de les cobertes (només quan s'activen) ----
 const LAZY_LAYERS = { cob2020: 'dades/cobertes_2020.geojson', cob1956: 'dades/cobertes_1956.geojson' };
+// Cobertes de 1993 i 2005: només serveixen per a l'historial dels punts (no tenen capa al mapa)
+const HIST_FILES = { cob1993: 'dades/cobertes_1993.geojson', cob2005: 'dades/cobertes_2005.geojson',
+  obGestio: 'dades/espais_oberts_gestio.geojson' };   // espais oberts (capa completa) que cauen dins de les zones de gestió: origen i edat
+const COB_FILES = { ...LAZY_LAYERS, ...HIST_FILES };
 const lazyP = {}, lazySrcSet = {};
 function loadLazy(key){
   if(dataCache[key]) return Promise.resolve(dataCache[key]);
-  if(!lazyP[key]) lazyP[key] = fetch(LAZY_LAYERS[key]).then(r => {
+  if(!lazyP[key]) lazyP[key] = fetch(COB_FILES[key]).then(r => {
     if(!r.ok) throw new Error(r.status);
     return r.json();
   }).then(d => { dataCache[key] = d; return d; })
-    .catch(err => { delete lazyP[key]; console.warn("No s'ha pogut carregar", LAZY_LAYERS[key], err); return null; });
+    .catch(err => { delete lazyP[key]; console.warn("No s'ha pogut carregar", COB_FILES[key], err); return null; });
   return lazyP[key];
 }
 const ensureCob2020 = () => loadLazy('cob2020');
+const ensureCobHist = () => Promise.all(['cob1956', 'cob1993', 'cob2005', 'obGestio'].map(loadLazy));
 Object.keys(LAZY_LAYERS).forEach(key => {
   document.getElementById('chk-' + key).addEventListener('change', async (e) => {
     if(!e.target.checked || lazySrcSet[key]) return;
@@ -1623,21 +1728,17 @@ const COVER_COLORS = {
   'Improductiu artificial': '#6f6a75',
   'Aigues continentals':    '#5b8fb0'
 };
-const HAB_PALETTE = ['#2d5a3d','#5f8a70','#8db89a','#b9a462','#e3d28a','#c98a4b','#4a7c94','#8c6d9e'];
 const OTHER_COLOR = '#d9d6cc';
-const HAB_TOP_N = 8;
 
 const STATS_SOURCES = {
   c1956: { file:'dades/estadistiques/1956_tipologies_STATS.csv',
            note:"Coberta de cada tipologia l'any 1956 (Mapa de Cobertes del Sòl de 1956, Diputació de Barcelona i CREAF, nivell 1F). Mostra si les zones gestionades avui eren bosc, matollar o conreu fa 70 anys." },
   c2020: { file:'dades/estadistiques/2020_tipologies_STATS.csv',
-           note:"Coberta actual de cada tipologia (Mapa de Cobertes del Sòl de Catalunya 2020, CREAF, nivell 1F)." },
-  hab:   { file:'dades/estadistiques/habitats_v3_tipologies_STATS.csv',
-           note:`Hàbitats CORINE presents a cada tipologia (Mapa d'Hàbitats de Catalunya). Les barres mostren els ${HAB_TOP_N} hàbitats amb més superfície; la resta s'agrupa com a «Altres hàbitats». La taula els inclou tots.` }
+           note:"Coberta actual de cada tipologia (Mapa de Cobertes del Sòl de Catalunya 2020, CREAF, nivell 1F)." }
 };
 
 const statsCache = {};
-let statsTab = 'c1956';
+let statsTab = 'cob';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmtHa  = (v) => v > 0 ? v.toLocaleString('ca-ES', { minimumFractionDigits:1, maximumFractionDigits:1 }) : '—';
@@ -1697,24 +1798,18 @@ async function getStats(key){
   return statsCache[key];
 }
 
-// ---- Composició (1956, 2020, hàbitats) ----
+// ---- Composició (1956, 2020) ----
 function renderComposition(d, key){
-  const isHab = key === 'hab';
-  const OTHER = 'Altres hàbitats';
   const colorOf = {};
-  const legendCats = isHab ? d.cats.slice(0, HAB_TOP_N) : d.cats;
-  legendCats.forEach((c, i) => colorOf[c] = isHab ? HAB_PALETTE[i % HAB_PALETTE.length] : (COVER_COLORS[c] || OTHER_COLOR));
+  d.cats.forEach(c => colorOf[c] = COVER_COLORS[c] || OTHER_COLOR);
 
   const bars = d.tipos.map(t => {
     const total = d.totals[t];
     const segs = [];
-    let other = 0;
     d.cats.forEach(c => {
       const ha = d.byTipo[t][c] || 0;
-      if(!ha) return;
-      if(colorOf[c]) segs.push([c, ha, colorOf[c]]); else other += ha;
+      if(ha) segs.push([c, ha, colorOf[c]]);
     });
-    if(other) segs.push([OTHER, other, OTHER_COLOR]);
     const spans = segs.map(([c, ha, col]) =>
       `<span style="width:${(ha / total * 100).toFixed(3)}%;background:${col}" title="${esc(c)}: ${fmtHa(ha)} ha (${fmtPct(ha / total * 100)} %)"></span>`).join('');
     return `<div>
@@ -1723,14 +1818,12 @@ function renderComposition(d, key){
     </div>`;
   }).join('');
 
-  const legendItems = legendCats.map(c =>
+  const legendItems = d.cats.map(c =>
     `<div class="legend-item" title="${esc(c)}"><span class="swatch" style="background:${colorOf[c]}"></span><span class="txt">${esc(c)}</span></div>`);
-  if(isHab && d.cats.length > HAB_TOP_N)
-    legendItems.push(`<div class="legend-item"><span class="swatch" style="background:${OTHER_COLOR}"></span><span class="txt">${OTHER}</span></div>`);
 
-  const head = `<tr><th>${isHab ? 'Hàbitat' : 'Coberta'}</th>` +
+  const head = `<tr><th>Coberta</th>` +
     d.tipos.map(t => `<th>${esc(t)} (ha)</th><th>%</th>`).join('') + '</tr>';
-  const body = d.cats.map(c => `<tr data-cat="${esc(c.toLowerCase())}">
+  const body = d.cats.map(c => `<tr>
       <td><div class="cat-cell"><span class="swatch" style="background:${colorOf[c] || OTHER_COLOR}"></span>${esc(c)}</div></td>` +
     d.tipos.map(t => {
       const ha = d.byTipo[t][c] || 0;
@@ -1744,7 +1837,6 @@ function renderComposition(d, key){
     <div class="stats-legend">${legendItems.join('')}</div>
     <div class="stats-tools">
       <h3>Taula de superfícies</h3>
-      ${isHab ? '<input type="search" id="stats-filter" placeholder="Filtra hàbitats…" aria-label="Filtra hàbitats">' : ''}
       <a href="${d.file}" download>Descarrega CSV</a>
     </div>
     <div class="stats-table-wrap"><table class="stats"><thead>${head}</thead><tbody>${body}${foot}</tbody></table></div>`;
@@ -1861,18 +1953,21 @@ function selAttrs(t, d, v){
   const on = statSel && statSel.t === t && statSel.d === d && statSel.v === v;
   return ` class="sel${on ? ' active' : ''}" role="button" tabindex="0" data-st="${esc(t)}" data-sd="${esc(d)}" data-sv="${esc(v)}"`;
 }
+// fons fosc (per exemple els verds) → número en blanc
+function darkBg(c){ const m = /^#([0-9a-f]{6})$/i.exec(c || ''); if(!m) return false; const v = parseInt(m[1], 16); return (0.299 * (v >> 16) + 0.587 * (v >> 8 & 255) + 0.114 * (v & 255)) < 140; }
 function stackBar(segs, total, label, meta){
   // segs: [[etiqueta, n, color]]; mostra el nombre dins de cada tram si hi cap
   if(!total) return `<div class="stack" role="img" aria-label="${esc(label)}"><span class="empty" style="width:100%"></span></div>`;
   return `<div class="stack" role="img" aria-label="${esc(label)}">` + segs.filter(x => x[1] > 0).map(([l, n, c]) => {
     const w = n / total * 100;
-    return `<span${meta && meta.t ? selAttrs(meta.t, meta.d, l) : ''} style="width:${w.toFixed(3)}%;background:${c}" title="${esc(l)}: ${n}${meta && meta.unit ? meta.unit : ''} (${fmt1(w)} %)${meta && meta.t ? ' · clic per veure\'ls' : ''}">${w >= 8 ? n : ''}</span>`;
+    return `<span${meta && meta.t ? selAttrs(meta.t, meta.d, l) : ''} style="width:${w.toFixed(3)}%;background:${c}${darkBg(c) ? ';color:#fff' : ''}" title="${esc(l)}: ${n}${meta && meta.unit ? meta.unit : ''} (${fmt1(w)} %)${meta && meta.t ? ' · clic per veure\'ls' : ''}">${w >= 8 ? n : ''}</span>`;
   }).join('') + '</div>';
 }
 // ---- Selecció interactiva des de les estadístiques ----
 let statSel = null;     // { t: tipologia ('' = totes), d: dimensió, v: valor }
 let ptSelIds = null;    // ids dels punts seleccionats (filtre del mapa)
-const SEL_DIM = { ori:'Orientació', pend:'Pendent', origen:'Origen', cob:'Coberta 2020', all:'' };
+const SEL_DIM = { ori:'Orientació', pend:'Pendent', origen:'Origen', cob:'Coberta 2020', cob2005:'Coberta 2005', cob1993:'Coberta 1993', cob1956:'Coberta 1956', all:'' };
+const cobPunt = (f, any) => any === 2020 ? cobertaActual(f) : cobHist(f, any);
 function matchSel(f, sel){
   const p = f.properties;
   if(isSuplent(p) || (sel.t && p.tipologia !== sel.t)) return false;
@@ -1880,7 +1975,8 @@ function matchSel(f, sel){
     case 'ori':    return sel.v === 'Sense dades' ? !p.orientacio : p.orientacio === sel.v;
     case 'pend':   return typeof p.pendent === 'number' && PENDENT_CLASSES.findIndex(c => p.pendent < c.max) === PENDENT_CLASSES.findIndex(c => c.l === sel.v);
     case 'origen': return p.origen === sel.v;
-    case 'cob':    return (cobertaActual(f) || 'Fora de la capa') === sel.v;
+    case 'cob':    return (cob1F(cobertaActual(f)) || 'Fora de la capa') === sel.v;
+    case 'cob2005': case 'cob1993': case 'cob1956': return (cob1F(cobHist(f, +sel.d.slice(3))) || 'Fora de la capa') === sel.v;
     default:       return true;
   }
 }
@@ -1960,16 +2056,24 @@ function renderPunts(){
     <div class="tipo-bars"><div>${stackBar(ORIGEN_OPTS.map((o, i) => [o, co.origen[o] || 0, i ? '#5b7f4a' : '#c89b52']), co.n, 'Origen del control obert', {t:'Control obert', d:'origen'})}
     <div class="stats-legend" style="margin:8px 0 0">${ORIGEN_OPTS.map((o, i) => `<div class="legend-item"><span class="swatch" style="background:${i ? '#5b7f4a' : '#c89b52'}"></span><span class="txt">${esc(o)}: <b>${co.origen[o] || 0}</b></span></div>`).join('')}</div></div></div></div>` : '';
 
-  let cobBlock = '';
-  if(dataCache.cob2020){
-    const cnt = {}; TIPO_OPTS.forEach(t => cnt[t] = {});
-    points.features.forEach(f => { const t = f.properties.tipologia; if(!cnt[t] || isSuplent(f.properties)) return; const c = cobertaActual(f) || 'Fora de la capa'; cnt[t][c] = (cnt[t][c] || 0) + 1; });
-    const cats = [...new Set(TIPO_OPTS.flatMap(t => Object.keys(cnt[t])))].sort((a, b) => TIPO_OPTS.reduce((x, t) => x + (cnt[t][b] || 0) - (cnt[t][a] || 0), 0));
-    const col = (c) => COVER_COLORS[c] || '#cccccc';
-    cobBlock = `<div class="pt-section"><h3>Coberta 2020</h3><p class="sub">Coberta del sòl 2020 a la posició de cada punt (Mapa de Cobertes del Sòl de Catalunya, CREAF).</p>
-      <div class="tipo-bars">` + TIPO_OPTS.map(t => `<div><div class="tipo-bar-label"><span class="tipo-dot" style="background:${PT_COLORS[t]}"></span>${esc(t)}<span class="ha">${R[t].n} punts</span></div>${stackBar(cats.map(c => [c, cnt[t][c] || 0, col(c)]), R[t].n, 'Coberta 2020 de ' + t, {t, d:'cob'})}</div>`).join('') + `</div>
-      <div class="stats-legend">` + cats.map(c => `<div class="legend-item"><span class="swatch" style="background:${col(c)}"></span><span class="txt">${esc(c)}</span></div>`).join('') + `</div></div>`;
-  }
+  const cobCol = (c) => COVER_COLORS[c] || (c === 'Aigües continentals' ? '#5b8fb0' : '#cccccc');
+  const cobCounts = (any) => { const cnt = {}; TIPO_OPTS.forEach(t => cnt[t] = {});
+    points.features.forEach(f => { const t = f.properties.tipologia; if(!cnt[t] || isSuplent(f.properties)) return; const c = cob1F(cobPunt(f, any)) || 'Fora de la capa'; cnt[t][c] = (cnt[t][c] || 0) + 1; });
+    return cnt; };
+  // Evolució: per a cada tipologia, una barra per any (2020 → 1956), cada tram clicable
+  const cobEvol = (anys) => {
+    const data = anys.map(([any, d]) => ({ any, d, cnt: cobCounts(any) }));
+    const cats = [...new Set(data.flatMap(x => TIPO_OPTS.flatMap(t => Object.keys(x.cnt[t]))))].sort((a, b) => data.reduce((n, x) => n + TIPO_OPTS.reduce((m, t) => m + (x.cnt[t][b] || 0) - (x.cnt[t][a] || 0), 0), 0));
+    return `<div class="pt-section"><h3>Evolució de la coberta</h3><p class="sub">Coberta del sòl a la posició de cada punt els anys ${data.map(x => x.any).reverse().join(', ')}. Cada tram es pot clicar per veure els punts.</p>
+      <div class="tipo-bars">` + TIPO_OPTS.map(t => `<div><div class="tipo-bar-label"><span class="tipo-dot" style="background:${PT_COLORS[t]}"></span>${esc(t)}<span class="ha">${R[t].n} punts</span></div>` +
+        data.map(x => `<div class="evol-row"><span class="evol-yr">${x.any}</span><div style="flex:1;min-width:0">${stackBar(cats.map(c => [c, x.cnt[t][c] || 0, cobCol(c)]), R[t].n, 'Coberta ' + x.any + ' de ' + t, {t, d:x.d})}</div></div>`).join('') + '</div>').join('') + `</div>
+      <div class="stats-legend">` + cats.map(c => `<div class="legend-item"><span class="swatch" style="background:${cobCol(c)}"></span><span class="txt">${esc(c)}</span></div>`).join('') + `</div></div>`;
+  };
+  const loaded = (k) => !!dataCache[k];
+  const senseEq = points.features.some(f => !isSuplent(f.properties) && [2020, 2005, 1993, 1956].some(y => cob1F(cobPunt(f, y)) === COB_SENSE_EQ));
+  const cobBlock =
+    cobEvol([[2020, 'cob'], [2005, 'cob2005'], [1993, 'cob1993'], [1956, 'cob1956']].filter(([y, d]) => loaded(d === 'cob' ? 'cob2020' : d))) +
+    (senseEq ? `<p class="stats-note">Als punts de control obert la coberta és la de l'espai obert, que té categories més detallades; es passen a les categories de les cobertes de gestió. «${COB_SENSE_EQ}» agrupa les que no tenen una equivalència clara (per exemple, conreus abandonats).</p>` : '');
   const rows = TIPO_OPTS.map(t => {
     const r = R[t], pm = r.pend.length ? fmt1(r.pend.reduce((a, b) => a + b, 0) / r.pend.length) : '—';
     const rng = r.pend.length ? fmt1(Math.min(...r.pend)) + '–' + fmt1(Math.max(...r.pend)) : '—';
@@ -2080,7 +2184,6 @@ async function renderRelleuStats(){
   const csv = ['capa;superficie_ha;pendent_mitjana;' + RELLEU_LLINDARS.map(l => 'pct_fins_' + l).join(';')].concat(R.filter(r => !r.buit).map(r =>
     [r.nom, r.ha.toFixed(1), r.mitjana.toFixed(1), ...r.llindars.map(x => (x * 100).toFixed(1))].join(';'))).join('\n');
   const csvHref = 'data:text/csv;charset=utf-8,' + encodeURIComponent('﻿' + csv);
-  const orientNS = R.filter(r => !r.buit && r.nom !== 'Tot el parc');
   return `<p class="stats-note">Superfície de cada capa segons la classe de pendent i l'orientació del terreny (ràster de relleu de 5 m). «Franges» inclou totes les franges (oficials i planificades) i «Espais oberts» tots els polígons de la capa de control. «Tot el parc» és la referència amb totes les cel·les amb dades.</p>
     <div class="pt-section"><h3>Pendent</h3><p class="sub">Hectàrees de cada capa per classe de pendent.</p>
       <div class="tipo-bars">${bars('pend')}</div><div class="stats-legend">${pendLegend}</div></div>
@@ -2091,31 +2194,53 @@ async function renderRelleuStats(){
     <div class="stats-table-wrap"><table class="stats"><thead><tr><th>Capa</th><th>Superfície (ha)</th><th>Pendent mitjana (°)</th>${RELLEU_LLINDARS.map(l => `<th>≤ ${l}°</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
+// ---- Evolució de les cobertes (1956, 1993, 2005, 2020) a les zones executades ----
+// dades/cobertes_gestio.json: hectàrees per tipologia, any i coberta 1F (ràster de 2 m de les capes de cobertes retallades a les zones executades)
+function renderEvol(d){
+  const ANYS = ['1956', '1993', '2005', '2020'];
+  const ZONES = [['Franja', 'Franges executades'], ['PEG', 'PEG executats'], ['AFG', 'AFG executades'], ['Total', 'Total (unió de les tres)']];
+  const col = (c) => COVER_COLORS[c] || (c === 'Aigües continentals' ? COVER_COLORS['Aigues continentals'] : OTHER_COLOR);
+  const ORD = ['Arbrat dens', 'Arbrat clar', 'Matollars', 'Prats i herbassars', 'Conreus', 'Improductiu natural', 'Improductiu artificial', 'Aigües continentals', 'Sense dades'];
+  const ha = (x) => Math.round(x).toLocaleString('ca-ES');
+  const classes = ORD.filter(c => ANYS.some(a => ZONES.some(([z]) => (d.anys[a][z][c] || 0) > 0)));
+  const legend = classes.map(c => `<div class="legend-item"><span class="swatch" style="background:${col(c)}"></span><span class="txt">${c}</span></div>`).join('');
+  const groups = ZONES.map(([z, nom]) => `<div class="pt-section"><h3>${nom} · ${ha(d.zones_ha[z])} ha</h3>
+    <div class="tipo-bars">${ANYS.map(a => { const r = d.anys[a][z], segs = classes.map(c => [c, Math.round((r[c] || 0) * 10) / 10, col(c)]);
+      return `<div><div class="tipo-bar-label">${a}</div>${stackBar(segs, segs.reduce((t, x) => t + x[1], 0), nom + ' ' + a, { unit:' ha' })}</div>`; }).join('')}</div></div>`).join('');
+  const rows = ZONES.map(([z, nom]) => `<tr class="total"><td colspan="${ANYS.length * 2 + 1}">${nom}</td></tr>` + classes.map(c =>
+    `<tr><td>${c}</td>${ANYS.map(a => { const v = d.anys[a][z][c] || 0; return `<td>${ha(v)}</td><td>${fmt1(v / d.zones_ha[z] * 100)} %</td>`; }).join('')}</tr>`).join('')).join('');
+  const csv = ['zona;coberta;' + ANYS.map(a => 'ha_' + a + ';pct_' + a).join(';')].concat(ZONES.flatMap(([z, nom]) => classes.map(c =>
+    [nom, c, ...ANYS.flatMap(a => { const v = d.anys[a][z][c] || 0; return [v.toFixed(2), (v / d.zones_ha[z] * 100).toFixed(1)]; })].join(';')))).join('\n');
+  const href = 'data:text/csv;charset=utf-8,' + encodeURIComponent('\ufeff' + csv);
+  return `<p class="stats-note">Coberta (nivell 1F) de les zones de gestió <b>executades</b> els anys 1956, 1993, 2005 i 2020. Mostra què hi havia abans de la intervenció. Les hectàrees són d'un càlcul sobre ràster de ${d.cell_m} m, i «Sense dades» és la part de la zona que les capes de cobertes no cobreixen. El total és la unió de les tres tipologies: on se superposen, es compta una sola vegada.</p>
+    ${groups}<div class="stats-legend">${legend}</div>
+    <div class="stats-tools"><h3>Taula</h3><a href="${href}" download="evolucio_cobertes_zones_executades.csv">Descarrega CSV</a></div>
+    <div class="stats-table-wrap"><table class="stats"><thead><tr><th>Coberta</th>${ANYS.map(a => `<th>${a} (ha)</th><th>%</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
 async function renderStats(){
   const body = document.getElementById('stats-body');
   body.innerHTML = '<p class="stats-note">Carregant dades…</p>';
   try {
-    if(statsTab === 'relleu'){
+    if(statsTab === 'evol'){
+      if(!statsCache.evol) statsCache.evol = fetch('dades/cobertes_gestio.json').then(r => { if(!r.ok) throw new Error('dades/cobertes_gestio.json'); return r.json(); });
+      body.innerHTML = renderEvol(await statsCache.evol);
+    } else if(statsTab === 'relleu'){
       body.innerHTML = await renderRelleuStats();
     } else if(statsTab === 'punts'){
-      await ensureCob2020();
+      await Promise.all([ensureCob2020(), ensureCobHist()]);
       body.innerHTML = renderPunts();
       if(statSel){ ptSelIds = selFeatures().map(f => f.properties.id); applyPtFilter(); }
-    } else if(statsTab === 'canvi'){
-      if(!statsCache.canvi) statsCache.canvi = loadTransitions('dades/estadistiques/canvi_1956_2020_STATS.csv');
-      body.innerHTML = renderChange(await statsCache.canvi);
     } else {
-      const d = await getStats(statsTab);
-      body.innerHTML = renderComposition(d, statsTab);
-      const filter = document.getElementById('stats-filter');
-      if(filter) filter.addEventListener('input', () => {
-        const q = filter.value.trim().toLowerCase();
-        body.querySelectorAll('tbody tr[data-cat]').forEach(tr =>
-          tr.style.display = !q || tr.dataset.cat.includes(q) ? '' : 'none');
-      });
+      // Cobertes 1956 + Cobertes 2020 + Canvi 1956–2020 en una sola pestanya
+      if(!statsCache.canvi) statsCache.canvi = loadTransitions('dades/estadistiques/canvi_1956_2020_STATS.csv');
+      const [d56, d20, ch] = await Promise.all([getStats('c1956'), getStats('c2020'), statsCache.canvi]);
+      body.innerHTML = `<h2 class="stats-h">Cobertes 1956</h2>${renderComposition(d56, 'c1956')}
+        <h2 class="stats-h">Cobertes 2020</h2>${renderComposition(d20, 'c2020')}
+        <h2 class="stats-h">Canvi 1956–2020</h2>${renderChange(ch)}`;
     }
   } catch(err){
-    delete statsCache[statsTab];
+    delete statsCache[statsTab]; delete statsCache.canvi;
     body.innerHTML = `<p class="stats-msg">No s'ha pogut carregar el fitxer ${esc(err.message)}. Comprova que els CSV són a <code>dades/estadistiques/</code> amb el nom correcte.</p>`;
   }
 }
@@ -2178,7 +2303,7 @@ function refreshPoints(){
   const src = map.getSource && map.getSource('punts');
   if(src) src.setData(points);
   document.getElementById('count-punts').textContent = points.features.length;
-  if(points.features.length) ensureCob2020();   // en segon pla, per mostrar la coberta actual dels punts
+  if(points.features.length){ ensureCob2020(); ensureCobHist(); }   // en segon pla, per mostrar les cobertes dels punts
   renderPtSummary();
 }
 const findPoint = (id) => points.features.find(f => f.properties.id === id);
@@ -2288,7 +2413,7 @@ function initPointsLayer(){
 
   // Clic en mode edició: sobre un punt l'edita, en un lloc buit en crea un de nou
   map.on('click', (e) => {
-    if(!editMode) return;
+    if(!editMode || measureMode) return;
     if(justDragged) return;
     const hit = map.queryRenderedFeatures(e.point, { layers:['punts-circle'] });
     if(hit.length){
@@ -2299,6 +2424,29 @@ function initPointsLayer(){
     }
   });
   refreshPoints();
+  loadPublishedPoints(false);
+}
+// Capa de punts publicada al repositori (dades/punts_mostreig.geojson): la veu qualsevol ordinador.
+// Si aquest navegador no té punts propis, es mostra directament; si en té, es pot carregar amb el botó.
+let publishedPoints = null;
+async function loadPublishedPoints(force){
+  try {
+    if(!publishedPoints){
+      const r = await fetch('dades/punts_mostreig.geojson', { cache:'no-cache' });
+      if(!r.ok) return;
+      const fc = await r.json();
+      if(!fc || !Array.isArray(fc.features)) return;
+      publishedPoints = fc;
+    }
+  } catch(e){ return; }
+  document.getElementById('pt-load-published').hidden = false;
+  if(force || !points.features.length){
+    points = JSON.parse(JSON.stringify(publishedPoints));
+    refreshPoints();
+    if(statsDrawer.classList.contains('open') && statsTab === 'punts') renderStats();
+    const n = document.getElementById('pt-note');
+    if(n) n.textContent = `Es mostra la capa publicada (${points.features.length} punts, dades/punts_mostreig.geojson). Si els edites o en generes de nous, es desen només en aquest navegador.`;
+  }
 }
 function onDragMove(e){
   const f = drag && findPoint(drag.id);
@@ -2445,17 +2593,21 @@ function download(name, text, type){
 const stamp = () => new Date().toISOString().slice(0, 10).replace(/-/g, '');
 document.getElementById('pt-export-geojson').addEventListener('click', async () => {
   if(!points.features.length) return alert('Encara no hi ha cap punt per descarregar.');
-  await ensureCob2020();
-  const out = { type:'FeatureCollection', features: points.features.map(f => ({ ...f, properties: { ...f.properties, cobertura_2020: cobertaActual(f) || '' } })) };
+  await Promise.all([ensureCob2020(), ensureCobHist()]);
+  const out = { type:'FeatureCollection', features: points.features.map(f => ({ ...f, properties: { ...f.properties, cobertura_2020: cobertaActual(f) || '', origen: origenPunt(f) || '', edat_espai_obert: edatPunt(f) || '', coberta_2005: cobHist(f, 2005) || '', coberta_1993: cobHist(f, 1993) || '', coberta_1956: cobHist(f, 1956) || '' } })) };
   download(`punts_mostreig_${stamp()}.geojson`, JSON.stringify(out, null, 1), 'application/geo+json');
+});
+document.getElementById('pt-load-published').addEventListener('click', () => {
+  if(points.features.length && !confirm(`Això substitueix els ${points.features.length} punts d'aquest navegador per la capa publicada. Continuar?`)) return;
+  loadPublishedPoints(true);
 });
 document.getElementById('pt-export-csv').addEventListener('click', async () => {
   if(!points.features.length) return alert('Encara no hi ha cap punt per descarregar.');
-  await ensureCob2020();
+  await Promise.all([ensureCob2020(), ensureCobHist()]);
   const cols = ['id','tipologia','origen','zona','orientacio','pendent','rol','metode','observacions', 'cobertura_2020', 'edat_espai_obert', 'incendi', 'coberta_2005', 'coberta_1993', 'coberta_1956'];
   const q = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
   const lines = [[...cols, 'lon', 'lat'].join(',')].concat(points.features.map(f =>
-    [...cols.map(c => q(c === 'cobertura_2020' ? (cobertaActual(f) || '') : c === 'edat_espai_obert' ? (edatTrajFix('tr_edat', trajectoria(f, 'edat')) || '') : c === 'incendi' ? (incendiPunt(f) || '') : /^coberta_/.test(c) ? ((f.properties.tipologia === 'Control obert' && trajectoria(f, 'cob' + c.slice(8))) || '') : f.properties[c])), f.geometry.coordinates[0], f.geometry.coordinates[1]].join(',')));
+    [...cols.map(c => q(c === 'cobertura_2020' ? (cobertaActual(f) || '') : c === 'edat_espai_obert' ? (edatPunt(f) || '') : c === 'origen' ? (origenPunt(f) || '') : c === 'incendi' ? (incendiPunt(f) || '') : /^coberta_/.test(c) ? (cobHist(f, c.slice(8)) || '') : f.properties[c])), f.geometry.coordinates[0], f.geometry.coordinates[1]].join(',')));
   download(`punts_mostreig_${stamp()}.csv`, '\uFEFF' + lines.join('\r\n'), 'text/csv;charset=utf-8');
 });
 document.getElementById('pt-import').addEventListener('change', async (e) => {
@@ -2675,41 +2827,80 @@ function revisioPunt(f){
   for(const e of obertesIndex){
     if(x < e.x0 || x > e.x1 || y < e.y0 || y > e.y1) continue;
     if(e.polys.some(rings => inRings(x, y, rings))){
-      const orig = f.properties.origen;
-      return { fora:false, props:e.props,
-               origenNou: (orig && e.props.origen && orig !== e.props.origen) ? e.props.origen : null };
+      return { fora:false, props:e.props };
     }
   }
-  return { fora:true, props:null, origenNou:null };
+  return { fora:true, props:null };
 }
-// Coberta actual (Mapa de Cobertes del Sòl 2020) sota un punt. undefined = capa encara no carregada; null = fora de la capa
-let cobIndex = null, cobIndexSrc = null;
+// Coberta del sòl d'una capa (cob2020, cob1956, cob1993, cob2005) sota un punt. undefined = capa encara no carregada; null = fora de la capa
+const cobIdx = new Map();
+function polyAt(key, f){
+  const fc = dataCache[key];
+  if(!fc || !f || !f.geometry) return undefined;
+  let e = cobIdx.get(key);
+  if(!e || e.src !== fc){
+    e = { src: fc, list: fc.features.filter(g => g.geometry).map(g => {
+      const polys = g.geometry.type === 'MultiPolygon' ? g.geometry.coordinates : [g.geometry.coordinates];
+      let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+      polys.forEach(rings => rings[0].forEach(([x, y]) => { if(x < x0) x0 = x; if(x > x1) x1 = x; if(y < y0) y0 = y; if(y > y1) y1 = y; }));
+      return { p: g.properties, polys, x0, y0, x1, y1 };
+    }) };
+    cobIdx.set(key, e);
+  }
+  const [x, y] = f.geometry.coordinates;
+  for(const g of e.list){
+    if(x < g.x0 || x > g.x1 || y < g.y0 || y > g.y1) continue;
+    if(g.polys.some(rings => inRings(x, y, rings))) return g.p;
+  }
+  return null;
+}
+function cobAt(key, f){ const p = polyAt(key, f); return p ? (p.coberta || '—') : p; }
+// Origen i edat de l'espai obert d'un punt: al control obert són els del polígon d'espai obert on cau; a franges, PEG i AFG,
+// els de l'espai obert (capa completa) que hi ha sota el punt, si n'hi ha cap (en zones de bosc normalment no n'hi ha).
+function obertPunt(f){
+  if(!f || !f.properties) return undefined;
+  if(f.properties.tipologia === 'Control obert'){ const r = revisioPunt(f); return r && !r.fora ? r.props : null; }
+  return polyAt('obGestio', f);
+}
+const origenPunt = (f) => { const q = obertPunt(f); return f && f.properties.tipologia === 'Control obert' ? (f.properties.origen || (q && q.origen) || '') : (q && q.origen) || ''; };
+const edatPunt = (f) => { const q = obertPunt(f); return q && q.edat ? edatText(q.edat) : ''; };
+// Coberta actual (Mapa de Cobertes del Sòl 2020) sota un punt.
 function cobertaActual(f){
   // Control obert: la coberta del 2020 és la de l'espai obert (la capa de cobertes no cobreix aquests polígons)
   if(f && f.properties && f.properties.tipologia === 'Control obert'){
     const r = revisioPunt(f);
     if(r && !r.fora && r.props && r.props.cob2020) return r.props.cob2020;
   }
-  const fc = dataCache.cob2020;
-  if(!fc || !f || !f.geometry) return undefined;
-  if(!cobIndex || cobIndexSrc !== fc){
-    cobIndexSrc = fc;
-    cobIndex = fc.features.filter(g => g.geometry).map(g => {
-      const polys = g.geometry.type === 'MultiPolygon' ? g.geometry.coordinates : [g.geometry.coordinates];
-      let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
-      polys.forEach(rings => rings[0].forEach(([x, y]) => { if(x < x0) x0 = x; if(x > x1) x1 = x; if(y < y0) y0 = y; if(y > y1) y1 = y; }));
-      return { c: g.properties.coberta || '—', polys, x0, y0, x1, y1 };
-    });
-  }
-  const [x, y] = f.geometry.coordinates;
-  for(const e of cobIndex){
-    if(x < e.x0 || x > e.x1 || y < e.y0 || y > e.y1) continue;
-    if(e.polys.some(rings => inRings(x, y, rings))) return e.c;
-  }
-  return null;
+  return cobAt('cob2020', f);
 }
+// Coberta històrica (1956, 1993 o 2005) sota un punt: al control obert és la de l'espai obert; a la resta, la de la capa de cobertes de l'any
+function cobHist(f, any){
+  if(f && f.properties && f.properties.tipologia === 'Control obert'){
+    const r = revisioPunt(f);
+    return r && !r.fora && r.props ? (r.props['cob' + any] || null) : null;
+  }
+  return cobAt('cob' + any, f);
+}
+// Equivalència de les categories detallades dels espais oberts (nivell 2) amb les de nivell 1F de les capes de cobertes.
+// Les que no hi tenen equivalència clara es deixen a part en lloc d'endevinar-la.
+const COB_1F = {
+  'Boscos densos (no de ribera)':'Arbrat dens', 'Boscos densos de ribera':'Arbrat dens', 'Boscos de ribera':'Arbrat dens', 'Boscos en franges de protecció':'Arbrat dens',
+  'Plantacions de coníferes no autòctones':'Arbrat dens', 'Plantacions de plàtans':'Arbrat dens', 'Boscos clars (no de ribera)':'Arbrat clar',
+  'Matollars':'Matollars', 'Matollars - Boscos tallats arreu':'Matollars', 'Prats i herbassars':'Prats i herbassars', 'Prats i herbassars - Boscos tallats arreu':'Prats i herbassars',
+  'Conreus':'Conreus', 'Conreus herbacis (no arrossars)':'Conreus', 'Conreus llenyosos (no vinyes)':'Conreus', 'Conreus en transformació':'Conreus', 'Vinyes':'Conreus',
+  'Sols nus forestals':'Improductiu natural', 'Sòls nus forestals':'Improductiu natural', 'Lleres naturals':'Improductiu natural',
+  'Sòls nus urbans':'Improductiu artificial', 'Zones urbanitzades':'Improductiu artificial', 'Vies de comunicacio':'Improductiu artificial', 'Zones esportives i ludiques':'Improductiu artificial',
+  "Zones d'extraccio minera":'Improductiu artificial', "Grans vials i zones d'aparcament":'Improductiu artificial', 'Zones industrials i comercials':'Improductiu artificial', 'Basses urbanes':'Improductiu artificial',
+  'Aigües continentals':'Aigües continentals', 'Embassaments':'Aigües continentals',
+  // Equivalències segons el nivell 1F de les teves capes de cobertes (els conreus abandonats de 1956 hi consten com a Conreus)
+  'Conreus abandonats - matollars':'Conreus', 'Conreus abandonats - prats':'Conreus', 'Conreus abandonats - boscos':'Conreus',
+  'Reforestacions recents':'Arbrat dens', 'Abocadors':'Improductiu artificial', 'Zones recent cremades':'Improductiu natural'
+};
+const COB_SENSE_EQ = 'Sense equivalència 1F';
+const cob1F = (c) => !c ? c : (COB_1F[c] || (COVER_COLORS[c] ? c : COB_SENSE_EQ));
 // Trajectòria de l'espai obert on cau un punt de control obert (null si no s'aplica o el punt és fora)
 const edatTrajFix = (c, v) => c === 'tr_edat' ? edatText(v) : v;
+const HIST_COLS = { tr_cob2005:2005, tr_cob1993:1993, tr_cob1956:1956 };
 const TRAJ_COLS = { tr_edat:'edat', tr_cob2020:'cob2020', tr_cob2005:'cob2005', tr_cob1993:'cob1993', tr_cob1956:'cob1956' };
 function incendiPunt(f){
   if(!f || f.properties.tipologia !== 'Control obert') return null;
@@ -2719,15 +2910,6 @@ function incendiPunt(f){
 function trajectoria(f, camp){
   const r = revisioPunt(f);
   return r && !r.fora && r.props ? (r.props[camp] ?? null) : null;
-}
-// Text per al popup i la taula. null = no s'aplica (el punt no és de control obert o la capa no és carregada)
-function revisioText(f){
-  const r = revisioPunt(f);
-  if(!r) return null;
-  if(r.fora) return "Fora d'espai obert";
-  const parts = [];
-  if(r.origenNou) parts.push('origen ara: ' + r.origenNou);
-  return parts.length ? parts.join(' · ') : 'No';
 }
 function edgeDist(x, y, rings){
   let d = Infinity;

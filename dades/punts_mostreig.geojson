@@ -1,0 +1,3203 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.13883,
+     41.445897
+    ]
+   },
+   "properties": {
+    "id": "P01",
+    "tipologia": "Franja",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Est",
+    "pendent": 25,
+    "observacions": "",
+    "zona": "REPOBLACIÓ DEL FORAT DEL VENT",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Matollars",
+    "coberta_1956": "Matollars"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.064152,
+     41.44616
+    ]
+   },
+   "properties": {
+    "id": "P02",
+    "tipologia": "Franja",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Sud",
+    "pendent": 15,
+    "observacions": "",
+    "zona": "URB VALLPINEDA  PERÍMETRE",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.092557,
+     41.429306
+    ]
+   },
+   "properties": {
+    "id": "P03",
+    "tipologia": "Franja",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "",
+    "pendent": null,
+    "observacions": "",
+    "zona": "FERROCARRILS",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.105722,
+     41.404172
+    ]
+   },
+   "properties": {
+    "id": "P04",
+    "tipologia": "Franja",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Sud",
+    "pendent": 15.5,
+    "observacions": "",
+    "zona": "REPOBLACIÓ PASSEIG MIRADOR",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Prats i herbassars"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.136417,
+     41.432823
+    ]
+   },
+   "properties": {
+    "id": "P05",
+    "tipologia": "Franja",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Est",
+    "pendent": 15.5,
+    "observacions": "",
+    "zona": "CAMÍ DE LA REPOBLACIÓ DE MONTBAU",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Matollars",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.061233,
+     41.424113
+    ]
+   },
+   "properties": {
+    "id": "P06",
+    "tipologia": "Franja",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Est",
+    "pendent": 15.5,
+    "observacions": "",
+    "zona": "CAN CALOPA -TURÓ DEL XAI",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.095831,
+     41.432383
+    ]
+   },
+   "properties": {
+    "id": "P07",
+    "tipologia": "Franja",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Oest",
+    "pendent": 29,
+    "observacions": "",
+    "zona": "RECTORET  PARCEL·LES",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat clar",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.106399,
+     41.443774
+    ]
+   },
+   "properties": {
+    "id": "P08",
+    "tipologia": "Franja",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Est",
+    "pendent": 19,
+    "observacions": "",
+    "zona": "PARCEL·LES I ZONES VERDES URBANES SANT CUGAT",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.061476,
+     41.415114
+    ]
+   },
+   "properties": {
+    "id": "P09",
+    "tipologia": "Franja",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Sud",
+    "pendent": 18,
+    "observacions": "",
+    "zona": "E 04  RIERA SALUT DE SANT FELIU",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.060784,
+     41.409469
+    ]
+   },
+   "properties": {
+    "id": "P10",
+    "tipologia": "Franja",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Sud",
+    "pendent": 16,
+    "observacions": "",
+    "zona": "REPOBLACIÒ DE CAN FERRIOL",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Matollars",
+    "coberta_1956": "Matollars"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.097447,
+     41.426941
+    ]
+   },
+   "properties": {
+    "id": "P11",
+    "tipologia": "Franja",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Sud",
+    "pendent": 36,
+    "observacions": "",
+    "zona": "RECTORET  PARCEL·LES",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.084795,
+     41.444086
+    ]
+   },
+   "properties": {
+    "id": "P12",
+    "tipologia": "Franja",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Est",
+    "pendent": 19.5,
+    "observacions": "",
+    "zona": "CARRER FONT DEL FUMET",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.030342,
+     41.444362
+    ]
+   },
+   "properties": {
+    "id": "P13",
+    "tipologia": "Franja",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Nord",
+    "pendent": 20.5,
+    "observacions": "",
+    "zona": "G 02  SERRA D´EN RABASSA",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat clar"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.140686,
+     41.438454
+    ]
+   },
+   "properties": {
+    "id": "P14",
+    "tipologia": "Franja",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Est",
+    "pendent": 28,
+    "observacions": "",
+    "zona": "BOSC DE LES LLARS MUNDET",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Matollars"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.135355,
+     41.42123
+    ]
+   },
+   "properties": {
+    "id": "P15",
+    "tipologia": "Franja",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Sud",
+    "pendent": 10.5,
+    "observacions": "",
+    "zona": "VALL PARC PERIMETRE",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Matollars"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.053966,
+     41.440936
+    ]
+   },
+   "properties": {
+    "id": "P16",
+    "tipologia": "PEG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Oest",
+    "pendent": 7.5,
+    "observacions": "",
+    "zona": "Can Julià ",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.122787,
+     41.421393
+    ]
+   },
+   "properties": {
+    "id": "P17",
+    "tipologia": "PEG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Est",
+    "pendent": 19,
+    "observacions": "",
+    "zona": "El Tibidabo",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.035288,
+     41.438652
+    ]
+   },
+   "properties": {
+    "id": "P18",
+    "tipologia": "PEG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Est",
+    "pendent": 17,
+    "observacions": "",
+    "zona": "Can Julià ",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.068307,
+     41.452075
+    ]
+   },
+   "properties": {
+    "id": "P19",
+    "tipologia": "PEG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Sud",
+    "pendent": 12,
+    "observacions": "",
+    "zona": "Mas Fuster",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Matollars"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.067076,
+     41.438168
+    ]
+   },
+   "properties": {
+    "id": "P20",
+    "tipologia": "PEG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Sud",
+    "pendent": 20.5,
+    "observacions": "",
+    "zona": "Pearson",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.122115,
+     41.427804
+    ]
+   },
+   "properties": {
+    "id": "P21",
+    "tipologia": "PEG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Nord",
+    "pendent": 20.5,
+    "observacions": "",
+    "zona": "El Tibidabo",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.027525,
+     41.429122
+    ]
+   },
+   "properties": {
+    "id": "P22",
+    "tipologia": "PEG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Oest",
+    "pendent": 8.5,
+    "observacions": "",
+    "zona": "Can Julià ",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.104553,
+     41.410869
+    ]
+   },
+   "properties": {
+    "id": "P23",
+    "tipologia": "PEG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Nord",
+    "pendent": 33.5,
+    "observacions": "",
+    "zona": "Vallvidrera",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Matollars"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.063073,
+     41.44264
+    ]
+   },
+   "properties": {
+    "id": "P24",
+    "tipologia": "PEG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Est",
+    "pendent": 19,
+    "observacions": "",
+    "zona": "Pearson",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.015544,
+     41.454159
+    ]
+   },
+   "properties": {
+    "id": "P25",
+    "tipologia": "PEG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Sud",
+    "pendent": 14.5,
+    "observacions": "",
+    "zona": "Roques Blanques",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.031527,
+     41.445048
+    ]
+   },
+   "properties": {
+    "id": "P26",
+    "tipologia": "PEG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Est",
+    "pendent": 18.5,
+    "observacions": "",
+    "zona": "Can Julià ",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Matollars"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.106341,
+     41.410559
+    ]
+   },
+   "properties": {
+    "id": "P27",
+    "tipologia": "PEG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Nord",
+    "pendent": 31,
+    "observacions": "",
+    "zona": "Vallvidrera",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.108408,
+     41.407045
+    ]
+   },
+   "properties": {
+    "id": "P28",
+    "tipologia": "PEG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Nord",
+    "pendent": 19,
+    "observacions": "",
+    "zona": "Vallvidrera",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.023541,
+     41.450671
+    ]
+   },
+   "properties": {
+    "id": "P29",
+    "tipologia": "PEG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Oest",
+    "pendent": 29.5,
+    "observacions": "",
+    "zona": "Puig Madrona",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.028833,
+     41.433759
+    ]
+   },
+   "properties": {
+    "id": "P30",
+    "tipologia": "PEG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Sud",
+    "pendent": 13,
+    "observacions": "",
+    "zona": "Can Julià ",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Matollars"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.025879,
+     41.429576
+    ]
+   },
+   "properties": {
+    "id": "P31",
+    "tipologia": "AFG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Est",
+    "pendent": 14,
+    "observacions": "",
+    "zona": "Can Julià ",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat clar",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat clar",
+    "coberta_1993": "Conreus",
+    "coberta_1956": "Conreus"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.044109,
+     41.437898
+    ]
+   },
+   "properties": {
+    "id": "P32",
+    "tipologia": "AFG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Pla",
+    "pendent": 2,
+    "observacions": "",
+    "zona": "Can Julià ",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.08345,
+     41.428725
+    ]
+   },
+   "properties": {
+    "id": "P33",
+    "tipologia": "AFG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Nord",
+    "pendent": 19.5,
+    "observacions": "",
+    "zona": "Pearson",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.062042,
+     41.43793
+    ]
+   },
+   "properties": {
+    "id": "P34",
+    "tipologia": "AFG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Sud",
+    "pendent": 11,
+    "observacions": "",
+    "zona": "Pearson",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.03423,
+     41.436408
+    ]
+   },
+   "properties": {
+    "id": "P35",
+    "tipologia": "AFG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Oest",
+    "pendent": 23,
+    "observacions": "",
+    "zona": "Can Julià ",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.022963,
+     41.431656
+    ]
+   },
+   "properties": {
+    "id": "P36",
+    "tipologia": "AFG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Oest",
+    "pendent": 19,
+    "observacions": "",
+    "zona": "Can Julià ",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.028602,
+     41.428754
+    ]
+   },
+   "properties": {
+    "id": "P37",
+    "tipologia": "AFG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Sud",
+    "pendent": 18,
+    "observacions": "",
+    "zona": "Can Julià ",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Conreus",
+    "coberta_1956": "Conreus"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.023166,
+     41.430847
+    ]
+   },
+   "properties": {
+    "id": "P38",
+    "tipologia": "AFG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Oest",
+    "pendent": 21,
+    "observacions": "",
+    "zona": "Can Julià ",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.026205,
+     41.428787
+    ]
+   },
+   "properties": {
+    "id": "P39",
+    "tipologia": "AFG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Est",
+    "pendent": 17,
+    "observacions": "",
+    "zona": "Can Julià ",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.074729,
+     41.43251
+    ]
+   },
+   "properties": {
+    "id": "P40",
+    "tipologia": "AFG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Est",
+    "pendent": 13.5,
+    "observacions": "",
+    "zona": "Pearson",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.045233,
+     41.438229
+    ]
+   },
+   "properties": {
+    "id": "P41",
+    "tipologia": "AFG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Sud",
+    "pendent": 13,
+    "observacions": "",
+    "zona": "Can Julià ",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Matollars"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.036005,
+     41.435532
+    ]
+   },
+   "properties": {
+    "id": "P42",
+    "tipologia": "AFG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Sud",
+    "pendent": 23.5,
+    "observacions": "",
+    "zona": "Can Julià ",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.058353,
+     41.440848
+    ]
+   },
+   "properties": {
+    "id": "P43",
+    "tipologia": "AFG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Sud",
+    "pendent": 14.5,
+    "observacions": "",
+    "zona": "Pearson",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.028715,
+     41.429442
+    ]
+   },
+   "properties": {
+    "id": "P44",
+    "tipologia": "AFG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Sud",
+    "pendent": 10,
+    "observacions": "",
+    "zona": "Can Julià ",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Conreus",
+    "coberta_1956": "Conreus"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.084595,
+     41.427182
+    ]
+   },
+   "properties": {
+    "id": "P45",
+    "tipologia": "AFG",
+    "rol": "Titular",
+    "origen": "",
+    "orientacio": "Nord",
+    "pendent": 17.5,
+    "observacions": "",
+    "zona": "Pearson",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.034848,
+     41.411414
+    ]
+   },
+   "properties": {
+    "id": "P46",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antics conreus",
+    "orientacio": "Sud",
+    "pendent": 22,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1993 i 2005",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Conreus",
+    "coberta_1956": "Conreus abandonats - matollars"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.095109,
+     41.397748
+    ]
+   },
+   "properties": {
+    "id": "P47",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antics conreus",
+    "orientacio": "Sud",
+    "pendent": 10,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1956 i 1993",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Matollars",
+    "coberta_1956": "Conreus herbacis (no arrossars)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.024581,
+     41.418434
+    ]
+   },
+   "properties": {
+    "id": "P48",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antics conreus",
+    "orientacio": "Oest",
+    "pendent": 11.5,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1993 i 2005",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Conreus",
+    "coberta_1956": "Conreus abandonats - prats"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.111453,
+     41.427149
+    ]
+   },
+   "properties": {
+    "id": "P49",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antic sòl forestal",
+    "orientacio": "Sud",
+    "pendent": 23.5,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1956 i 1993",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Matollars",
+    "coberta_1956": "Boscos densos (no de ribera)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.071024,
+     41.391651
+    ]
+   },
+   "properties": {
+    "id": "P50",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antics conreus",
+    "orientacio": "Sud",
+    "pendent": 4.5,
+    "observacions": "",
+    "zona": "Prats i herbassars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Prats i herbassars",
+    "edat_espai_obert": "Obert després de 2005",
+    "coberta_2005": "Conreus herbacis (no arrossars)",
+    "coberta_1993": "Conreus",
+    "coberta_1956": "Vinyes"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.129359,
+     41.471483
+    ]
+   },
+   "properties": {
+    "id": "P51",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antic sòl forestal",
+    "orientacio": "Est",
+    "pendent": 4.5,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1956 i 1993",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Matollars",
+    "coberta_1956": "Boscos densos (no de ribera)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.059088,
+     41.398384
+    ]
+   },
+   "properties": {
+    "id": "P52",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antics conreus",
+    "orientacio": "Oest",
+    "pendent": 17.5,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1956 i 1993",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Matollars",
+    "coberta_1956": "Conreus llenyosos (no vinyes)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.08772,
+     41.393491
+    ]
+   },
+   "properties": {
+    "id": "P53",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antics conreus",
+    "orientacio": "Oest",
+    "pendent": 14.5,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1956 i 1993",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Matollars",
+    "coberta_1956": "Conreus herbacis (no arrossars)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.087515,
+     41.402286
+    ]
+   },
+   "properties": {
+    "id": "P54",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antics conreus",
+    "orientacio": "Est",
+    "pendent": 3,
+    "observacions": "",
+    "zona": "Conreus abandonats - prats",
+    "metode": "Aleatori",
+    "cobertura_2020": "Conreus abandonats - prats",
+    "edat_espai_obert": "Obert després de 2005",
+    "coberta_2005": "Conreus herbacis (no arrossars)",
+    "coberta_1993": "Conreus",
+    "coberta_1956": "Conreus herbacis (no arrossars)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.042034,
+     41.404153
+    ]
+   },
+   "properties": {
+    "id": "P55",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antics conreus",
+    "orientacio": "Sud",
+    "pendent": 13,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1993 i 2005",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Conreus",
+    "coberta_1956": "Conreus herbacis (no arrossars)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.010942,
+     41.444808
+    ]
+   },
+   "properties": {
+    "id": "P56",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antic sòl forestal",
+    "orientacio": "Oest",
+    "pendent": 9,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert després de 2005",
+    "coberta_2005": "Boscos clars (no de ribera)",
+    "coberta_1993": "Conreus",
+    "coberta_1956": "Conreus herbacis (no arrossars)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.153833,
+     41.443778
+    ]
+   },
+   "properties": {
+    "id": "P57",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antics conreus",
+    "orientacio": "Est",
+    "pendent": 22.5,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1956 i 1993",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Matollars",
+    "coberta_1956": "Conreus herbacis (no arrossars)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.083117,
+     41.390288
+    ]
+   },
+   "properties": {
+    "id": "P58",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antics conreus",
+    "orientacio": "Nord",
+    "pendent": 13,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1993 i 2005",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Conreus",
+    "coberta_1956": "Conreus llenyosos (no vinyes)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.141975,
+     41.45004
+    ]
+   },
+   "properties": {
+    "id": "P59",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antic sòl forestal",
+    "orientacio": "Nord",
+    "pendent": 41.5,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert després de 2005",
+    "coberta_2005": "Boscos densos (no de ribera)",
+    "coberta_1993": "Boscos densos (no de ribera)",
+    "coberta_1956": "Matollars"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.03653,
+     41.417727
+    ]
+   },
+   "properties": {
+    "id": "P60",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antics conreus",
+    "orientacio": "Sud",
+    "pendent": 25,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1993 i 2005",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Conreus",
+    "coberta_1956": "Conreus herbacis (no arrossars)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.040012,
+     41.425873
+    ]
+   },
+   "properties": {
+    "id": "P61",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antics conreus",
+    "orientacio": "Oest",
+    "pendent": 10.5,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1993 i 2005",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Conreus",
+    "coberta_1956": "Conreus herbacis (no arrossars)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.075802,
+     41.439234
+    ]
+   },
+   "properties": {
+    "id": "P62",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antic sòl forestal",
+    "orientacio": "Oest",
+    "pendent": 20,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1993 i 2005",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Boscos densos (no de ribera)",
+    "coberta_1956": "Boscos densos (no de ribera)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.102766,
+     41.422844
+    ]
+   },
+   "properties": {
+    "id": "P63",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antic sòl forestal",
+    "orientacio": "Sud",
+    "pendent": 32,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1956 i 1993",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Matollars",
+    "coberta_1956": "Boscos densos (no de ribera)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.176004,
+     41.46739
+    ]
+   },
+   "properties": {
+    "id": "P64",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antics conreus",
+    "orientacio": "Est",
+    "pendent": 21.5,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert abans de 1956",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Matollars",
+    "coberta_1956": "Conreus abandonats - prats"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.007824,
+     41.428476
+    ]
+   },
+   "properties": {
+    "id": "P65",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antic sòl forestal",
+    "orientacio": "Nord",
+    "pendent": 8,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1956 i 1993",
+    "coberta_2005": "Prats i herbassars",
+    "coberta_1993": "Matollars",
+    "coberta_1956": "Boscos densos (no de ribera)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.154214,
+     41.445349
+    ]
+   },
+   "properties": {
+    "id": "P66",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antic sòl forestal",
+    "orientacio": "Nord",
+    "pendent": 31,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1993 i 2005",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Sols nus forestals",
+    "coberta_1956": "Matollars"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.035318,
+     41.460426
+    ]
+   },
+   "properties": {
+    "id": "P67",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antics conreus",
+    "orientacio": "Est",
+    "pendent": 6.5,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1993 i 2005",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Conreus",
+    "coberta_1956": "Conreus herbacis (no arrossars)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.175341,
+     41.46757
+    ]
+   },
+   "properties": {
+    "id": "P68",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antics conreus",
+    "orientacio": "Sud",
+    "pendent": 9.5,
+    "observacions": "",
+    "zona": "Prats i herbassars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Prats i herbassars",
+    "edat_espai_obert": "Obert abans de 1956",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Matollars",
+    "coberta_1956": "Conreus abandonats - prats"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.071892,
+     41.396895
+    ]
+   },
+   "properties": {
+    "id": "P69",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antics conreus",
+    "orientacio": "Sud",
+    "pendent": 24,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert abans de 1956",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Matollars",
+    "coberta_1956": "Conreus abandonats - matollars"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.070929,
+     41.39523
+    ]
+   },
+   "properties": {
+    "id": "P70",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antics conreus",
+    "orientacio": "Est",
+    "pendent": 13.5,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert abans de 1956",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Matollars",
+    "coberta_1956": "Conreus abandonats - matollars"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.048902,
+     41.411859
+    ]
+   },
+   "properties": {
+    "id": "P71",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antics conreus",
+    "orientacio": "Sud",
+    "pendent": 23.5,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert abans de 1956",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Matollars",
+    "coberta_1956": "Conreus abandonats - matollars"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.116569,
+     41.415896
+    ]
+   },
+   "properties": {
+    "id": "P72",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antic sòl forestal",
+    "orientacio": "Est",
+    "pendent": 20,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1956 i 1993",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Matollars",
+    "coberta_1956": "Boscos densos (no de ribera)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.060916,
+     41.405553
+    ]
+   },
+   "properties": {
+    "id": "P73",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antics conreus",
+    "orientacio": "Est",
+    "pendent": 21,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert abans de 1956",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Matollars",
+    "coberta_1956": "Conreus abandonats - matollars"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.090625,
+     41.393112
+    ]
+   },
+   "properties": {
+    "id": "P74",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antics conreus",
+    "orientacio": "Sud",
+    "pendent": 27,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1956 i 1993",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Matollars",
+    "coberta_1956": "Conreus llenyosos (no vinyes)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.036756,
+     41.417519
+    ]
+   },
+   "properties": {
+    "id": "P75",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antics conreus",
+    "orientacio": "Sud",
+    "pendent": 28,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1993 i 2005",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Conreus",
+    "coberta_1956": "Conreus llenyosos (no vinyes)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.138545,
+     41.436181
+    ]
+   },
+   "properties": {
+    "id": "P76",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antic sòl forestal",
+    "orientacio": "Nord",
+    "pendent": 33.5,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1993 i 2005",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Boscos densos (no de ribera)",
+    "coberta_1956": "Boscos densos (no de ribera)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.012399,
+     41.424924
+    ]
+   },
+   "properties": {
+    "id": "P77",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antics conreus",
+    "orientacio": "Sud",
+    "pendent": 13,
+    "observacions": "",
+    "zona": "Prats i herbassars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Prats i herbassars",
+    "edat_espai_obert": "Obert entre 1993 i 2005",
+    "coberta_2005": "Prats i herbassars",
+    "coberta_1993": "Conreus",
+    "coberta_1956": "Conreus herbacis (no arrossars)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.153632,
+     41.467928
+    ]
+   },
+   "properties": {
+    "id": "P78",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antic sòl forestal",
+    "orientacio": "Nord",
+    "pendent": 7.5,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1993 i 2005",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Sols nus forestals",
+    "coberta_1956": "Conreus herbacis (no arrossars)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.079902,
+     41.399035
+    ]
+   },
+   "properties": {
+    "id": "P79",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antics conreus",
+    "orientacio": "Sud",
+    "pendent": 11,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert abans de 1956",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Matollars",
+    "coberta_1956": "Conreus abandonats - matollars"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.154554,
+     41.454845
+    ]
+   },
+   "properties": {
+    "id": "P80",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antic sòl forestal",
+    "orientacio": "Est",
+    "pendent": 11.5,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1993 i 2005",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Boscos densos (no de ribera)",
+    "coberta_1956": "Boscos densos (no de ribera)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.004376,
+     41.453454
+    ]
+   },
+   "properties": {
+    "id": "P81",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antic sòl forestal",
+    "orientacio": "Nord",
+    "pendent": 14,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1993 i 2005",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Boscos densos (no de ribera)",
+    "coberta_1956": "Boscos densos (no de ribera)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.088279,
+     41.400134
+    ]
+   },
+   "properties": {
+    "id": "P82",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antics conreus",
+    "orientacio": "Est",
+    "pendent": 24,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1993 i 2005",
+    "coberta_2005": "Prats i herbassars",
+    "coberta_1993": "Conreus",
+    "coberta_1956": "Conreus abandonats - matollars"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.029778,
+     41.413204
+    ]
+   },
+   "properties": {
+    "id": "P83",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antics conreus",
+    "orientacio": "Oest",
+    "pendent": 8.5,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert després de 2005",
+    "coberta_2005": "Conreus herbacis (no arrossars)",
+    "coberta_1993": "Boscos densos (no de ribera)",
+    "coberta_1956": "Conreus abandonats - prats"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.009957,
+     41.427946
+    ]
+   },
+   "properties": {
+    "id": "P84",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antics conreus",
+    "orientacio": "Nord",
+    "pendent": 12.5,
+    "observacions": "",
+    "zona": "Prats i herbassars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Prats i herbassars",
+    "edat_espai_obert": "Obert entre 1956 i 1993",
+    "coberta_2005": "Prats i herbassars",
+    "coberta_1993": "Prats i herbassars",
+    "coberta_1956": "Conreus herbacis (no arrossars)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.06478,
+     41.390432
+    ]
+   },
+   "properties": {
+    "id": "P85",
+    "tipologia": "Control obert",
+    "rol": "Titular",
+    "origen": "Antics conreus",
+    "orientacio": "Est",
+    "pendent": 8.5,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1993 i 2005",
+    "coberta_2005": "Prats i herbassars",
+    "coberta_1993": "Conreus",
+    "coberta_1956": "Conreus llenyosos (no vinyes)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.128727,
+     41.438158
+    ]
+   },
+   "properties": {
+    "id": "P86",
+    "tipologia": "Franja",
+    "rol": "Suplent",
+    "origen": "",
+    "orientacio": "Oest",
+    "pendent": 40.5,
+    "observacions": "",
+    "zona": "URB SANT MEDIR-SOL I AIGUA  PERÍMETRE",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.146685,
+     41.449925
+    ]
+   },
+   "properties": {
+    "id": "P87",
+    "tipologia": "Franja",
+    "rol": "Suplent",
+    "origen": "",
+    "orientacio": "Est",
+    "pendent": 25,
+    "observacions": "",
+    "zona": "A 14  CAN FERRER-CAN CATÀ",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.127058,
+     41.439772
+    ]
+   },
+   "properties": {
+    "id": "P88",
+    "tipologia": "Franja",
+    "rol": "Suplent",
+    "origen": "",
+    "orientacio": "Nord",
+    "pendent": 33,
+    "observacions": "",
+    "zona": "URB SANT MEDIR-SOL I AIGUA  PERÍMETRE",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.079597,
+     41.405627
+    ]
+   },
+   "properties": {
+    "id": "P89",
+    "tipologia": "Franja",
+    "rol": "Suplent",
+    "origen": "",
+    "orientacio": "Oest",
+    "pendent": 16.5,
+    "observacions": "",
+    "zona": "E 14  SANTA MARGARIDA",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Matollars"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.112074,
+     41.415495
+    ]
+   },
+   "properties": {
+    "id": "P90",
+    "tipologia": "Franja",
+    "rol": "Suplent",
+    "origen": "",
+    "orientacio": "Sud",
+    "pendent": 28,
+    "observacions": "",
+    "zona": "FU14  FONT DEL MONT SUD-EST",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.096514,
+     41.42334
+    ]
+   },
+   "properties": {
+    "id": "P91",
+    "tipologia": "Franja",
+    "rol": "Suplent",
+    "origen": "",
+    "orientacio": "Sud",
+    "pendent": 25,
+    "observacions": "",
+    "zona": "RECTORET EST (pça TV a Major del Rectoret)",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.07496,
+     41.436405
+    ]
+   },
+   "properties": {
+    "id": "P92",
+    "tipologia": "PEG",
+    "rol": "Suplent",
+    "origen": "",
+    "orientacio": "Oest",
+    "pendent": 16.5,
+    "observacions": "",
+    "zona": "Pearson",
+    "metode": "Aleatori",
+    "cobertura_2020": "",
+    "edat_espai_obert": "",
+    "coberta_2005": "Improductiu artificial",
+    "coberta_1993": "Improductiu artificial",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.123289,
+     41.425629
+    ]
+   },
+   "properties": {
+    "id": "P93",
+    "tipologia": "PEG",
+    "rol": "Suplent",
+    "origen": "",
+    "orientacio": "Est",
+    "pendent": 20.5,
+    "observacions": "",
+    "zona": "El Tibidabo",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Matollars"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.030687,
+     41.437096
+    ]
+   },
+   "properties": {
+    "id": "P94",
+    "tipologia": "PEG",
+    "rol": "Suplent",
+    "origen": "",
+    "orientacio": "Sud",
+    "pendent": 24,
+    "observacions": "",
+    "zona": "Can Julià ",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.022125,
+     41.427576
+    ]
+   },
+   "properties": {
+    "id": "P95",
+    "tipologia": "PEG",
+    "rol": "Suplent",
+    "origen": "",
+    "orientacio": "Nord",
+    "pendent": 20.5,
+    "observacions": "",
+    "zona": "Can Julià ",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Conreus",
+    "coberta_1956": "Conreus"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.068029,
+     41.438089
+    ]
+   },
+   "properties": {
+    "id": "P96",
+    "tipologia": "PEG",
+    "rol": "Suplent",
+    "origen": "",
+    "orientacio": "Est",
+    "pendent": 19.5,
+    "observacions": "",
+    "zona": "Pearson",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.11517,
+     41.42889
+    ]
+   },
+   "properties": {
+    "id": "P97",
+    "tipologia": "PEG",
+    "rol": "Suplent",
+    "origen": "",
+    "orientacio": "Nord",
+    "pendent": 23.5,
+    "observacions": "",
+    "zona": "El Tibidabo",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Matollars",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.036772,
+     41.43752
+    ]
+   },
+   "properties": {
+    "id": "P98",
+    "tipologia": "AFG",
+    "rol": "Suplent",
+    "origen": "",
+    "orientacio": "Est",
+    "pendent": 19,
+    "observacions": "",
+    "zona": "Can Julià ",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.085868,
+     41.425614
+    ]
+   },
+   "properties": {
+    "id": "P99",
+    "tipologia": "AFG",
+    "rol": "Suplent",
+    "origen": "",
+    "orientacio": "Est",
+    "pendent": 24.5,
+    "observacions": "",
+    "zona": "Pearson",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.061748,
+     41.438822
+    ]
+   },
+   "properties": {
+    "id": "P100",
+    "tipologia": "AFG",
+    "rol": "Suplent",
+    "origen": "",
+    "orientacio": "Sud",
+    "pendent": 15,
+    "observacions": "",
+    "zona": "Pearson",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.043141,
+     41.443563
+    ]
+   },
+   "properties": {
+    "id": "P101",
+    "tipologia": "AFG",
+    "rol": "Suplent",
+    "origen": "",
+    "orientacio": "Est",
+    "pendent": 21.5,
+    "observacions": "",
+    "zona": "Can Julià ",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.02432,
+     41.431075
+    ]
+   },
+   "properties": {
+    "id": "P102",
+    "tipologia": "AFG",
+    "rol": "Suplent",
+    "origen": "",
+    "orientacio": "Oest",
+    "pendent": 6.5,
+    "observacions": "",
+    "zona": "Can Julià ",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.02615,
+     41.428403
+    ]
+   },
+   "properties": {
+    "id": "P103",
+    "tipologia": "AFG",
+    "rol": "Suplent",
+    "origen": "",
+    "orientacio": "Sud",
+    "pendent": 19.5,
+    "observacions": "",
+    "zona": "Can Julià ",
+    "metode": "Aleatori",
+    "cobertura_2020": "Arbrat dens",
+    "edat_espai_obert": "",
+    "coberta_2005": "Arbrat dens",
+    "coberta_1993": "Arbrat dens",
+    "coberta_1956": "Arbrat dens"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.010832,
+     41.459774
+    ]
+   },
+   "properties": {
+    "id": "P104",
+    "tipologia": "Control obert",
+    "rol": "Suplent",
+    "origen": "Antic sòl forestal",
+    "orientacio": "Nord",
+    "pendent": 25.5,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert després de 2005",
+    "coberta_2005": "Boscos densos (no de ribera)",
+    "coberta_1993": "Matollars",
+    "coberta_1956": "Boscos densos (no de ribera)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.068735,
+     41.387113
+    ]
+   },
+   "properties": {
+    "id": "P105",
+    "tipologia": "Control obert",
+    "rol": "Suplent",
+    "origen": "Antics conreus",
+    "orientacio": "Sud",
+    "pendent": 6,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1993 i 2005",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Conreus",
+    "coberta_1956": "Conreus herbacis (no arrossars)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.030358,
+     41.449159
+    ]
+   },
+   "properties": {
+    "id": "P106",
+    "tipologia": "Control obert",
+    "rol": "Suplent",
+    "origen": "Antic sòl forestal",
+    "orientacio": "Sud",
+    "pendent": 10.5,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1956 i 1993",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Matollars",
+    "coberta_1956": "Boscos densos (no de ribera)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.165416,
+     41.449097
+    ]
+   },
+   "properties": {
+    "id": "P107",
+    "tipologia": "Control obert",
+    "rol": "Suplent",
+    "origen": "Antic sòl forestal",
+    "orientacio": "Sud",
+    "pendent": 25.5,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1956 i 1993",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Prats i herbassars",
+    "coberta_1956": "Boscos clars (no de ribera)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.067139,
+     41.402943
+    ]
+   },
+   "properties": {
+    "id": "P108",
+    "tipologia": "Control obert",
+    "rol": "Suplent",
+    "origen": "Antics conreus",
+    "orientacio": "Oest",
+    "pendent": 7.5,
+    "observacions": "",
+    "zona": "Prats i herbassars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Prats i herbassars",
+    "edat_espai_obert": "Obert entre 1993 i 2005",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Conreus",
+    "coberta_1956": "Conreus llenyosos (no vinyes)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.175904,
+     41.469651
+    ]
+   },
+   "properties": {
+    "id": "P109",
+    "tipologia": "Control obert",
+    "rol": "Suplent",
+    "origen": "Antics conreus",
+    "orientacio": "Est",
+    "pendent": 19,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert abans de 1956",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Matollars",
+    "coberta_1956": "Conreus abandonats - matollars"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.042666,
+     41.423395
+    ]
+   },
+   "properties": {
+    "id": "P110",
+    "tipologia": "Control obert",
+    "rol": "Suplent",
+    "origen": "Antic sòl forestal",
+    "orientacio": "Sud",
+    "pendent": 26.5,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1993 i 2005",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Boscos densos (no de ribera)",
+    "coberta_1956": "Boscos densos (no de ribera)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.085162,
+     41.395403
+    ]
+   },
+   "properties": {
+    "id": "P111",
+    "tipologia": "Control obert",
+    "rol": "Suplent",
+    "origen": "Antics conreus",
+    "orientacio": "Sud",
+    "pendent": 11.5,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1956 i 1993",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Matollars",
+    "coberta_1956": "Conreus herbacis (no arrossars)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.129832,
+     41.471416
+    ]
+   },
+   "properties": {
+    "id": "P112",
+    "tipologia": "Control obert",
+    "rol": "Suplent",
+    "origen": "Antics conreus",
+    "orientacio": "Sud",
+    "pendent": 9.5,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1993 i 2005",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Conreus",
+    "coberta_1956": "Conreus herbacis (no arrossars)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.138456,
+     41.444443
+    ]
+   },
+   "properties": {
+    "id": "P113",
+    "tipologia": "Control obert",
+    "rol": "Suplent",
+    "origen": "Antic sòl forestal",
+    "orientacio": "Nord",
+    "pendent": 22.5,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1956 i 1993",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Matollars",
+    "coberta_1956": "Boscos densos (no de ribera)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.078466,
+     41.398402
+    ]
+   },
+   "properties": {
+    "id": "P114",
+    "tipologia": "Control obert",
+    "rol": "Suplent",
+    "origen": "Antics conreus",
+    "orientacio": "Pla",
+    "pendent": 1.5,
+    "observacions": "",
+    "zona": "Prats i herbassars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Prats i herbassars",
+    "edat_espai_obert": "Obert entre 1993 i 2005",
+    "coberta_2005": "Prats i herbassars",
+    "coberta_1993": "Conreus",
+    "coberta_1956": "Conreus herbacis (no arrossars)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.09357,
+     41.411791
+    ]
+   },
+   "properties": {
+    "id": "P115",
+    "tipologia": "Control obert",
+    "rol": "Suplent",
+    "origen": "Antics conreus",
+    "orientacio": "Sud",
+    "pendent": 9.5,
+    "observacions": "",
+    "zona": "Prats i herbassars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Prats i herbassars",
+    "edat_espai_obert": "Obert entre 1956 i 1993",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Matollars",
+    "coberta_1956": "Conreus herbacis (no arrossars)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.045945,
+     41.39899
+    ]
+   },
+   "properties": {
+    "id": "P116",
+    "tipologia": "Control obert",
+    "rol": "Suplent",
+    "origen": "Antics conreus",
+    "orientacio": "Oest",
+    "pendent": 10,
+    "observacions": "",
+    "zona": "Prats i herbassars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Prats i herbassars",
+    "edat_espai_obert": "Obert entre 1993 i 2005",
+    "coberta_2005": "Conreus abandonats - prats",
+    "coberta_1993": "Conreus",
+    "coberta_1956": "Vinyes"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.045841,
+     41.400439
+    ]
+   },
+   "properties": {
+    "id": "P117",
+    "tipologia": "Control obert",
+    "rol": "Suplent",
+    "origen": "Antics conreus",
+    "orientacio": "Sud",
+    "pendent": 16,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1993 i 2005",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Conreus",
+    "coberta_1956": "Conreus llenyosos (no vinyes)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.095495,
+     41.456077
+    ]
+   },
+   "properties": {
+    "id": "P118",
+    "tipologia": "Control obert",
+    "rol": "Suplent",
+    "origen": "Antic sòl forestal",
+    "orientacio": "Nord",
+    "pendent": 16.5,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1956 i 1993",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Matollars",
+    "coberta_1956": "Boscos densos (no de ribera)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.135289,
+     41.461346
+    ]
+   },
+   "properties": {
+    "id": "P119",
+    "tipologia": "Control obert",
+    "rol": "Suplent",
+    "origen": "Antic sòl forestal",
+    "orientacio": "Oest",
+    "pendent": 25,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1993 i 2005",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Boscos densos (no de ribera)",
+    "coberta_1956": "Boscos densos (no de ribera)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.034029,
+     41.443981
+    ]
+   },
+   "properties": {
+    "id": "P120",
+    "tipologia": "Control obert",
+    "rol": "Suplent",
+    "origen": "Antic sòl forestal",
+    "orientacio": "Nord",
+    "pendent": 14.5,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1956 i 1993",
+    "coberta_2005": "Matollars",
+    "coberta_1993": "Matollars",
+    "coberta_1956": "Boscos densos (no de ribera)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.005224,
+     41.455338
+    ]
+   },
+   "properties": {
+    "id": "P121",
+    "tipologia": "Control obert",
+    "rol": "Suplent",
+    "origen": "Antics conreus",
+    "orientacio": "Est",
+    "pendent": 17.5,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert després de 2005",
+    "coberta_2005": "Conreus llenyosos (no vinyes)",
+    "coberta_1993": "Conreus",
+    "coberta_1956": "Conreus herbacis (no arrossars)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.120578,
+     41.482302
+    ]
+   },
+   "properties": {
+    "id": "P122",
+    "tipologia": "Control obert",
+    "rol": "Suplent",
+    "origen": "Antics conreus",
+    "orientacio": "Pla",
+    "pendent": 2,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert entre 1993 i 2005",
+    "coberta_2005": "Prats i herbassars",
+    "coberta_1993": "Conreus",
+    "coberta_1956": "Vinyes"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     2.029759,
+     41.413005
+    ]
+   },
+   "properties": {
+    "id": "P123",
+    "tipologia": "Control obert",
+    "rol": "Suplent",
+    "origen": "Antics conreus",
+    "orientacio": "Oest",
+    "pendent": 17,
+    "observacions": "",
+    "zona": "Matollars",
+    "metode": "Aleatori",
+    "cobertura_2020": "Matollars",
+    "edat_espai_obert": "Obert després de 2005",
+    "coberta_2005": "Conreus herbacis (no arrossars)",
+    "coberta_1993": "Conreus",
+    "coberta_1956": "Conreus abandonats - prats"
+   }
+  }
+ ]
+}
