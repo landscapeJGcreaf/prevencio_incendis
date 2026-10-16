@@ -459,9 +459,9 @@
       </div>
       <div class="sublayer-panel open" id="panel-franges">
         <div class="legend">
-          <div class="legend-item"><span class="swatch" style="background:#8db89a"></span> Executada</div>
-          <div class="legend-item"><span class="swatch" style="background:#e08a3c"></span> Pendent d'execució</div>
-          <div class="legend-item"><span class="swatch" style="background:#a8a49a"></span> Planificada / proposta</div>
+          <div class="legend-item sel-filter" role="button" tabindex="0" aria-pressed="false" data-sel="franges" data-val="exec" title="Clic per ressaltar al mapa"><span class="swatch" style="background:#8db89a"></span> Executada</div>
+          <div class="legend-item sel-filter" role="button" tabindex="0" aria-pressed="false" data-sel="franges" data-val="pend" title="Clic per ressaltar al mapa"><span class="swatch" style="background:#e08a3c"></span> Pendent d'execució</div>
+          <div class="legend-item sel-filter" role="button" tabindex="0" aria-pressed="false" data-sel="franges" data-val="plan" title="Clic per ressaltar al mapa"><span class="swatch" style="background:#a8a49a"></span> Planificada / proposta</div>
         </div>
         <button class="table-toggle" data-table="franges">Veure taula d'atributs (1298 registres)</button>
       </div>
@@ -474,8 +474,8 @@
       </div>
       <div class="sublayer-panel open" id="panel-pegs">
         <div class="legend">
-          <div class="legend-item"><span class="swatch" style="background:#2f8f4e"></span> Executat</div>
-          <div class="legend-item"><span class="swatch" style="background:#bfe3c0"></span> No executat</div>
+          <div class="legend-item sel-filter" role="button" tabindex="0" aria-pressed="false" data-sel="pegs" data-val="exec" title="Clic per ressaltar al mapa"><span class="swatch" style="background:#2f8f4e"></span> Executat</div>
+          <div class="legend-item sel-filter" role="button" tabindex="0" aria-pressed="false" data-sel="pegs" data-val="no" title="Clic per ressaltar al mapa"><span class="swatch" style="background:#bfe3c0"></span> No executat</div>
         </div>
         <button class="table-toggle" data-table="pegs">Veure taula d'atributs (178 registres)</button>
       </div>
@@ -1649,25 +1649,26 @@ Object.keys(LAZY_LAYERS).forEach(key => {
 
 // ---- Ressaltar al mapa els elements d'una llegenda (espais oberts, incendis) ----
 const SEL_LAYERS = {
-  obertes:  { fill:'obertes-fill',  line:'obertes-line',  baseOp:0.5,  baseW:0.5, slider:null },
-  incendis: { fill:'incendis-fill', line:'incendis-line', baseOp:0.55, baseW:1.4, slider:'incendis-fill' }
+  obertes:  { fills:['obertes-fill'],  lines:['obertes-line'],  baseOp:0.5,  hiOp:0.8,  baseW:0.5, slider:null },
+  incendis: { fills:['incendis-fill'], lines:['incendis-line'], baseOp:0.55, hiOp:0.85, baseW:1.4, slider:'incendis-fill' },
+  franges:  { fills:['franges-fill'],  lines:['franges-line', 'franges-line-planned'], baseOp:0.5, hiOp:0.8, baseW:1, slider:null,
+              hits:{ exec:['==', ['get', 'feta'], 1], pend:['==', ['get', 'feta'], 0], plan:['!', ['has', 'feta']] } },
+  pegs:     { fills:['pegs-fill'],     lines:['pegs-line'],     baseOp:['case', ['==', ['get', 'executat'], 1], 0.6, 0.4], hiOp:0.85, baseW:1, slider:null,
+              hits:{ exec:['==', ['get', 'executat'], 1], no:['!=', ['get', 'executat'], 1] } }
 };
 const selState = {};
 function applySel(key){
   const L = SEL_LAYERS[key], st = selState[key];
-  if(!map.getLayer(L.fill)) return;
+  if(!map.getLayer(L.fills[0])) return;
   const sl = L.slider && document.querySelector(`[data-opacity="${L.slider}"]`);
   const base = sl ? sl.value / 100 : L.baseOp;
-  if(st){
-    const hit = ['==', ['get', st.prop], st.val];
-    map.setPaintProperty(L.fill, 'fill-opacity', ['case', hit, Math.min(0.9, base + 0.3), 0.06]);
-    map.setPaintProperty(L.line, 'line-opacity', ['case', hit, 1, 0.12]);
-    map.setPaintProperty(L.line, 'line-width', ['case', hit, L.baseW + 1.2, L.baseW]);
-  } else {
-    map.setPaintProperty(L.fill, 'fill-opacity', base);
-    map.setPaintProperty(L.line, 'line-opacity', 1);
-    map.setPaintProperty(L.line, 'line-width', L.baseW);
-  }
+  const hit = st ? (st.expr || ['==', ['get', st.prop], st.val]) : null;
+  L.fills.forEach(id => map.getLayer(id) && map.setPaintProperty(id, 'fill-opacity', st ? ['case', hit, typeof base === 'number' ? Math.min(0.9, base + 0.3) : L.hiOp, 0.06] : base));
+  L.lines.forEach(id => {
+    if(!map.getLayer(id)) return;
+    map.setPaintProperty(id, 'line-opacity', st ? ['case', hit, 1, 0.12] : 1);
+    map.setPaintProperty(id, 'line-width', st ? ['case', hit, L.baseW + 1.2, L.baseW] : L.baseW);
+  });
   document.querySelectorAll(`.legend-item.sel-filter[data-sel="${key}"]`).forEach(el => {
     const on = !!st && String(st.raw) === el.dataset.val;
     el.classList.toggle('on', on);
@@ -1679,7 +1680,7 @@ document.querySelectorAll('.legend-item.sel-filter').forEach(el => {
   const toggle = () => {
     const key = el.dataset.sel, cur = selState[key];
     selState[key] = cur && String(cur.raw) === el.dataset.val ? null
-      : { prop: el.dataset.prop, raw: el.dataset.val, val: el.dataset.num ? Number(el.dataset.val) : el.dataset.val };
+      : { prop: el.dataset.prop, raw: el.dataset.val, val: el.dataset.num ? Number(el.dataset.val) : el.dataset.val, expr: (SEL_LAYERS[key].hits || {})[el.dataset.val] };
     applySel(key);
   };
   el.addEventListener('click', toggle);
