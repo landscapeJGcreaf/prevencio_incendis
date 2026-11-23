@@ -106,7 +106,11 @@
     border-top:1px solid var(--line); z-index:6; overflow:hidden; transition:height .18s ease;
     display:flex; flex-direction:column;
   }
-  #table-overlay.open{ height:38%; }
+  #table-overlay.open{ height:var(--table-h, 38%); }
+  #table-overlay.resizing{ transition:none; }
+  #table-resizer{ position:absolute; top:0; left:0; right:0; height:9px; cursor:ns-resize; z-index:2; touch-action:none; display:flex; justify-content:center; align-items:center; }
+  #table-resizer::after{ content:''; width:44px; height:3px; border-radius:2px; background:#c9c6bc; }
+  #table-resizer:hover::after, #table-overlay.resizing #table-resizer::after{ background:var(--green-dark); }
   #table-head{
     display:flex; align-items:center; justify-content:space-between; padding:8px 16px;
     border-bottom:1px solid var(--line); flex-shrink:0;
@@ -225,6 +229,8 @@
   .pt-files summary::after{ content:'▾'; font-size:11px; }
   .pt-files[open] summary::after{ content:'▴'; }
   .pt-files summary:hover{ border-color:var(--green-dark); }
+  .layer-dl{ flex:none; border:1px solid var(--line); background:#fbfaf7; color:var(--green-dark); border-radius:5px; width:24px; height:22px; margin-left:6px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; padding:0; }
+  .layer-dl:hover{ border-color:var(--green-dark); background:#eef4ef; }
   .pt-tools-body{ margin-top:8px; }
   .pt-files-list{ display:flex; flex-direction:column; gap:5px; margin-top:5px; }
   .pt-files-list button, .pt-files-list .pt-import{ text-align:left; }
@@ -423,7 +429,7 @@
     #sidebar-header{ padding-left:58px; }
     #map{ left:0; }
     #table-overlay{ left:0; }
-    #table-overlay.open{ height:55%; }
+    #table-overlay.open{ height:var(--table-h, 55%); }
     #coord-display{ left:10px; font-size:9.5px; }
     #edit-banner{ left:50%; max-width:calc(100% - 80px); }
     #stats-drawer{ width:100%; }
@@ -522,6 +528,9 @@
         <input type="checkbox" id="chk-punts" checked>
         <label for="chk-punts">Punts proposats</label>
         <span class="layer-count" id="count-punts">0</span>
+        <button type="button" class="layer-dl" id="pt-dl-row" title="Descarrega els punts proposats (GeoJSON i CSV)" aria-label="Descarrega els punts proposats">
+          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M8 2v8M4.5 7 8 10.5 11.5 7M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
       </div>
       <div class="sublayer-panel open" id="panel-punts">
         <div class="legend">
@@ -687,6 +696,7 @@
 <div id="coord-display">lon —, lat —</div>
 
 <div id="table-overlay">
+  <div id="table-resizer" title="Arrossega per canviar l'alçada de la taula" aria-hidden="true"></div>
   <div id="table-head">
     <h3 id="table-title">Taula d'atributs</h3>
     <button id="table-close">✕</button>
@@ -1693,6 +1703,30 @@ document.querySelectorAll('.legend-item.sel-filter').forEach(el => {
   el.addEventListener('keydown', (e) => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); } });
 });
 
+// ---- Taula d'atributs: es pot fer més alta arrossegant la vora superior ----
+(() => {
+  const ov = document.getElementById('table-overlay'), grip = document.getElementById('table-resizer');
+  try { const h = parseInt(localStorage.getItem('collserola_taula_h'), 10); if(h >= 120) ov.style.setProperty('--table-h', h + 'px'); } catch(e){}
+  let startY = 0, startH = 0;
+  const max = () => Math.max(160, ov.parentElement.clientHeight - 60);
+  grip.addEventListener('pointerdown', (e) => {
+    startY = e.clientY; startH = ov.offsetHeight; ov.classList.add('resizing'); grip.setPointerCapture(e.pointerId); e.preventDefault();
+  });
+  grip.addEventListener('pointermove', (e) => {
+    if(!ov.classList.contains('resizing')) return;
+    const h = Math.min(max(), Math.max(120, startH + (startY - e.clientY)));
+    ov.style.setProperty('--table-h', h + 'px');
+  });
+  const end = (e) => {
+    if(!ov.classList.contains('resizing')) return;
+    ov.classList.remove('resizing');
+    try { localStorage.setItem('collserola_taula_h', String(Math.round(ov.offsetHeight))); } catch(err){}
+    map.resize();
+  };
+  grip.addEventListener('pointerup', end); grip.addEventListener('pointercancel', end);
+  grip.addEventListener('dblclick', () => { ov.style.removeProperty('--table-h'); try { localStorage.removeItem('collserola_taula_h'); } catch(e){} });
+})();
+
 // ---- Opacitat dels rasters de relleu ----
 document.querySelectorAll('[data-opacity]').forEach(inp => {
   inp.addEventListener('input', () => {
@@ -2638,6 +2672,7 @@ async function exportCSV(){
   download(`punts_mostreig_${stamp()}.csv`, '\uFEFF' + lines.join('\r\n'), 'text/csv;charset=utf-8');
 }
 // Un sol botó: baixa el GeoJSON (per publicar-lo al visor) i el CSV (per treballar-hi en full de càlcul)
+document.getElementById('pt-dl-row').addEventListener('click', () => document.getElementById('pt-export').click());
 document.getElementById('pt-export').addEventListener('click', async () => {
   if(!points.features.length) return alert('Encara no hi ha cap punt per descarregar.');
   await exportGeoJSON();
